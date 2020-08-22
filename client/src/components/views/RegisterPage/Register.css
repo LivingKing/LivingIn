@@ -1,0 +1,13 @@
+.Register {
+  text-align: center;
+}
+.logo {
+  margin-top: 10vh;
+  height: 30vh;
+  pointer-events: none;
+}
+
+.RegisterForm {
+  margin: 0 auto;
+  width: 40vh;
+}

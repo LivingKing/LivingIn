@@ -1,0 +1,29 @@
+.Login {
+  text-align: center;
+}
+.Login-logo {
+  margin-top: 25%;
+  height: 30vh;
+  pointer-events: none;
+}
+
+.LoginForm {
+  margin: 0 auto;
+  width: 30vh;
+}
+
+.LoginForm2 .Item3 {
+  margin-top: 10px;
+  padding: 0;
+  width: 167px;
+  height: 45px;
+  line-height: 44px;
+  color: #783c00;
+  background-color: #ffeb00;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  cursor: pointer;
+}
