@@ -72,7 +72,7 @@ https://localhost:5000
 | password          | O        | _String_  | -       |                              |
 | nickname          | O        | _String_  | -       |                              |
 | icon              | O        | _String_  | -       | 프로필 사진 경로             |
-| Favorite_HashTage | O        | _String_  | -       | 선호하는 헤쉬태그            |
+| Favorite_HashTage | O        | _String_  | -       | 선호하는 해시태그            |
 | googleId          | O        | _String_  | -       | OAuth 통해 받아오는 googleId |
 | kakaoId           | O        | _String_  | -       | OAuth 통해 받아오는 kakaoId  |
 | created_At        | O        | _Date_    | -       | 생성날짜                     |
