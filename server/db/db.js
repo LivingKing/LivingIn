@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-import db_config from "../config/db-config.json";
+const db_config = require("../config/db-config.json");
 
 const db = mongoose.connection;
 db.on("error", console.error);

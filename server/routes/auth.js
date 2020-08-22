@@ -11,7 +11,7 @@ router.post("/login", (req, res) => {
 
 router.post("/login/google", (req, res) => {
   const post = req.body.profileObj;
-  User.findOne({ googleId: post.googleId }, (err, user) => {
+  User.findOne({ email: post.email }, (err, user) => {
     if (err) throw err;
     if (!user) {
       return axios({
@@ -29,7 +29,7 @@ router.post("/login/google", (req, res) => {
 
 router.post("/login/kakao", (req, res) => {
   const post = req.body.profile;
-  User.findOne({ kakaoId: post.id }, (err, user) => {
+  User.findOne({ email: post.kakao_account.email }, (err, user) => {
     if (err) throw err;
     if (!user) {
       return axios({
