@@ -10,14 +10,18 @@ $ git clone https://github.com/LivingKing/LivingIn.git
 ```
 
 ### NPM 설치
+#### NPM 설치방법
+
+```
+npm i npm-name --save
+```
+
 #### client, server 공통
 ```
 $ npm init
 ```
 
-```
-npm i npm-name --save
-```
+
 #### server list(계속 추가될 수도 있음)
 - pm2
 
