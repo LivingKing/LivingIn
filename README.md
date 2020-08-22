@@ -9,6 +9,8 @@
 ```
 $ git clone https://github.com/LivingKing/LivingIn.git
 ```
+### PowerShell 설정
+https://dog-developers.tistory.com/183
 
 ### NPM 설치
 
@@ -21,7 +23,7 @@ npm i packageName --save
 #### client, server 공통
 
 ```
-$ npm init
+npm i --save
 ```
 
 #### 서버 설치 리스트(계속 추가될 수도 있음)
