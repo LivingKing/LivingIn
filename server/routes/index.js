@@ -9,4 +9,14 @@ router.get("/users", (req, res) => {
   });
 });
 
+router.get("/all_delete", (req, res) => {
+  User.remove({}, (err, result) => {
+    if (err) throw err;
+    console.log(result);
+    res.json({
+      message: "all data clear",
+    });
+  });
+});
+
 module.exports = router;
