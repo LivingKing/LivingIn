@@ -17,7 +17,7 @@ function LoginPage(props) {
       },
     })
       .then((res) => res.json())
-      .then((res) => console.log("Success:", JSON.stringify(res)));
+      .then((res) => console.log("Message:", JSON.stringify(res)));
   };
   const responseKakao = (res) => {
     fetch("/auth/login/kakao", {
@@ -28,12 +28,10 @@ function LoginPage(props) {
       },
     })
       .then((res) => res.json())
-      .then((res) => console.log("Success:", JSON.stringify(res)));
+      .then((res) => console.log("Message:", JSON.stringify(res)));
   };
 
   const onFinish = (values) => {
-    console.log("Received values of form: ", values);
-    console.log(values["password"]);
     fetch("/auth/login/", {
       method: "POST",
       body: JSON.stringify(values), // data can be `string` or {object}!
@@ -42,7 +40,13 @@ function LoginPage(props) {
       },
     })
       .then((res) => res.json())
-      .then((res) => console.log("Success:", JSON.stringify(res)));
+      .then((res) => console.log("Message:", JSON.stringify(res)));
+    // bcrypt.hash(values.password, 10, (err, res) => {
+    //   if (err) throw err;
+    //   values.password = res;
+    //   console.log("Received values of form: ", values);
+
+    // });
   };
   // const kakaoSvg= {
   // }
