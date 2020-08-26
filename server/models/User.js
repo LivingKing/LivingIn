@@ -10,9 +10,8 @@ const userSchema = new Schema({
   nickname: { type: String, required: true },
   created_At: { type: Date, default: Date.now },
   icon: String,
-  Favorite_HashTag: String,
-  googleId: String,
-  kakaoId: String,
+  favorite_HashTag: String,
+  refresh_token: String,
   is_admin: { type: Boolean, default: false },
 });
 
@@ -44,9 +43,11 @@ userSchema.statics.findOneByNick = function (nickname) {
   return this.findOne({ nickname }).exec();
 };
 userSchema.methods.verify = function (password) {
-  bcrypt.compare(password, this.password, (err, result) => {
-    if (err) throw err;
-    return result;
+  return new Promise((resolve, reject) => {
+    bcrypt.compare(password, this.password, (err, result) => {
+      if (err) reject(err);
+      resolve(result);
+    });
   });
 };
 

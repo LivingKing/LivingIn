@@ -3,11 +3,11 @@ const router = express.Router();
 const User = require("../models/User");
 
 router.post("/", (req, res) => {
-  const { email, password, nickname } = req.body;
+  const { email, password, nickname, imageUrl } = req.body;
 
   const create = (user) => {
     if (user) throw new Error("username exists");
-    return User.create(email, password, nickname);
+    return User.create(email, password, nickname, imageUrl);
   };
   const respond = () => {
     res.status(200).json({

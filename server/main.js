@@ -3,6 +3,7 @@ const app = express();
 const compression = require("compression");
 const helmet = require("helmet");
 const indexRouter = require("./routes/index");
+const apiRouter = require("./routes/api");
 const loginRouter = require("./routes/auth");
 const registerRouter = require("./routes/register");
 const db = require("./db/db");
@@ -13,8 +14,8 @@ app.use(express.json());
 app.use(compression());
 app.use(cors());
 app.use(express.static("public"));
-
-app.use("/api", indexRouter);
+app.use("/", indexRouter);
+app.use("/api", apiRouter);
 app.use("/auth", loginRouter);
 app.use("/register", registerRouter);
 

@@ -8,7 +8,6 @@ const config = require("../config/config");
 
 router.post("/vaild_check", (req, res) => {
   const { email, nickname } = req.body;
-  console.log(email, nickname);
   const respond = (user) => {
     if (user) {
       throw new Error("already exist");
@@ -30,38 +29,53 @@ router.post("/vaild_check", (req, res) => {
 });
 
 router.post("/login", (req, res) => {
-  const post = req.body;
+  const { email, password } = req.body;
   const secret = config.secret;
-  User.findOne({ email: post.email }, (err, user) => {
-    if (err) throw err;
-    if (user) {
-      bcrypt.compare(post.password, user.password, (err, result) => {
-        if (err) throw err;
+
+  const check = (user) => {
+    if (!user) {
+      throw new Error("user not exist");
+    } else {
+      return user.verify(password).then((result) => {
         if (result) {
           return new Promise((resolve, reject) => {
             jwt.sign(
               {
                 _id: user._id,
                 email: user.email,
+                admin: user.is_admin,
               },
               secret,
               {
-                expiresIn: "5m",
-                issuer: "test",
+                expiresIn: "1h",
+                issuer: "LivingIn.com",
                 subject: "userInfo",
               },
               (err, token) => {
                 if (err) reject(err);
-                else resolve(token);
+                else resolve({ token: token, nickname: user.nickname });
               }
             );
-          }).then((token) => {
-            res.status(200).json({ message: "logged in successfully", token });
           });
-        }
+        } else throw new Error("password incorrect");
       });
     }
-  });
+  };
+  const respond = (result) => {
+    const { token, nickname } = result;
+    res.status(200).json({
+      message: "logged in successfully",
+      token,
+      nickname,
+    });
+  };
+  const onError = (error) => {
+    res.status(403).json({
+      message: error.message,
+    });
+  };
+
+  User.findOneByEmail(email).then(check).then(respond).catch(onError);
 });
 
 router.post("/login/google", (req, res) => {
