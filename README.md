@@ -29,6 +29,7 @@ npm i --save
 #### 서버 설치 리스트(계속 추가될 수도 있음)
 
 - pm2
+- mongoose
 
 ### 실행 방법
 
@@ -58,9 +59,10 @@ https://localhost:5000
 
 #####
 
-| METHOD | URL                             | Description                             |
-| ------ | ------------------------------- | --------------------------------------- |
-| GET    | http://localhost:5000/api/users | DB에 저장된 회원정보 JSON 포맷으로 출력 |
+| METHOD | URL                                  | Description                             |
+| ------ | ------------------------------------ | --------------------------------------- |
+| GET    | http://localhost:5000/api/users      | DB에 저장된 회원정보 JSON 포맷으로 출력 |
+| GET    | http://localhost5000:/api/all_delete | DB 저장된 회원정보 전체삭제             |
 
 #####
 
@@ -68,16 +70,15 @@ https://localhost:5000
 
 #####
 
-| Parameter         | Required | Type      | Default | Description                  |
-| ----------------- | -------- | --------- | ------- | ---------------------------- |
-| email             | O        | _String_  | -       |                              |
-| password          | O        | _String_  | -       |                              |
-| nickname          | O        | _String_  | -       |                              |
-| icon              | O        | _String_  | -       | 프로필 사진 경로             |
-| Favorite_HashTage | O        | _String_  | -       | 선호하는 해시태그            |
-| googleId          | O        | _String_  | -       | OAuth 통해 받아오는 googleId |
-| kakaoId           | O        | _String_  | -       | OAuth 통해 받아오는 kakaoId  |
-| created_At        | O        | _Date_    | -       | 생성날짜                     |
-| is_admin          | O        | _Boolean_ | -       | 관리자 계정 여부             |
+| Parameter         | Required | Type      | Default | Description                                        |
+| ----------------- | -------- | --------- | ------- | -------------------------------------------------- |
+| email             | O        | _String_  | -       |                                                    |
+| password          | O        | _String_  | -       |                                                    |
+| nickname          | O        | _String_  | -       |                                                    |
+| icon              | O        | _String_  | -       | 프로필 사진 경로                                   |
+| Favorite_HashTage | O        | _String_  | -       | 선호하는 해시태그                                  |
+| refresh_token     | O        | _String_  | -       | access_token이 만료되있을 경우 재발급을 위한 token |
+| created_At        | O        | _Date_    | -       | 생성날짜                                           |
+| is_admin          | O        | _Boolean_ | -       | 관리자 계정 여부                                   |
 
 #####
