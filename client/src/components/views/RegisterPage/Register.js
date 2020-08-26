@@ -1,35 +1,71 @@
 import React, { useState, useRef } from "react";
-import { Form, Input, Tooltip, Checkbox, Button, message } from "antd";
-import { QuestionCircleOutlined } from "@ant-design/icons";
+import { Form, Input, Tooltip, Checkbox, Button, message, Upload } from "antd";
+import {
+  QuestionCircleOutlined,
+  LoadingOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
 import { withRouter } from "react-router-dom";
 import bcrypt from "bcryptjs";
 import logo from "./logo.png";
 import "./Register.css";
-import Avatar from "./Avatar";
 
-function RegistrationForm(props) {
+function RegistrationPage(props) {
   const [form] = Form.useForm();
+  const u_key = "updatable";
+  const iv_key = "invalid";
+  const v_key = "valid";
+
+  const [email, setEmail] = useState("");
+  const [nickname, setNickName] = useState("");
+  const [email_checked, setEmailChecked] = useState(false);
+  const [nick_checked, setNickChecked] = useState(false);
+  const [imageUrl, setImageUrl] = useState("");
+  const [loading, setLoading] = useState(false);
+  const emailInput = useRef();
+  const nickInput = useRef();
+
+  const destory_message = (key) => {
+    if (key === "all") {
+      message.destroy(u_key);
+      message.destroy(iv_key);
+      message.destroy(v_key);
+    } else {
+      message.destroy(key);
+    }
+  };
   const onFinish = (values) => {
+    const result = Object.assign({ imageUrl: imageUrl }, values);
     if (!email_checked)
-      return message.error("이메일 중복체크를 실시해주시기 바랍니다.");
+      return message.error({
+        content: "이메일 중복체크를 실시해주시기 바랍니다.",
+        iv_key: iv_key,
+      });
     if (!nick_checked)
-      return message.error("닉네임 중복체크를 실시해주시기 바랍니다.");
+      return message.error({
+        content: "닉네임 중복체크를 실시해주시기 바랍니다.",
+        iv_key: iv_key,
+      });
+
+    message.loading({ content: "Loading...", u_key });
 
     let url = "http://localhost:5000/register";
     bcrypt.hash(values.password, 10, (err, res) => {
       if (err) throw err;
-      values.password = res;
-      values.confirm = res;
+      result.password = res;
+      result.confirm = res;
       fetch(url, {
         method: "POST",
-        body: JSON.stringify(values),
+        body: JSON.stringify(result),
         headers: {
           "Content-Type": "application/json",
         },
       })
         .then((res) => {
           if (res.status === 200) {
-            alert("회원가입에 성공하였습니다!");
+            message
+              .success("회원가입에 성공하였습니다!", 2, destory_message("all"))
+              .then(props.history.push("/login"));
           } else {
             throw new Error("알 수 없는 오류가 발생했습니다.");
           }
@@ -39,13 +75,6 @@ function RegistrationForm(props) {
         });
     });
   };
-
-  const [email, setEmail] = useState("");
-  const [nickname, setNickName] = useState("");
-  const [email_checked, setEmailChecked] = useState(false);
-  const [nick_checked, setNickChecked] = useState(false);
-  const emailInput = useRef();
-  const nickInput = useRef();
 
   function check(key, value) {
     return new Promise((resolve, reject) => {
@@ -70,10 +99,11 @@ function RegistrationForm(props) {
     check("email", email).then((result) => {
       if (result === 200) {
         setEmailChecked(true);
-        return message.success("사용 가능한 이메일입니다.");
+        message.destroy(iv_key);
+        return message.success({ content: "사용 가능한 이메일입니다.", v_key });
       } else if (result === 409) {
         emailInput.current.focus();
-        return message.error("이미 등록된 이메일입니다.");
+        return message.error({ content: "이미 등록된 이메일입니다.", iv_key });
       }
     });
   };
@@ -82,14 +112,52 @@ function RegistrationForm(props) {
     check("nickname", nickname).then((result) => {
       if (result === 200) {
         setNickChecked(true);
-        return message.success("사용 가능한 닉네임입니다.");
+        message.destroy(iv_key);
+        return message.success({ content: "사용 가능한 닉네임입니다.", v_key });
       } else if (result === 409) {
         nickInput.current.focus();
-        return message.error("이미 등록된 닉네임입니다.");
+        return message.error({ content: "이미 등록된 닉네임입니다.", iv_key });
       }
     });
   };
 
+  function getBase64(img, callback) {
+    const reader = new FileReader();
+    reader.addEventListener("load", () => callback(reader.result));
+    reader.readAsDataURL(img);
+  }
+
+  function beforeUpload(file) {
+    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
+    if (!isJpgOrPng) {
+      message.error("You can only upload JPG/PNG file!");
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error("Image must smaller than 2MB!");
+    }
+    return isJpgOrPng && isLt2M;
+  }
+
+  const handleChange = (info) => {
+    if (info.file.status === "uploading") {
+      setLoading(true);
+      return;
+    }
+    if (info.file.status === "done") {
+      // Get this url from response in real world.
+      getBase64(info.file.originFileObj, (imageUrl) => {
+        setImageUrl(imageUrl);
+        setLoading(false);
+      });
+    }
+  };
+  const uploadButton = (
+    <div>
+      {loading ? <LoadingOutlined /> : <PlusOutlined />}
+      <div className="ant-upload-text">Upload</div>
+    </div>
+  );
   return (
     <div className="Register">
       <img src={logo} className="logo" alt="logo" />
@@ -103,6 +171,22 @@ function RegistrationForm(props) {
           }}
           scrollToFirstError
         >
+          <Form.Item label="아이콘">
+            <Upload
+              listType="picture-card"
+              className="avatar-uploader"
+              showUploadList={false}
+              action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+              beforeUpload={beforeUpload}
+              onChange={handleChange}
+            >
+              {imageUrl ? (
+                <img src={imageUrl} alt="avatar" style={{ width: "100%" }} />
+              ) : (
+                uploadButton
+              )}
+            </Upload>
+          </Form.Item>
           <Form.Item
             label="이메일"
             style={{ marginBottom: 0 }}
@@ -269,4 +353,4 @@ function RegistrationForm(props) {
   );
 }
 
-export default withRouter(RegistrationForm);
+export default withRouter(RegistrationPage);

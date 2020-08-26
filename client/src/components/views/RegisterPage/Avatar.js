@@ -21,9 +21,12 @@ function beforeUpload(file) {
 }
 
 class Avatar extends React.Component {
-  state = {
-    loading: false,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: false,
+    };
+  }
 
   handleChange = (info) => {
     if (info.file.status === "uploading") {

@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Input, Button, Checkbox } from "antd";
+import { Form, Input, Button, Checkbox, message } from "antd";
 import { MailOutlined, LockOutlined } from "@ant-design/icons";
 import logo from "./logo.png";
 import "./Login.css";
@@ -9,6 +9,7 @@ import { withRouter } from "react-router-dom";
 
 function LoginPage(props) {
   const responseGoogle = (res) => {
+    console.log(res);
     fetch("/auth/login/google", {
       method: "POST",
       body: JSON.stringify(res), // data can be `string` or {object}!
@@ -40,16 +41,20 @@ function LoginPage(props) {
       },
     })
       .then((res) => res.json())
-      .then((res) => console.log("Message:", JSON.stringify(res)));
-    // bcrypt.hash(values.password, 10, (err, res) => {
-    //   if (err) throw err;
-    //   values.password = res;
-    //   console.log("Received values of form: ", values);
-
-    // });
+      .then((res) => {
+        if (res.message === "user not exist")
+          return message.error("존재하지 않는 이메일입니다.");
+        else if (res.message === "password incorrect")
+          return message.error("비밀번호가 틀립니다.");
+        else if (res.message === "logged in successfully") {
+          message.info(res.nickname + "님 반갑습니다!", 1);
+          return props.history.push("/");
+        } else {
+          return message.error(res.message);
+        }
+      });
   };
-  // const kakaoSvg= {
-  // }
+
   return (
     <div className="Login">
       <img src={logo} className="Login-logo" alt="logo" />

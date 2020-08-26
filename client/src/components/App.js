@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { Route } from "react-router-dom";
+import MainPage from "./views/mainPage/Main";
 import LoginPage from "./views/loginPage/Login";
-import Register from "./views/RegisterPage/Register";
+import RegisterPage from "./views/RegisterPage/Register";
 import "./App.css";
 
 class App extends Component {
@@ -9,8 +10,9 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
+          <Route exact path="/" component={MainPage} />
           <Route exact path="/login" component={LoginPage} />
-          <Route exact path="/register" component={Register} />
+          <Route exact path="/register" component={RegisterPage} />
         </header>
       </div>
     );
