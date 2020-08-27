@@ -3,8 +3,11 @@ const router = express.Router();
 const User = require("../models/User");
 const axios = require("axios");
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
 const config = require("../config/config");
+const { OAuth2Client } = require("google-auth-library");
+const client = new OAuth2Client(
+  "544956299484-cb4buam4sdchdl5t28h7cmvq41hc99uq.apps.googleusercontent.com"
+);
 
 router.post("/vaild_check", (req, res) => {
   const { email, nickname } = req.body;
@@ -29,24 +32,13 @@ router.post("/vaild_check", (req, res) => {
 });
 
 router.post("/token_check", (req, res) => {
-  const parseCookies = (cookie = "") => {
-    return cookie
-      .split(";")
-      .map((v) => v.split("="))
-      .map(([k, ...vs]) => [k, vs.join("=")])
-      .reduce((acc, [k, v]) => {
-        acc[k.trim()] = decodeURIComponent(v);
-        return acc;
-      }, {});
-  };
-
-  const { user } = parseCookies(req.headers.cookie);
-  if (!user) {
+  const token = req.headers["x-access-token"];
+  if (!token) {
     return res.status(403).json({ success: false, message: "not logged in" });
   }
 
   const p = new Promise((resolve, reject) => {
-    jwt.verify(user, config.secret, (err, decoded) => {
+    jwt.verify(token, config.secret, (err, decoded) => {
       if (err) reject(err);
       resolve(decoded);
     });
@@ -63,6 +55,20 @@ router.post("/token_check", (req, res) => {
     req.decoded = decoded;
     res.status(200).json({ success: true });
   }).catch(onError);
+});
+
+router.post("/google/token_check", (req, res) => {
+  const token_id = req.headers["x-access-token"];
+  const verify = () => {
+    return client.verifyIdToken({
+      idToken: token_id,
+      audience:
+        "544956299484-cb4buam4sdchdl5t28h7cmvq41hc99uq.apps.googleusercontent.com",
+    });
+  };
+
+  const respond = () => res.status(200).json({ success: true });
+  verify().then(respond).catch(console.error);
 });
 
 router.post("/login", (req, res) => {
@@ -100,9 +106,10 @@ router.post("/login", (req, res) => {
   };
   const respond = (result) => {
     const { access_token, nickname } = result;
-    res.cookie("user", access_token).status(200).json({
+    res.status(200).json({
       message: "logged in successfully",
       nickname,
+      access_token,
     });
   };
   const onError = (error) => {
@@ -115,9 +122,8 @@ router.post("/login", (req, res) => {
 });
 
 router.post("/login/google", (req, res) => {
-  const post = req.body.profileObj;
-  User.findOne({ email: post.email }, (err, user) => {
-    if (err) throw err;
+  const { email } = req.body.profileObj;
+  const check = (user) => {
     if (!user) {
       console.log("user not found!");
       return axios({
@@ -127,31 +133,64 @@ router.post("/login/google", (req, res) => {
           googledata: post,
         },
       });
-    } else {
-      res.status(200).send(JSON.stringify("success"));
     }
-  });
+    return {
+      nickname: req.body.profileObj.name,
+      access_token: req.body.tokenObj.id_token,
+    };
+  };
+  const respond = (result) => {
+    const { access_token, nickname } = result;
+    res.status(200).json({
+      message: "logged in successfully",
+      access_token,
+      nickname,
+    });
+  };
+  const onError = (error) => {
+    res.status(403).json({
+      message: error.message,
+    });
+  };
+
+  User.findOneByEmail(email).then(check).then(respond).catch(onError);
 });
 
 router.post("/login/kakao", (req, res) => {
-  const post = req.body.profile;
-  User.findOne({ email: post.kakao_account.email }, (err, user) => {
-    if (err) throw err;
+  const email = req.body.profile.kakao_account.email;
+
+  const check = (user) => {
     if (!user) {
+      console.log("user not found!");
       return axios({
         method: "post",
         url: "http://localhost:5000/register/kakao",
         data: {
-          kakaodata: post,
+          nickname,
+          kakaodata: req.body,
         },
-      }).then(res.status(200).send(JSON.stringify("success")));
-    } else {
-      res.status(200).send(JSON.stringify("success"));
+      });
     }
-  });
-});
-router.get("/login", (req, res) => {
-  console.log("get");
+    return {
+      nickname: req.body.profile.properties.nickname,
+      access_token: req.body.response.refresh_token.access_token,
+    };
+  };
+  const respond = (result) => {
+    const { access_token, nickname } = result;
+    res.status(200).json({
+      message: "logged in successfully",
+      nickname,
+      access_token,
+    });
+  };
+  const onError = (error) => {
+    res.status(403).json({
+      message: error.message,
+    });
+  };
+
+  User.findOneByEmail(email).then(check).then(respond).catch(onError);
 });
 
 module.exports = router;

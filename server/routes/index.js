@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 
 router.get("/", (req, res) => {
-  const token = req.headers["x-access-token"];
-  console.log(req);
+  const token = req;
+  console.log(token);
   res.send("hi", token);
 });
 

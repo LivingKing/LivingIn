@@ -9,39 +9,57 @@ import { withRouter } from "react-router-dom";
 
 function LoginPage(props) {
   const responseGoogle = (res) => {
-    console.log(res);
     fetch("/auth/login/google", {
       method: "POST",
-      body: JSON.stringify(res), // data can be `string` or {object}!
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => console.log("Message:", JSON.stringify(res)));
-  };
-  const responseKakao = (res) => {
-    fetch("/auth/login/kakao", {
-      method: "POST",
-      body: JSON.stringify(res), // data can be `string` or {object}!
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => console.log("Message:", JSON.stringify(res)));
-  };
-
-  const onFinish = (values) => {
-    fetch("/auth/login/", {
-      method: "POST",
-      body: JSON.stringify(values), // data can be `string` or {object}!
+      body: JSON.stringify(res),
       headers: {
         "Content-Type": "application/json",
       },
     })
       .then((res) => {
-        console.log(res.headers["x-access-token"]);
+        return res.json();
+      })
+      .then((res) => {
+        if (res.message === "logged in successfully") {
+          message.info(res.nickname + "님 반갑습니다!", 1);
+          return props.history.push({
+            pathname: "/",
+            state: { g_access_token: res.access_token },
+          });
+        }
+      });
+  };
+  const responseKakao = (res) => {
+    fetch("/auth/login/kakao", {
+      method: "POST",
+      body: JSON.stringify(res),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((res) => {
+        if (res.message === "logged in successfully") {
+          message.info(res.nickname + "님 반갑습니다!", 1);
+          return props.history.push({
+            pathname: "/",
+            state: { k_access_token: res.access_token },
+          });
+        }
+      });
+  };
+
+  const onFinish = (values) => {
+    fetch("/auth/login/", {
+      method: "POST",
+      body: JSON.stringify(values),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => {
         return res.json();
       })
       .then((res) => {
@@ -51,7 +69,10 @@ function LoginPage(props) {
           return message.error("비밀번호가 틀립니다.");
         else if (res.message === "logged in successfully") {
           message.info(res.nickname + "님 반갑습니다!", 1);
-          return props.history.push("/");
+          return props.history.push({
+            pathname: "/",
+            state: { access_token: res.access_token },
+          });
         } else {
           return message.error(res.message);
         }

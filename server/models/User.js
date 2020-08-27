@@ -20,16 +20,16 @@ userSchema.statics.create = function (
   password,
   nickname,
   icon,
-  googleId,
-  kakaoId
+  refresh_token,
+  is_admin
 ) {
   const user = new this({
     email,
     password,
     nickname,
     icon,
-    googleId,
-    kakaoId,
+    refresh_token,
+    is_admin,
   });
 
   return user.save();

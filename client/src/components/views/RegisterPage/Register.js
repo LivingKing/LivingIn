@@ -49,12 +49,11 @@ function RegistrationPage(props) {
 
     message.loading({ content: "Loading...", u_key });
 
-    let url = "http://localhost:5000/register";
     bcrypt.hash(values.password, 10, (err, res) => {
       if (err) throw err;
       result.password = res;
       result.confirm = res;
-      fetch(url, {
+      fetch("/register", {
         method: "POST",
         body: JSON.stringify(result),
         headers: {
@@ -145,7 +144,6 @@ function RegistrationPage(props) {
       return;
     }
     if (info.file.status === "done") {
-      // Get this url from response in real world.
       getBase64(info.file.originFileObj, (imageUrl) => {
         setImageUrl(imageUrl);
         setLoading(false);
