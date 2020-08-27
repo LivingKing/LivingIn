@@ -28,6 +28,43 @@ router.post("/vaild_check", (req, res) => {
     User.findOneByNick(nickname).then(respond).catch(onError);
 });
 
+router.post("/token_check", (req, res) => {
+  const parseCookies = (cookie = "") => {
+    return cookie
+      .split(";")
+      .map((v) => v.split("="))
+      .map(([k, ...vs]) => [k, vs.join("=")])
+      .reduce((acc, [k, v]) => {
+        acc[k.trim()] = decodeURIComponent(v);
+        return acc;
+      }, {});
+  };
+
+  const { user } = parseCookies(req.headers.cookie);
+  if (!user) {
+    return res.status(403).json({ success: false, message: "not logged in" });
+  }
+
+  const p = new Promise((resolve, reject) => {
+    jwt.verify(user, config.secret, (err, decoded) => {
+      if (err) reject(err);
+      resolve(decoded);
+    });
+  });
+
+  const onError = (error) => {
+    res.status(403).json({
+      success: false,
+      message: error.message,
+    });
+  };
+
+  p.then((decoded) => {
+    req.decoded = decoded;
+    res.status(200).json({ success: true });
+  }).catch(onError);
+});
+
 router.post("/login", (req, res) => {
   const { email, password } = req.body;
   const secret = config.secret;
@@ -53,7 +90,7 @@ router.post("/login", (req, res) => {
               },
               (err, token) => {
                 if (err) reject(err);
-                else resolve({ token: token, nickname: user.nickname });
+                else resolve({ access_token: token, nickname: user.nickname });
               }
             );
           });
@@ -62,10 +99,9 @@ router.post("/login", (req, res) => {
     }
   };
   const respond = (result) => {
-    const { token, nickname } = result;
-    res.status(200).json({
+    const { access_token, nickname } = result;
+    res.cookie("user", access_token).status(200).json({
       message: "logged in successfully",
-      token,
       nickname,
     });
   };

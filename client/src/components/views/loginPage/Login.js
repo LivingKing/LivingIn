@@ -40,7 +40,10 @@ function LoginPage(props) {
         "Content-Type": "application/json",
       },
     })
-      .then((res) => res.json())
+      .then((res) => {
+        console.log(res.headers["x-access-token"]);
+        return res.json();
+      })
       .then((res) => {
         if (res.message === "user not exist")
           return message.error("존재하지 않는 이메일입니다.");

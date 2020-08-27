@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const compression = require("compression");
 const helmet = require("helmet");
+const bodyParser = require("body-parser");
 const indexRouter = require("./routes/index");
 const apiRouter = require("./routes/api");
 const loginRouter = require("./routes/auth");
@@ -12,8 +13,10 @@ const cors = require("cors");
 app.use(helmet());
 app.use(express.json());
 app.use(compression());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 app.use(express.static("public"));
+
 app.use("/", indexRouter);
 app.use("/api", apiRouter);
 app.use("/auth", loginRouter);
