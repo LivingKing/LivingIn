@@ -4,6 +4,14 @@ import { withRouter } from "react-router-dom";
 
 function MainPage(props) {
   useEffect(() => {
+    if (props.history.location.state === undefined) {
+      return message.error(
+        "로그인이 필요합니다.",
+        2,
+        props.history.push("/login")
+      );
+    }
+
     const { access_token, g_access_token } = props.history.location.state;
 
     const check = (token) => {
@@ -21,24 +29,52 @@ function MainPage(props) {
         body: {
           test: "test",
         },
-      }).then((res) => {
-        if (res.status !== 200) {
-          return message.error(
-            "로그인이 필요합니다.",
-            2,
-            props.history.push("/login")
-          );
-        } else {
-          return;
-        }
-      });
+      })
+        .then((res) => {
+          if (res.status === 200) {
+            return res.json();
+          } else {
+            return message.error(
+              "로그인이 필요합니다.",
+              2,
+              props.history.push("/login")
+            );
+          }
+        })
+        .then((res) => {
+          const re_token = res.result.access_token;
+          if (re_token !== undefined) {
+            props.history.replace({
+              state: { access_token: res.result.access_token },
+            });
+          }
+        });
     };
-
-    if (access_token !== undefined) check(access_token);
-    else if (g_access_token !== undefined) check(g_access_token);
+    if (access_token !== undefined) {
+      check(access_token);
+    } else if (g_access_token !== undefined) check(g_access_token);
   });
   return (
     <div>
+      <Button type="primary">Primary Button</Button>
+      <Button type="primary">Primary Button</Button>
+      <Button type="primary">Primary Button</Button>
+      <Button type="primary">Primary Button</Button>
+      <Button type="primary">Primary Button</Button>
+      <Button type="primary">Primary Button</Button>
+      <Button type="primary">Primary Button</Button>
+      <Button type="primary">Primary Button</Button>
+      <Button type="primary">Primary Button</Button>
+      <Button type="primary">Primary Button</Button>
+      <Button type="primary">Primary Button</Button>
+      <Button type="primary">Primary Button</Button>
+      <Button type="primary">Primary Button</Button>
+      <Button type="primary">Primary Button</Button>
+      <Button type="primary">Primary Button</Button>
+      <Button type="primary">Primary Button</Button>
+      <Button type="primary">Primary Button</Button>
+      <Button type="primary">Primary Button</Button>
+      <Button type="primary">Primary Button</Button>
       <Button type="primary">Primary Button</Button>
     </div>
   );

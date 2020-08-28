@@ -3,10 +3,9 @@ const app = express();
 const compression = require("compression");
 const helmet = require("helmet");
 const bodyParser = require("body-parser");
-const indexRouter = require("./routes/index");
 const apiRouter = require("./routes/api");
 const loginRouter = require("./routes/auth");
-const registerRouter = require("./routes/register");
+const createRouter = require("./routes/create");
 const db = require("./db/db");
 const cors = require("cors");
 
@@ -17,10 +16,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 app.use(express.static("public"));
 
-app.use("/", indexRouter);
 app.use("/api", apiRouter);
 app.use("/auth", loginRouter);
-app.use("/register", registerRouter);
+app.use("/create", createRouter);
 
 app.use((req, res, next) => {
   res.status(404).send("Sorry cant find that!");

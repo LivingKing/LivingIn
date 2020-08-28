@@ -53,7 +53,7 @@ function RegistrationPage(props) {
       if (err) throw err;
       result.password = res;
       result.confirm = res;
-      fetch("/register", {
+      fetch("/create", {
         method: "POST",
         body: JSON.stringify(result),
         headers: {

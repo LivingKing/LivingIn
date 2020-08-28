@@ -21,6 +21,8 @@
     "google-auth-library": "^6.0.6",
     "helmet": "^3.23.3",
     "jsonwebtoken": "^8.5.1",
-    "sanitize-html": "^1.27.1"
+    "mongoose": "^5.10.1",
+    "pm2": "^4.4.1",
+    "sanitize-html": "^1.27.4"
   }
 }

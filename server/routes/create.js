@@ -4,7 +4,7 @@ const User = require("../models/User");
 
 router.post("/", (req, res) => {
   const { email, password, nickname, imageUrl } = req.body;
-
+  console.log(email, password, nickname, imageUrl);
   const create = (user) => {
     if (user) throw new Error("username exists");
     return User.create(email, password, nickname, imageUrl);

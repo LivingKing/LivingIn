@@ -12,7 +12,7 @@ const userSchema = new Schema({
   icon: String,
   favorite_HashTag: String,
   refresh_token: String,
-  is_admin: { type: Boolean, default: false },
+  is_admin: { type: Boolean, required: true, default: false },
 });
 
 userSchema.statics.create = function (

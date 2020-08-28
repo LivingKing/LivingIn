@@ -5,9 +5,34 @@ const axios = require("axios");
 const jwt = require("jsonwebtoken");
 const config = require("../config/config");
 const { OAuth2Client } = require("google-auth-library");
-const client = new OAuth2Client(
-  "544956299484-cb4buam4sdchdl5t28h7cmvq41hc99uq.apps.googleusercontent.com"
-);
+const client = new OAuth2Client(config.google_clientID);
+
+const tokenGenerator = (user, time) => {
+  const secret = config.secret;
+  return new Promise((resolve, reject) => {
+    jwt.sign(
+      {
+        _id: user._id,
+        email: user.email,
+        admin: user.is_admin,
+      },
+      secret,
+      {
+        expiresIn: time,
+        issuer: "LivingIn.com",
+        subject: "userInfo",
+      },
+      (err, token) => {
+        if (err) reject(err);
+        else
+          resolve({
+            access_token: token,
+            nickname: user.nickname,
+          });
+      }
+    );
+  });
+};
 
 router.post("/vaild_check", (req, res) => {
   const { email, nickname } = req.body;
@@ -40,9 +65,26 @@ router.post("/token_check", (req, res) => {
   const p = new Promise((resolve, reject) => {
     jwt.verify(token, config.secret, (err, decoded) => {
       if (err) reject(err);
-      resolve(decoded);
+      const exp = decoded.exp * 1000 - new Date().getTime();
+      if (exp <= 600000) {
+        //10분
+        User.findOneByEmail(decoded.email).then((user) => {
+          jwt.verify(user.refresh_token, config.secret, (err) => {
+            if (err) reject(err);
+            tokenGenerator(user, "1h").then((result) => {
+              resolve(result);
+            });
+          });
+        });
+      } else {
+        resolve("");
+      }
     });
   });
+
+  const respond = (result) => {
+    res.status(200).json({ sucess: true, result });
+  };
 
   const onError = (error) => {
     res.status(403).json({
@@ -51,10 +93,7 @@ router.post("/token_check", (req, res) => {
     });
   };
 
-  p.then((decoded) => {
-    req.decoded = decoded;
-    res.status(200).json({ success: true });
-  }).catch(onError);
+  p.then(respond).catch(onError);
 });
 
 router.post("/google/token_check", (req, res) => {
@@ -62,8 +101,7 @@ router.post("/google/token_check", (req, res) => {
   const verify = () => {
     return client.verifyIdToken({
       idToken: token_id,
-      audience:
-        "544956299484-cb4buam4sdchdl5t28h7cmvq41hc99uq.apps.googleusercontent.com",
+      audience: config.google_clientID,
     });
   };
 
@@ -74,7 +112,6 @@ router.post("/google/token_check", (req, res) => {
 router.post("/login", (req, res) => {
   const { email, password } = req.body;
   const secret = config.secret;
-
   const check = (user) => {
     if (!user) {
       throw new Error("user not exist");
@@ -90,13 +127,19 @@ router.post("/login", (req, res) => {
               },
               secret,
               {
-                expiresIn: "1h",
+                expiresIn: "14d",
                 issuer: "LivingIn.com",
                 subject: "userInfo",
               },
               (err, token) => {
                 if (err) reject(err);
-                else resolve({ access_token: token, nickname: user.nickname });
+                else {
+                  user.refresh_token = token;
+                  user.save();
+                  tokenGenerator(user, "1h").then((result) => {
+                    resolve(result);
+                  });
+                }
               }
             );
           });
@@ -171,9 +214,11 @@ router.post("/login/kakao", (req, res) => {
         },
       });
     }
+    user.refresh_token = req.body.response.refresh_token;
+    user.save();
     return {
       nickname: req.body.profile.properties.nickname,
-      access_token: req.body.response.refresh_token.access_token,
+      access_token: req.body.response.access_token,
     };
   };
   const respond = (result) => {
