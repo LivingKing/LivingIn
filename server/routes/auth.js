@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const config = require("../config/config");
 const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client(config.google_clientID);
+const qs = require("querystring");
 
 const tokenGenerator = (user, time) => {
   const secret = config.secret;
@@ -33,6 +34,7 @@ const tokenGenerator = (user, time) => {
     );
   });
 };
+const token_exp = "1h";
 
 router.post("/vaild_check", (req, res) => {
   const { email, nickname } = req.body;
@@ -71,7 +73,7 @@ router.post("/token_check", (req, res) => {
         User.findOneByEmail(decoded.email).then((user) => {
           jwt.verify(user.refresh_token, config.secret, (err) => {
             if (err) reject(err);
-            tokenGenerator(user, "1h").then((result) => {
+            tokenGenerator(user, token_exp).then((result) => {
               resolve(result);
             });
           });
@@ -83,7 +85,7 @@ router.post("/token_check", (req, res) => {
   });
 
   const respond = (result) => {
-    res.status(200).json({ sucess: true, result });
+    res.status(200).json({ success: true, result });
   };
 
   const onError = (error) => {
@@ -109,9 +111,69 @@ router.post("/google/token_check", (req, res) => {
   verify().then(respond).catch(console.error);
 });
 
+router.post("/kakao/token_check", (req, res) => {
+  const access_token = req.headers["x-access-token"];
+  const check_token = () => {
+    return new Promise((resolve, reject) => {
+      axios({
+        method: "GET",
+        url: "https://kapi.kakao.com./v1/user/access_token_info",
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }).then((res, err) => {
+        if (err) reject(err);
+        if (res.data.expiresInMillis <= 600000) {
+          User.findOneBySocialId(res.data.id).then((user) => resolve(user));
+        } else resolve({ success: true });
+      });
+    });
+  };
+
+  const get_token = (res) => {
+    return new Promise((resolve, reject) => {
+      if (res._id !== undefined) {
+        const data = {
+          grant_type: "refresh_token",
+          client_id: config.kakao_REST_API_KEY,
+          refresh_token: res.refresh_token,
+        };
+        axios({
+          method: "POST",
+          url: "https://kauth.kakao.com/oauth/token",
+          headers: {
+            "content-type": "application/x-www-form-urlencoded",
+          },
+          data: qs.stringify(data),
+        }).then((res, err) => {
+          if (err) reject(err);
+          const { access_token, refresh_token } = res.data;
+          if (refresh_token !== undefined) {
+            user.refresh_token = refresh_token;
+            user.save();
+          }
+          resolve({ access_token, type: "kakao" });
+        });
+      } else resolve("");
+    });
+  };
+
+  const respond = (result) => {
+    console.log(result);
+    res.status(200).json({ success: true, result });
+  };
+
+  const onError = (error) => {
+    res.status(403).json({
+      success: false,
+      message: error.message,
+    });
+  };
+  check_token().then(get_token).then(respond).catch(onError);
+});
+
 router.post("/login", (req, res) => {
   const { email, password } = req.body;
-  const secret = config.secret;
   const check = (user) => {
     if (!user) {
       throw new Error("user not exist");
@@ -119,29 +181,13 @@ router.post("/login", (req, res) => {
       return user.verify(password).then((result) => {
         if (result) {
           return new Promise((resolve, reject) => {
-            jwt.sign(
-              {
-                _id: user._id,
-                email: user.email,
-                admin: user.is_admin,
-              },
-              secret,
-              {
-                expiresIn: "14d",
-                issuer: "LivingIn.com",
-                subject: "userInfo",
-              },
-              (err, token) => {
-                if (err) reject(err);
-                else {
-                  user.refresh_token = token;
-                  user.save();
-                  tokenGenerator(user, "1h").then((result) => {
-                    resolve(result);
-                  });
-                }
-              }
-            );
+            tokenGenerator(user, "14d").then((result) => {
+              user.refresh_token = result.access_token;
+              user.save();
+              tokenGenerator(user, token_exp).then((result) => {
+                resolve(result);
+              });
+            });
           });
         } else throw new Error("password incorrect");
       });
@@ -165,13 +211,19 @@ router.post("/login", (req, res) => {
 });
 
 router.post("/login/google", (req, res) => {
-  const { email } = req.body.profileObj;
+  if (req.body.profileObj === undefined) {
+    return res.status(403).json({
+      message: "cancel google login",
+    });
+  }
+  console.log(req.body);
+  const post = req.body.profileObj;
   const check = (user) => {
     if (!user) {
       console.log("user not found!");
-      return axios({
+      axios({
         method: "post",
-        url: "http://localhost:5000/register/google",
+        url: "/create/google",
         data: {
           googledata: post,
         },
@@ -196,46 +248,32 @@ router.post("/login/google", (req, res) => {
     });
   };
 
-  User.findOneByEmail(email).then(check).then(respond).catch(onError);
+  User.findOneByEmail(post.email).then(check).then(respond).catch(onError);
 });
 
 router.post("/login/kakao", (req, res) => {
   const email = req.body.profile.kakao_account.email;
-
   const check = (user) => {
     if (!user) {
       console.log("user not found!");
-      return axios({
+      axios({
         method: "post",
-        url: "http://localhost:5000/register/kakao",
+        url: "http://localhost:8000/create/kakao",
         data: {
-          nickname,
           kakaodata: req.body,
         },
       });
     }
     user.refresh_token = req.body.response.refresh_token;
     user.save();
-    return {
-      nickname: req.body.profile.properties.nickname,
-      access_token: req.body.response.access_token,
-    };
-  };
-  const respond = (result) => {
-    const { access_token, nickname } = result;
     res.status(200).json({
       message: "logged in successfully",
-      nickname,
-      access_token,
-    });
-  };
-  const onError = (error) => {
-    res.status(403).json({
-      message: error.message,
+      nickname: req.body.profile.properties.nickname,
+      access_token: req.body.response.access_token,
     });
   };
 
-  User.findOneByEmail(email).then(check).then(respond).catch(onError);
+  User.findOneByEmail(email).then(check);
 });
 
 module.exports = router;

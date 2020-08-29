@@ -27,7 +27,7 @@ router.post("/", (req, res) => {
 });
 
 router.post("/google", (req, res) => {
-  const { email, googleId, imageUrl, name } = req.body.googledata;
+  const { email, imageUrl, name } = req.body.googledata;
   const create = (user) => {
     if (user) throw new Error("username exists");
     return User.create(email, "", name, imageUrl);
@@ -51,7 +51,7 @@ router.post("/google", (req, res) => {
 
 router.post("/kakao", (req, res) => {
   const post = req.body.kakaodata;
-
+  const email = post.profile.kakao_account.email;
   const create = (user) => {
     if (user) throw new Error("username exists");
     return User.create(
@@ -59,7 +59,8 @@ router.post("/kakao", (req, res) => {
       "",
       post.profile.properties.nickname,
       post.profile.properties.profile_image,
-      post.response.refresh_token
+      post.response.refresh_token,
+      post.profile.id
     );
   };
 

@@ -20,6 +20,7 @@ function LoginPage(props) {
         return res.json();
       })
       .then((res) => {
+        message.info(res);
         if (res.message === "logged in successfully") {
           message.info(res.nickname + "님 반갑습니다!", 1);
           return props.history.push({
@@ -38,6 +39,7 @@ function LoginPage(props) {
       },
     })
       .then((res) => {
+        if (res.status === 403) return;
         return res.json();
       })
       .then((res) => {
@@ -168,7 +170,7 @@ function LoginPage(props) {
             //styled component 통해 style을 입혀 줄 예정
             jsKey={"baef566d75829ac6ace44db138489ed7"}
             //카카오에서 할당받은 jsKey를 입력
-            buttonText="카카오로 로그인"
+            buttonText=""
             //로그인 버튼의 text를 입력
             onSuccess={responseKakao}
             //성공했을때 불러올 함수로서 fetch해서 localStorage에 저장할 함수를 여기로 저장

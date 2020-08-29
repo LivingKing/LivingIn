@@ -9,6 +9,7 @@ const userSchema = new Schema({
   password: { type: String },
   nickname: { type: String, required: true },
   created_At: { type: Date, default: Date.now },
+  social_id: { type: String },
   icon: String,
   favorite_HashTag: String,
   refresh_token: String,
@@ -21,6 +22,7 @@ userSchema.statics.create = function (
   nickname,
   icon,
   refresh_token,
+  social_id,
   is_admin
 ) {
   const user = new this({
@@ -29,6 +31,7 @@ userSchema.statics.create = function (
     nickname,
     icon,
     refresh_token,
+    social_id,
     is_admin,
   });
 
@@ -41,6 +44,10 @@ userSchema.statics.findOneByEmail = function (email) {
 
 userSchema.statics.findOneByNick = function (nickname) {
   return this.findOne({ nickname }).exec();
+};
+
+userSchema.statics.findOneBySocialId = function (social_id) {
+  return this.findOne({ social_id }).exec();
 };
 userSchema.methods.verify = function (password) {
   return new Promise((resolve, reject) => {
