@@ -35,7 +35,6 @@ const tokenGenerator = (user, time) => {
   });
 };
 const token_exp = "1h";
-
 router.post("/vaild_check", (req, res) => {
   const { email, nickname } = req.body;
   const respond = (user) => {
@@ -99,16 +98,53 @@ router.post("/token_check", (req, res) => {
 });
 
 router.post("/google/token_check", (req, res) => {
-  const token_id = req.headers["x-access-token"];
-  const verify = () => {
-    return client.verifyIdToken({
-      idToken: token_id,
-      audience: config.google_clientID,
+  const access_token = req.headers["x-access-token"];
+  console.log(access_token);
+  const check_token = () => {
+    return new Promise((resolve, reject) => {
+      axios({
+        method: "GET",
+        url: `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${access_token}`,
+      }).then((res, err) => {
+        if (err) reject(err);
+        if (res.data.expires_in <= 600) {
+          User.findOneByEmail(res.data.email).then((user) => resolve(user));
+        } else resolve({ success: true });
+      });
     });
   };
+  const get_token = (res) => {
+    return new Promise((resolve, reject) => {
+      if (res._id !== undefined) {
+        axios({
+          method: "POST",
+          url: "https://oauth2.googleapis.com/token",
+          data: {
+            client_id: config.google_clientID,
+            client_secret: config.google_client_secret,
+            refresh_token: res.refresh_token,
+            grant_type: "refresh_token",
+          },
+        }).then((res, err) => {
+          if (err) reject(err);
+          const { access_token } = res.data;
+          resolve({ access_token, type: "google" });
+        });
+      } else resolve("");
+    });
+  };
+  const respond = (result) => {
+    console.log(result);
+    res.status(200).json({ success: true, result });
+  };
 
-  const respond = () => res.status(200).json({ success: true });
-  verify().then(respond).catch(console.error);
+  const onError = (error) => {
+    res.status(403).json({
+      success: false,
+      message: error.message,
+    });
+  };
+  check_token().then(get_token).then(respond).catch(onError);
 });
 
 router.post("/kakao/token_check", (req, res) => {
@@ -209,31 +245,7 @@ router.post("/login", (req, res) => {
 
   User.findOneByEmail(email).then(check).then(respond).catch(onError);
 });
-
-router.post("/login/google", (req, res) => {
-  if (req.body.profileObj === undefined) {
-    return res.status(403).json({
-      message: "cancel google login",
-    });
-  }
-  console.log(req.body);
-  const post = req.body.profileObj;
-  const check = (user) => {
-    if (!user) {
-      console.log("user not found!");
-      axios({
-        method: "post",
-        url: "/create/google",
-        data: {
-          googledata: post,
-        },
-      });
-    }
-    return {
-      nickname: req.body.profileObj.name,
-      access_token: req.body.tokenObj.id_token,
-    };
-  };
+router.post("/google/callback", (req, res) => {
   const respond = (result) => {
     const { access_token, nickname } = result;
     res.status(200).json({
@@ -242,16 +254,62 @@ router.post("/login/google", (req, res) => {
       nickname,
     });
   };
-  const onError = (error) => {
-    res.status(403).json({
-      message: error.message,
-    });
-  };
+  axios({
+    method: "POST",
+    url: "https://oauth2.googleapis.com/token",
+    data: {
+      code: decodeURIComponent(req.body.code),
+      client_id: config.google_clientID,
+      client_secret: config.google_client_secret,
+      redirect_uri: "http://localhost:3000/login/callback",
+      grant_type: "authorization_code",
+    },
+  }).then((res) => {
+    console.log(res.data);
+    const { access_token, refresh_token } = res.data;
+    axios({
+      method: "GET",
+      url: `https://oauth2.googleapis.com/tokeninfo?id_token=${res.data.id_token}`,
+    }).then((res) => {
+      const { email } = res.data;
+      User.findOneByEmail(email).then((user) => {
+        if (!user) {
+          console.log("user not found!");
+          const data = {
+            email: res.data.email,
+            nickname: res.data.name,
+            refresh_token: refresh_token,
+            imageUrl: res.data.picture,
+          };
+          axios({
+            method: "post",
+            url: "http://localhost:8000/create/google",
+            data: {
+              googledata: data,
+            },
+          });
+        }
 
-  User.findOneByEmail(post.email).then(check).then(respond).catch(onError);
+        respond({ nickname: res.data.name, access_token: access_token });
+      });
+    });
+  });
 });
 
-router.post("/login/kakao", (req, res) => {
+router.post("/google", (req, res) => {
+  console.log("google login");
+  const scopes = "email profile";
+  const url = client.generateAuthUrl({
+    scope: scopes,
+    access_type: "offline",
+    prompt: "consent",
+    redirect_uri: "http://localhost:3000/login/callback",
+    client_id: config.google_clientID,
+  });
+  res.json({ url: url });
+});
+
+router.post("/kakao", (req, res) => {
   const email = req.body.profile.kakao_account.email;
   const check = (user) => {
     if (!user) {
@@ -275,5 +333,4 @@ router.post("/login/kakao", (req, res) => {
 
   User.findOneByEmail(email).then(check);
 });
-
 module.exports = router;

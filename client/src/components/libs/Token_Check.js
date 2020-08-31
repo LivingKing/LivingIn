@@ -29,11 +29,15 @@ const Token_Check = (token, token_type, props) => {
         console.log("토큰갱신");
         if (type === "local")
           props.history.replace({
-            state: { access_token: res.result.access_token },
+            state: { access_token: re_token },
           });
         else if (type === "kakao")
           props.history.replace({
-            state: { k_access_token: res.result.access_token },
+            state: { k_access_token: re_token },
+          });
+        else if (type === "google")
+          props.history.replace({
+            state: { g_access_token: re_token },
           });
       }
     });

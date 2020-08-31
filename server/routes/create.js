@@ -27,10 +27,10 @@ router.post("/", (req, res) => {
 });
 
 router.post("/google", (req, res) => {
-  const { email, imageUrl, name } = req.body.googledata;
+  const { email, imageUrl, nickname, refresh_token } = req.body.googledata;
   const create = (user) => {
     if (user) throw new Error("username exists");
-    return User.create(email, "", name, imageUrl);
+    return User.create(email, "", nickname, imageUrl, refresh_token);
   };
 
   const respond = (is_admin) => {

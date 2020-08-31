@@ -8,10 +8,9 @@ import KakaoLogin from "react-kakao-login";
 import { withRouter } from "react-router-dom";
 
 function LoginPage(props) {
-  const responseGoogle = (res) => {
-    fetch("/auth/login/google", {
+  const responseGoogle = () => {
+    fetch("/auth/google", {
       method: "POST",
-      body: JSON.stringify(res),
       headers: {
         "Content-Type": "application/json",
       },
@@ -20,18 +19,14 @@ function LoginPage(props) {
         return res.json();
       })
       .then((res) => {
-        message.info(res);
-        if (res.message === "logged in successfully") {
-          message.info(res.nickname + "님 반갑습니다!", 1);
-          return props.history.push({
-            pathname: "/",
-            state: { g_access_token: res.access_token },
-          });
+        console.log(res);
+        if (res.url !== undefined) {
+          window.open(res.url, "_self");
         }
       });
   };
   const responseKakao = (res) => {
-    fetch("/auth/login/kakao", {
+    fetch("/auth/kakao", {
       method: "POST",
       body: JSON.stringify(res),
       headers: {
@@ -130,10 +125,7 @@ function LoginPage(props) {
             <Form.Item name="remember" valuePropName="checked" noStyle>
               <Checkbox>자동 로그인</Checkbox>
             </Form.Item>
-
-            <a className="login-form-forgot" href="">
-              아이디/비밀번호 찾기
-            </a>
+            <Button type="link">아이디/비밀번호 찾기</Button>
           </Form.Item>
 
           <Form.Item>
@@ -144,20 +136,12 @@ function LoginPage(props) {
             >
               로그인
             </Button>
-            &nbsp;또는 <a href="register">회원가입</a>
+            &nbsp;또는 <a href="/register">회원가입</a>
           </Form.Item>
         </Form>
       </div>
       <div className="LoginForm2">
-        <GoogleLogin
-          className="Item1"
-          clientId="544956299484-cb4buam4sdchdl5t28h7cmvq41hc99uq.apps.googleusercontent.com"
-          buttonText="Google로 로그인"
-          onSuccess={responseGoogle}
-          onFailure={responseGoogle}
-          cookiePolicy={"single_host_origin"}
-          theme="dark"
-        />
+        <button className="GoogleLogin" onClick={responseGoogle}></button>
         <div
           style={{
             display: "flex",

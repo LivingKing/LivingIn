@@ -281,6 +281,11 @@ function RegistrationPage(props) {
                 </Tooltip>
               </span>
             }
+            rules={[
+              {
+                required: true,
+              },
+            ]}
             style={{ marginBottom: 0 }}
           >
             <Form.Item

@@ -5,6 +5,7 @@ import Token_Check from "../../libs/Token_Check";
 
 function MainPage(props) {
   useEffect(() => {
+    console.log(props.history.goback);
     if (props.history.location.state === undefined) {
       return message.error(
         "로그인이 필요합니다.",
@@ -18,7 +19,7 @@ function MainPage(props) {
       g_access_token,
       k_access_token,
     } = props.history.location.state;
-    console.log("현재토큰", k_access_token);
+    console.log("현재토큰", g_access_token);
     if (access_token !== undefined) {
       Token_Check(access_token, "local", props);
     } else if (g_access_token !== undefined)
