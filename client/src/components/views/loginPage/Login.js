@@ -3,7 +3,6 @@ import { Form, Input, Button, Checkbox, message } from "antd";
 import { MailOutlined, LockOutlined } from "@ant-design/icons";
 import logo from "./logo.png";
 import "./Login.css";
-import GoogleLogin from "react-google-login";
 import KakaoLogin from "react-kakao-login";
 import { withRouter } from "react-router-dom";
 
@@ -77,7 +76,7 @@ function LoginPage(props) {
   };
 
   return (
-    <div className="Login">
+    <section className="Login">
       <img src={logo} className="Login-logo" alt="logo" />
       <div className="LoginForm">
         <Form
@@ -162,7 +161,7 @@ function LoginPage(props) {
           />
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 

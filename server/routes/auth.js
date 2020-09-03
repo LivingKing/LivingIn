@@ -99,7 +99,6 @@ router.post("/token_check", (req, res) => {
 
 router.post("/google/token_check", (req, res) => {
   const access_token = req.headers["x-access-token"];
-  console.log(access_token);
   const check_token = () => {
     return new Promise((resolve, reject) => {
       axios({
@@ -134,7 +133,6 @@ router.post("/google/token_check", (req, res) => {
     });
   };
   const respond = (result) => {
-    console.log(result);
     res.status(200).json({ success: true, result });
   };
 
@@ -265,7 +263,6 @@ router.post("/google/callback", (req, res) => {
       grant_type: "authorization_code",
     },
   }).then((res) => {
-    console.log(res.data);
     const { access_token, refresh_token } = res.data;
     axios({
       method: "GET",
@@ -332,5 +329,67 @@ router.post("/kakao", (req, res) => {
   };
 
   User.findOneByEmail(email).then(check);
+});
+
+router.post("/logout", async (req, res) => {
+  const { access_token } = req.body;
+  const verify = await jwt.verify(access_token, config.secret);
+  const user = await User.findOneByEmail(verify.email);
+  user.refresh_token = "";
+  await user.save();
+  if (user.refresh_token === "")
+    res.status(200).json({ success: true, message: "로그아웃 성공!" });
+  else res.status(500).json({ success: false });
+});
+
+router.post("/google/logout", async (req, res) => {
+  const { access_token } = req.body;
+  const userInfo = await axios({
+    method: "GET",
+    url: `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${access_token}`,
+  });
+  const revoke = await axios({
+    method: "POST",
+    url: `https://oauth2.googleapis.com/revoke?token=${access_token}`,
+    headers: {
+      "Content-type": "application / x-www-form-urlencoded",
+    },
+  });
+  if (revoke.status === 200) {
+    const user = await User.findOneByEmail(userInfo.data.email);
+    user.refresh_token = "";
+    await user.save();
+    if (user.refresh_token === "")
+      res.status(200).json({ success: true, message: "로그아웃 성공!" });
+    else onError;
+  } else onError;
+  const onError = () => {
+    res.status(500).json({ success: false });
+  };
+});
+
+router.post("/kakao/logout", async (req, res) => {
+  const { access_token } = req.body;
+  console.log(access_token);
+  const revoke = await axios({
+    method: "POST",
+    url: "https://kapi.kakao.com/v1/user/logout",
+    headers: {
+      Authorization: `Bearer ${access_token}`,
+    },
+  });
+  if (revoke.status === 200) {
+    const user = await User.findOneBySocialId(revoke.data.id);
+    user.refresh_token = "";
+    await user.save();
+    if (user.refresh_token === "")
+      res.status(200).json({ success: true, message: "로그아웃 성공!" });
+    else onError;
+  } else {
+    onError;
+  }
+  const onError = () => {
+    res.status(500).json({ success: false });
+  };
 });
 module.exports = router;

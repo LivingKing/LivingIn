@@ -22,7 +22,6 @@ const Token_Check = (token, token_type, props) => {
       }
     })
     .then((res) => {
-      console.log(res);
       const re_token = res.result.access_token;
       const { type } = res.result;
       if (re_token !== undefined) {
