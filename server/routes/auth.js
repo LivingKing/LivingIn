@@ -211,6 +211,7 @@ router.post("/login", async (req, res) => {
     }
   };
   const respond = (result) => {
+    console.log(result);
     const { access_token, nickname } = result;
     res.status(200).json({
       message: "logged in successfully",

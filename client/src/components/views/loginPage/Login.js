@@ -44,7 +44,6 @@ function LoginPage(props) {
     }).then((res) => {
       return res.json();
     });
-    console.log(res);
     if (res.message === "uncertified")
       return message.error("이메일 인증을 진행해주세요!");
     else if (res.message === "user not exist") {
@@ -54,13 +53,13 @@ function LoginPage(props) {
       passwordInput.current.focus();
       return message.error("비밀번호가 틀립니다.");
     } else if (res.message === "logged in successfully") {
-      message.info(res.data.nickname + "님 반갑습니다!", 1);
+      message.info(res.nickname + "님 반갑습니다!", 1);
       return props.history.push({
         pathname: "/",
-        state: { access_token: res.data.access_token },
+        state: { access_token: res.access_token },
       });
     } else {
-      return message.error(res.data.message);
+      return message.error(res.message);
     }
   };
 
