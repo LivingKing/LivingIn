@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const apiRouter = require("./routes/api");
 const loginRouter = require("./routes/auth");
 const createRouter = require("./routes/create");
-const db = require("./db/db");
+const db = require("./libs/db");
 const cors = require("cors");
 
 app.use(helmet());

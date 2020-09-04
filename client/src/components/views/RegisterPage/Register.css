@@ -1,12 +1,28 @@
 .Register {
-  text-align: center;
-}
-.logo {
-  margin-top: 10vh;
-  height: 30vh;
-  pointer-events: none;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  grid-template-rows: 0.1fr 0.6fr;
+  grid-template-columns: 0.4fr 0.3fr 0.4fr;
 }
 
+.container {
+  grid-row-start: 2;
+  grid-column-start: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  padding: 10px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+}
+
+.logo {
+  width: 70%;
+  pointer-events: none;
+  margin-bottom: 3vh;
+}
 .RegisterForm {
   margin: 0 auto;
   width: 40vh;

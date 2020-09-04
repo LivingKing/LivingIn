@@ -1,15 +1,29 @@
 .Login {
-  text-align: center;
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  grid-template-rows: 0.2fr 0.6fr 0.226fr;
+  grid-template-columns: 0.4fr 0.3fr 0.4fr;
+}
+
+.container {
+  grid-row-start: 2;
+  grid-column-start: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 10px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
 }
 .Login-logo {
-  margin-top: 10%;
-  height: 30vh;
+  width: 80%;
   pointer-events: none;
+  margin-bottom: 3vh;
 }
 
 .LoginForm {
-  margin: 0 auto;
-  width: 30vh;
+  text-align: center;
 }
 
 .LoginForm2 .Item3 {

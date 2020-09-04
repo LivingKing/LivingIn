@@ -8,32 +8,24 @@ const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client(config.google_clientID);
 const qs = require("querystring");
 
-const tokenGenerator = (user, time) => {
+const tokenGenerator = async (user, time) => {
   const secret = config.secret;
-  return new Promise((resolve, reject) => {
-    jwt.sign(
-      {
-        _id: user._id,
-        email: user.email,
-        admin: user.is_admin,
-      },
-      secret,
-      {
-        expiresIn: time,
-        issuer: "LivingIn.com",
-        subject: "userInfo",
-      },
-      (err, token) => {
-        if (err) reject(err);
-        else
-          resolve({
-            access_token: token,
-            nickname: user.nickname,
-          });
-      }
-    );
-  });
+  token = await jwt.sign(
+    {
+      _id: user._id,
+      email: user.email,
+      admin: user.is_admin,
+    },
+    secret,
+    {
+      expiresIn: time,
+      issuer: "LivingIn.com",
+      subject: "userInfo",
+    }
+  );
+  return { access_token: token, nickname: user.nickname };
 };
+
 const token_exp = "1h";
 router.post("/vaild_check", (req, res) => {
   const { email, nickname } = req.body;
@@ -57,47 +49,38 @@ router.post("/vaild_check", (req, res) => {
     User.findOneByNick(nickname).then(respond).catch(onError);
 });
 
-router.post("/token_check", (req, res) => {
-  const token = req.headers["x-access-token"];
-  if (!token) {
-    return res.status(403).json({ success: false, message: "not logged in" });
-  }
+router.post("/verify", async (req, res) => {
+  try {
+    const token = req.headers["x-access-token"];
+    if (!token) {
+      return res.status(403).json({ success: false, message: "not logged in" });
+    }
+    const result = await jwt.verify(token, config.secret);
+    const exp = result.exp * 1000 - new Date().getTime();
 
-  const p = new Promise((resolve, reject) => {
-    jwt.verify(token, config.secret, (err, decoded) => {
-      if (err) reject(err);
-      const exp = decoded.exp * 1000 - new Date().getTime();
-      if (exp <= 600000) {
-        //10분
-        User.findOneByEmail(decoded.email).then((user) => {
-          jwt.verify(user.refresh_token, config.secret, (err) => {
-            if (err) reject(err);
-            tokenGenerator(user, token_exp).then((result) => {
-              resolve(result);
-            });
-          });
-        });
-      } else {
-        resolve("");
-      }
-    });
-  });
+    const respond = (result) => {
+      res.status(200).json({ success: true, result });
+    };
 
-  const respond = (result) => {
-    res.status(200).json({ success: true, result });
-  };
-
-  const onError = (error) => {
+    if (!exp) {
+      throw new Error("오류");
+    } else if (exp <= 600000) {
+      const user = await User.findOneByEmail(result.email);
+      await jwt.verify(user.refresh_token, config.secret);
+      const token = await tokenGenerator(user, token_exp);
+      respond(token);
+    } else {
+      respond("");
+    }
+  } catch (error) {
     res.status(403).json({
       success: false,
       message: error.message,
     });
-  };
-
-  p.then(respond).catch(onError);
+  }
 });
 
-router.post("/google/token_check", (req, res) => {
+router.post("/google/verity", (req, res) => {
   const access_token = req.headers["x-access-token"];
   const check_token = () => {
     return new Promise((resolve, reject) => {
@@ -145,7 +128,7 @@ router.post("/google/token_check", (req, res) => {
   check_token().then(get_token).then(respond).catch(onError);
 });
 
-router.post("/kakao/token_check", (req, res) => {
+router.post("/kakao/verify", (req, res) => {
   const access_token = req.headers["x-access-token"];
   const check_token = () => {
     return new Promise((resolve, reject) => {
@@ -193,7 +176,6 @@ router.post("/kakao/token_check", (req, res) => {
   };
 
   const respond = (result) => {
-    console.log(result);
     res.status(200).json({ success: true, result });
   };
 
@@ -206,7 +188,7 @@ router.post("/kakao/token_check", (req, res) => {
   check_token().then(get_token).then(respond).catch(onError);
 });
 
-router.post("/login", (req, res) => {
+router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   const check = (user) => {
     if (!user) {
@@ -215,6 +197,7 @@ router.post("/login", (req, res) => {
       return user.verify(password).then((result) => {
         if (result) {
           return new Promise((resolve, reject) => {
+            if (!user.is_active) throw new Error("uncertified");
             tokenGenerator(user, "14d").then((result) => {
               user.refresh_token = result.access_token;
               user.save();
@@ -294,7 +277,6 @@ router.post("/google/callback", (req, res) => {
 });
 
 router.post("/google", (req, res) => {
-  console.log("google login");
   const scopes = "email profile";
   const url = client.generateAuthUrl({
     scope: scopes,
@@ -370,7 +352,6 @@ router.post("/google/logout", async (req, res) => {
 
 router.post("/kakao/logout", async (req, res) => {
   const { access_token } = req.body;
-  console.log(access_token);
   const revoke = await axios({
     method: "POST",
     url: "https://kapi.kakao.com/v1/user/logout",

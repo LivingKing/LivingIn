@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, message } from "antd";
 import { withRouter } from "react-router-dom";
-import Token_Check from "../../libs/Token_Check";
+import Verify from "../../libs/Verify";
 import LogOut from "../../libs/LogOut";
 
 function MainPage(props) {
@@ -17,17 +17,17 @@ function MainPage(props) {
       props.history.push("/login");
     }
     if (access_token) {
-      Token_Check(access_token, "local", props);
+      Verify(access_token, "local", props);
     } else if (g_access_token) {
-      Token_Check(g_access_token, "google", props);
+      Verify(g_access_token, "google", props);
     } else if (k_access_token) {
-      Token_Check(k_access_token, "kakao", props);
+      Verify(k_access_token, "kakao", props);
     }
     if (isLoading) setIsLoading(false);
   }, [props, isLoading]);
 
   return (
-    <section className="container">
+    <section className="main">
       {isLoading ? (
         <div></div>
       ) : (

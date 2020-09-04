@@ -14,6 +14,7 @@ const userSchema = new Schema({
   favorite_HashTag: String,
   refresh_token: String,
   is_admin: { type: Boolean, required: true, default: false },
+  is_active: { type: Boolean, required: true, default: false },
 });
 
 userSchema.statics.create = function (
@@ -49,7 +50,7 @@ userSchema.statics.findOneByNick = function (nickname) {
 userSchema.statics.findOneBySocialId = function (social_id) {
   return this.findOne({ social_id }).exec();
 };
-userSchema.methods.verify = function (password) {
+userSchema.methods.verify = function async(password) {
   return new Promise((resolve, reject) => {
     bcrypt.compare(password, this.password, (err, result) => {
       if (err) reject(err);
