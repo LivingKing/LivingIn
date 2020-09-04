@@ -21,14 +21,22 @@ function LoginPage(props) {
   };
 
   const responseKakao = async (values) => {
-    const res = await axios.post("/auth/kakao", values);
-    if (res.data.status === 403) return;
+    const res = await fetch("/auth/kakao", {
+      method: "POST",
+      body: JSON.stringify(values),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => {
+      return res.json();
+    });
+    if (res.status === 403) return;
     else {
-      if (res.data.message === "logged in successfully") {
-        message.info(res.data.nickname + "님 반갑습니다!", 1);
+      if (res.message === "logged in successfully") {
+        message.info(res.nickname + "님 반갑습니다!", 1);
         return props.history.push({
           pathname: "/",
-          state: { k_access_token: res.data.access_token },
+          state: { k_access_token: res.access_token },
         });
       }
     }
@@ -141,13 +149,9 @@ function LoginPage(props) {
           >
             <KakaoLogin
               className="Item3"
-              //styled component 통해 style을 입혀 줄 예정
               jsKey={"baef566d75829ac6ace44db138489ed7"}
-              //카카오에서 할당받은 jsKey를 입력
               buttonText=""
-              //로그인 버튼의 text를 입력
               onSuccess={responseKakao}
-              //성공했을때 불러올 함수로서 fetch해서 localStorage에 저장할 함수를 여기로 저장
               getProfile={true}
             />
           </div>

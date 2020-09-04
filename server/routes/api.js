@@ -8,11 +8,12 @@ router.get("/users", (req, res) => {
   });
 });
 
-router.get("/all_delete", (req, res) => {
-  User.remove({}, (err, result) => {
+router.get("/delete/", (req, res) => {
+  const { email } = req.query;
+  User.remove({ email: email }, (err, result) => {
     if (err) throw err;
     res.json({
-      message: "all data clear",
+      message: "success delete",
     });
   });
 });

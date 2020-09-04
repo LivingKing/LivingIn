@@ -211,7 +211,6 @@ router.post("/login", async (req, res) => {
     }
   };
   const respond = (result) => {
-    console.log(result);
     const { access_token, nickname } = result;
     res.status(200).json({
       message: "logged in successfully",
@@ -259,7 +258,6 @@ router.post("/google/callback", (req, res) => {
           const data = {
             email: res.data.email,
             nickname: res.data.name,
-            refresh_token: refresh_token,
             imageUrl: res.data.picture,
           };
           axios({
@@ -270,7 +268,8 @@ router.post("/google/callback", (req, res) => {
             },
           });
         }
-
+        user.refresh_token = refresh_token;
+        user.save();
         respond({ nickname: res.data.name, access_token: access_token });
       });
     });

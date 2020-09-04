@@ -22,7 +22,6 @@ userSchema.statics.create = function (
   password,
   nickname,
   icon,
-  refresh_token,
   social_id,
   is_admin
 ) {
@@ -31,7 +30,6 @@ userSchema.statics.create = function (
     password,
     nickname,
     icon,
-    refresh_token,
     social_id,
     is_admin,
   });

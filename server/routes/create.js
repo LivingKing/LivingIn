@@ -48,10 +48,10 @@ router.post("/", (req, res) => {
 });
 
 router.post("/google", (req, res) => {
-  const { email, imageUrl, nickname, refresh_token } = req.body.googledata;
+  const { email, imageUrl, nickname } = req.body.googledata;
   const create = (user) => {
     if (user) throw new Error("username exists");
-    return User.create(email, "", nickname, imageUrl, refresh_token);
+    return User.create(email, "", nickname, imageUrl);
   };
 
   const respond = (is_admin) => {
@@ -80,7 +80,6 @@ router.post("/kakao", (req, res) => {
       "",
       post.profile.properties.nickname,
       post.profile.properties.profile_image,
-      post.response.refresh_token,
       post.profile.id
     );
   };
