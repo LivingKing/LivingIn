@@ -19,7 +19,7 @@ module.exports = (email, token, nickname) => {
     // 보내는 메일의 내용을 입력
     // text: 일반 text로 작성된 내용
     // html: html로 작성된 내용
-    html: html(nickname, token, email),
+    html: html(nickname, token),
   });
   return sendEmail;
 };

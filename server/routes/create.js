@@ -4,13 +4,20 @@ const User = require("../models/User");
 const sendMail = require("../libs/sendEmail");
 const jwt = require("jsonwebtoken");
 const config = require("../config/config");
+const moment = require("moment");
 
 router.post("/", (req, res) => {
-  const { email, password, nickname, imageUrl } = req.body;
-  console.log(email, password, nickname, imageUrl);
+  const { email, password, nickname, imageUrl, name, birthday } = req.body;
   const create = (user) => {
     if (user) throw new Error("username exists");
-    return User.create(email, password, nickname, imageUrl);
+    return User.create(
+      email,
+      password,
+      nickname,
+      imageUrl,
+      name,
+      moment(birthday).format("yyyy-MM-DD")
+    );
   };
   const respond = (user) => {
     jwt.sign(
@@ -18,6 +25,8 @@ router.post("/", (req, res) => {
         email: user.email,
         password: user.password,
         nickname: user.nickanme,
+        name: user.name,
+        birthday: user.birthday,
       },
       config.secret,
       {

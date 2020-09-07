@@ -1,5 +1,14 @@
 import React, { useState, useRef } from "react";
-import { Form, Input, Tooltip, Checkbox, Button, message, Upload } from "antd";
+import {
+  Form,
+  Input,
+  Tooltip,
+  Checkbox,
+  Button,
+  message,
+  Upload,
+  DatePicker,
+} from "antd";
 import {
   QuestionCircleOutlined,
   LoadingOutlined,
@@ -224,7 +233,7 @@ function RegistrationPage(props) {
               rules={[
                 {
                   required: true,
-                  message: "비밀번호 입력",
+                  message: "비밀번호 입력하세요.",
                 },
               ]}
               hasFeedback
@@ -240,7 +249,7 @@ function RegistrationPage(props) {
               rules={[
                 {
                   required: true,
-                  message: "비밀번호 확인",
+                  message: "비밀번호 일치하지 않습니다.",
                 },
                 ({ getFieldValue }) => ({
                   validator(rule, value) {
@@ -257,6 +266,25 @@ function RegistrationPage(props) {
               ]}
             >
               <Input.Password />
+            </Form.Item>
+            <Form.Item
+              name="name"
+              label="이름"
+              rules={[{ required: true, message: "이름 입력하세요." }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              name="birthday"
+              label="생년월일"
+              rules={[
+                {
+                  required: true,
+                  message: "생년월일을 입력하세요.",
+                },
+              ]}
+            >
+              <DatePicker style={{ width: "31vh" }} locale="ko-kr" />
             </Form.Item>
             <Form.Item
               label={

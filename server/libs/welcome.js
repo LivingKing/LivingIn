@@ -1,4 +1,4 @@
-module.exports = (nickname, token, email) => {
+module.exports = (nickname, token) => {
   const html = `
   <table width="100%" border="0" cellspacing="0" style="width: 100% !important">
     <tbody>
@@ -105,7 +105,7 @@ module.exports = (nickname, token, email) => {
                         line-height: 24px;
                       "
                     >
-                      <a href="http://localhost:8000/create/confirm?token=${token}&email=${email}"
+                      <a href="http://localhost:8000/create/confirm?token=${token}"
                       style="color: #067df7; text-decoration: none"
                       target="_blank">인증하기</a>
                     </p>

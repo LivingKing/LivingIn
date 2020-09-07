@@ -7,6 +7,8 @@ mongoose.set("useCreateIndex", true);
 const userSchema = new Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String },
+  name: { type: String },
+  birthday: { type: Date },
   nickname: { type: String, required: true },
   created_At: { type: Date, default: Date.now },
   social_id: { type: String },
@@ -22,6 +24,8 @@ userSchema.statics.create = function (
   password,
   nickname,
   icon,
+  name,
+  birthday,
   social_id,
   is_admin
 ) {
@@ -30,6 +34,8 @@ userSchema.statics.create = function (
     password,
     nickname,
     icon,
+    name,
+    birthday,
     social_id,
     is_admin,
   });
@@ -43,6 +49,10 @@ userSchema.statics.findOneByEmail = function (email) {
 
 userSchema.statics.findOneByNick = function (nickname) {
   return this.findOne({ nickname }).exec();
+};
+
+userSchema.statics.findOneByName = function (name) {
+  return this.findOne({ name }).exec();
 };
 
 userSchema.statics.findOneBySocialId = function (social_id) {

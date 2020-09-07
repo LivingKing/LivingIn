@@ -10,6 +10,14 @@ import axios from "axios";
 function LoginPage(props) {
   const emailInput = useRef();
   const passwordInput = useRef();
+  const findUser = () => {
+    window.open(
+      "http://localhost:3000/find",
+      "아이디/비밀번호 찾기",
+      "width=300,height=330,location=no,status=no,scrollbars=yes"
+    );
+  };
+
   const responseGoogle = async () => {
     const res = await axios("/auth/google", {
       method: "POST",
@@ -123,7 +131,9 @@ function LoginPage(props) {
               <Form.Item name="remember" valuePropName="checked" noStyle>
                 <Checkbox>자동 로그인</Checkbox>
               </Form.Item>
-              <Button type="link">아이디/비밀번호 찾기</Button>
+              <Button type="link" onClick={findUser}>
+                아이디/비밀번호 찾기
+              </Button>
             </Form.Item>
 
             <Form.Item>
