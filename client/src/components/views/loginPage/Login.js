@@ -14,7 +14,7 @@ function LoginPage(props) {
     window.open(
       "http://localhost:3000/find",
       "아이디/비밀번호 찾기",
-      "width=300,height=330,location=no,status=no,scrollbars=yes"
+      "width=300,height=330,scrollbars=no"
     );
   };
 

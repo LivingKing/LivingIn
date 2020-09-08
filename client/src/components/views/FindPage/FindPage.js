@@ -33,7 +33,9 @@ const FindPage = () => {
   };
 
   const onPwFinish = async (values) => {
+    setEmail(values.email);
     const res = await fetch(`api/forget/user?email=${values.email}`);
+    if (res.status === 200) setPw_find(true);
   };
   const handleChange = (activeKey) => {
     setActiveKey(activeKey);
@@ -129,42 +131,51 @@ const FindPage = () => {
         }
         key="2"
       >
-        <Form
-          layout="vertical"
-          name="basic"
-          style={{ marginLeft: "5vh" }}
-          onFinish={onPwFinish}
-          initialValues={{ email: email }}
-        >
-          <Form.Item
-            name="email"
-            rules={[
-              {
-                type: "email",
-                message: "이메일 형식으로 입력해주세요.",
-              },
-              {
-                required: true,
-                message: "이메일을 입력하세요!",
-              },
-            ]}
+        {pw_find ? (
+          <div>
+            <p>
+              <b>{email}</b>로 발송하였습니다.
+            </p>
+            <Button onClick={onClose}>닫기</Button>
+          </div>
+        ) : (
+          <Form
+            layout="vertical"
+            name="basic"
+            style={{ marginLeft: "5vh" }}
+            onFinish={onPwFinish}
+            initialValues={{ email: email }}
           >
-            <Input
-              style={{ width: "80%" }}
-              prefix={<MailOutlined className="site-form-item-icon" />}
-              placeholder="이메일"
-            />
-          </Form.Item>
+            <Form.Item
+              name="email"
+              rules={[
+                {
+                  type: "email",
+                  message: "이메일 형식으로 입력해주세요.",
+                },
+                {
+                  required: true,
+                  message: "이메일을 입력하세요!",
+                },
+              ]}
+            >
+              <Input
+                style={{ width: "80%" }}
+                prefix={<MailOutlined className="site-form-item-icon" />}
+                placeholder="이메일"
+              />
+            </Form.Item>
 
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              확인
-            </Button>
-            <Button style={{ marginLeft: "50px" }} onClick={onClose} danger>
-              닫기
-            </Button>
-          </Form.Item>
-        </Form>
+            <Form.Item>
+              <Button type="primary" htmlType="submit">
+                확인
+              </Button>
+              <Button style={{ marginLeft: "50px" }} onClick={onClose} danger>
+                닫기
+              </Button>
+            </Form.Item>
+          </Form>
+        )}
       </TabPane>
     </Tabs>
   );

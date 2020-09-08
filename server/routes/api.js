@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
+const tokenGenerator = require("../libs/tokenGenerator");
+const sendEmail = require("../libs/sendEmail");
 router.get("/users", (req, res) => {
   User.find({}, (err, users) => {
     if (err) throw err;
@@ -8,8 +10,16 @@ router.get("/users", (req, res) => {
   });
 });
 
-router.get("/forget/user", (req, res) => {
-  const { email } = req.body;
+router.get("/forget/user", async (req, res) => {
+  try {
+    const { email } = req.query;
+    const user = await User.findOneByEmail(email);
+    const token = await tokenGenerator(user, "1h");
+    sendEmail(email, token.access_token, user.nickname, "findPw");
+    res.status(200).json({ result: "success" });
+  } catch (err) {
+    res.status(404).json({ result: "fail" });
+  }
 });
 router.get("/user", (req, res) => {
   const { name, birthday } = req.query;

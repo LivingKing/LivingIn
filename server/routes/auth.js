@@ -6,25 +6,8 @@ const jwt = require("jsonwebtoken");
 const config = require("../config/config");
 const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client(config.google_clientID);
+const tokenGenerator = require("../libs/tokenGenerator");
 const qs = require("querystring");
-
-const tokenGenerator = async (user, time) => {
-  const secret = config.secret;
-  token = await jwt.sign(
-    {
-      _id: user._id,
-      email: user.email,
-      admin: user.is_admin,
-    },
-    secret,
-    {
-      expiresIn: time,
-      issuer: "LivingIn.com",
-      subject: "userInfo",
-    }
-  );
-  return { access_token: token, nickname: user.nickname };
-};
 
 const token_exp = "1h";
 router.post("/vaild_check", (req, res) => {
@@ -372,5 +355,18 @@ router.post("/kakao/logout", async (req, res) => {
   const onError = () => {
     res.status(500).json({ success: false });
   };
+});
+
+router.post("/modify", async (req, res) => {
+  try {
+    const { token, password } = req.body;
+    const result = await jwt.verify(token, config.secret);
+    const user = await User.findOneByEmail(result.email);
+    user.password = password;
+    user.save();
+    res.status(200).json({ result: "success" });
+  } catch (err) {
+    res.status(404).json({ result: "fail" });
+  }
 });
 module.exports = router;

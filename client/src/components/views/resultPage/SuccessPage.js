@@ -2,11 +2,14 @@ import React from "react";
 import { Result } from "antd";
 import { Link } from "react-router-dom";
 
-const SuccessPage = () => {
+const SuccessPage = (props) => {
+  let { title } = props.history.location.state;
+  if (title === "password") title = "비밀번호 변경 성공!";
+  else title = "이메일 인증 성공!";
   return (
     <Result
       status="success"
-      title="이메일 인증 성공!"
+      title={title}
       subTitle="로그인 페이지에서 로그인 해주세요."
       extra={[<Link to="/login">로그인하기</Link>]}
     />
