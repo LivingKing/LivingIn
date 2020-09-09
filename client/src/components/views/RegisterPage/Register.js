@@ -64,7 +64,6 @@ function RegistrationPage(props) {
       result.password = res;
       result.confirm = res;
       const res2 = await axios.post("/create", result);
-      console.log(res2);
       if (res2.status === 200) {
         message
           .success(
@@ -253,7 +252,6 @@ function RegistrationPage(props) {
                 },
                 ({ getFieldValue }) => ({
                   validator(rule, value) {
-                    console.log(getFieldValue("email"));
                     if (!value || getFieldValue("password") === value) {
                       return Promise.resolve();
                     }

@@ -19,7 +19,6 @@ const FindPage = () => {
     setActiveKey(activeKey);
   };
   const onIdFinish = async (values) => {
-    console.log(date);
     const res = await fetch(`/api/user?name=${values.name}&birthday=${date}`, {
       method: "GET",
     });
@@ -75,7 +74,7 @@ const FindPage = () => {
             >
               비밀번호 찾기
             </Button>
-            <Button style={{ marginLeft: "30px" }} onClick={onClose} danger>
+            <Button style={{ marginLeft: "30px" }} onClick={onClose}>
               닫기
             </Button>
           </div>
@@ -112,7 +111,7 @@ const FindPage = () => {
               <Button type="primary" htmlType="submit">
                 확인
               </Button>
-              <Button style={{ marginLeft: "50px" }} onClick={onClose} danger>
+              <Button style={{ marginLeft: "50px" }} onClick={onClose}>
                 닫기
               </Button>
             </Form.Item>
@@ -136,7 +135,9 @@ const FindPage = () => {
             <p>
               <b>{email}</b>로 발송하였습니다.
             </p>
-            <Button onClick={onClose}>닫기</Button>
+            <Button onClick={onClose} danger>
+              닫기
+            </Button>
           </div>
         ) : (
           <Form
@@ -170,7 +171,7 @@ const FindPage = () => {
               <Button type="primary" htmlType="submit">
                 확인
               </Button>
-              <Button style={{ marginLeft: "50px" }} onClick={onClose} danger>
+              <Button style={{ marginLeft: "50px" }} onClick={onClose}>
                 닫기
               </Button>
             </Form.Item>

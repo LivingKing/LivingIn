@@ -63,7 +63,7 @@ router.post("/verify", async (req, res) => {
   }
 });
 
-router.post("/google/verity", (req, res) => {
+router.post("/google/verify", (req, res) => {
   const access_token = req.headers["x-access-token"];
   const check_token = () => {
     return new Promise((resolve, reject) => {

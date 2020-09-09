@@ -7,15 +7,18 @@ import LogOut from "../../libs/LogOut";
 function MainPage(props) {
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
+    if (
+      !props.history.location.state ||
+      Object.keys(props.history.location.state).length === 0
+    ) {
+      message.error("로그인이 필요합니다.");
+      return props.history.push("/login");
+    }
     const {
       access_token,
       g_access_token,
       k_access_token,
     } = props.history.location.state;
-    if (!access_token && !g_access_token && !k_access_token) {
-      message.error("로그인이 필요합니다.");
-      props.history.push("/login");
-    }
     if (access_token) {
       Verify(access_token, "local", props);
     } else if (g_access_token) {

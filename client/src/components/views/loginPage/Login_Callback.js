@@ -17,7 +17,6 @@ function Login_Callback(props) {
         return res.json();
       })
       .then((res) => {
-        console.log(res);
         if (res.message === "logged in successfully") {
           message.info(res.nickname + "님 반갑습니다!", 1);
           return props.history.push({

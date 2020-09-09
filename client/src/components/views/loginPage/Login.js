@@ -132,7 +132,7 @@ function LoginPage(props) {
                 <Checkbox>자동 로그인</Checkbox>
               </Form.Item>
               <Button type="link" onClick={findUser}>
-                아이디/비밀번호 찾기
+                이메일/비밀번호 찾기
               </Button>
             </Form.Item>
 

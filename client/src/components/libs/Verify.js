@@ -12,7 +12,6 @@ const Verify = async (token, token_type, props) => {
       "x-access-token": token,
     },
   });
-
   if (res.status !== 200) {
     return message.error(
       "로그인이 필요합니다.",
@@ -23,7 +22,6 @@ const Verify = async (token, token_type, props) => {
   const re_token = res.data.result.access_token;
   const { type } = res.data.result;
   if (re_token) {
-    console.log("토큰갱신");
     if (type === "local")
       props.history.replace({
         state: { access_token: re_token },
