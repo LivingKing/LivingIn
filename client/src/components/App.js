@@ -9,6 +9,7 @@ import FailPage from "./views/resultPage/FailPage";
 import FindPage from "./views/FindPage/FindPage";
 import ModifyPage from "./views/FindPage/ModifyPage";
 import CallbackPage from "./views/loginPage/Login_Callback";
+import DetailPage from "./views/detailPage/Detail";
 import { Switch, BrowserRouter } from "react-router-dom";
 
 const App = () => {
@@ -23,6 +24,7 @@ const App = () => {
         <Route exact path="/modify" component={ModifyPage} />
         <Route exact path="/confirm/success" component={SuccessPage} />
         <Route exact path="/confirm/fail" component={FailPage} />
+        <Route exact path="/detail" component={DetailPage} />
         <Route component={NoMatchPage} />
       </Switch>
     </BrowserRouter>
