@@ -3,9 +3,16 @@ import { Result } from "antd";
 import { Link } from "react-router-dom";
 
 const SuccessPage = (props) => {
-  let { title } = props.history.location.state;
-  if (title === "password") title = "비밀번호 변경 성공!";
-  else title = "이메일 인증 성공!";
+  let title;
+  if (
+    !props.history.location.state ||
+    Object.keys(props.history.location.state).length === 0
+  ) {
+    title = "이메일 인증 성공!";
+  } else {
+    title = props.history.location.state.title;
+    if (title === "password") title = "비밀번호 변경 성공!";
+  }
   return (
     <Result
       status="success"

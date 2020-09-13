@@ -36,7 +36,7 @@ router.post("/", (req, res) => {
       },
       (err, token) => {
         if (err) throw err;
-        sendMail(user.email, token, user.nickname);
+        sendMail(user.email, token, user.nickname, "welcome");
         res.status(200).json({
           message: "registered successfully",
           success: true,
