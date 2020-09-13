@@ -21,6 +21,7 @@ import {
 // import BackTop from "../../libs/BackTopButton";
 import moment from "moment";
 import "./Detail.css";
+import Post from "./Post";
 
 const { TextArea } = Input;
 
@@ -94,9 +95,11 @@ const Detail = () => {
     setValue(e.target.value);
   };
   const handleLike = () => {
+    if (isdislike) setIsdislike(!isdislike);
     setIsLike(!islike);
   };
   const handleDisLike = () => {
+    if (islike) setIsLike(!islike);
     setIsdislike(!isdislike);
   };
 
@@ -113,48 +116,28 @@ const Detail = () => {
           dignissimos veniam excepturi accusantium earum accusamus tempore
           cupiditate obcaecati cum, reiciendis consequatur quibusdam
           exercitationem mollitia id doloremque? Sit, excepturi inventore.
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
-          <p>q</p>
         </div>
+        <div style={{ display: "flex", justifyContent: "space-around" }}>
+          <Post
+            id={1}
+            title={"진라면 맛있게 끓이는 법"}
+            category={"요리"}
+            views={50}
+            likes={50}
+            comments={30}
+            hashtags={["해시태그1", "해시태그2", "해시태그3"]}
+          />
+          <Post
+            id={2}
+            title={"삼양라면 맛있게 끓이는 법"}
+            category={"요리"}
+            views={30}
+            likes={62}
+            comments={32}
+            hashtags={["해시태그1", "해시태그2", "해시태그3"]}
+          />
+        </div>
+
         <BackTop />
       </content>
       <footer>
