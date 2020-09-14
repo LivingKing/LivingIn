@@ -136,6 +136,15 @@ const Detail = () => {
             comments={32}
             hashtags={["해시태그1", "해시태그2", "해시태그3"]}
           />
+          <Post
+            id={2}
+            title={"신라면 맛있게 끓이는 법"}
+            category={"요리"}
+            views={31}
+            likes={52}
+            comments={22}
+            hashtags={["해시태그1", "해시태그2", "해시태그3"]}
+          />
         </div>
 
         <BackTop />
