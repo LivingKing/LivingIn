@@ -116,6 +116,7 @@ const Detail = () => {
           dignissimos veniam excepturi accusantium earum accusamus tempore
           cupiditate obcaecati cum, reiciendis consequatur quibusdam
           exercitationem mollitia id doloremque? Sit, excepturi inventore.
+          dwodkknudkkkdkkdkkdisjfsdflkjasdnnndndkdkdkdjdj
         </div>
         <div style={{ display: "flex", justifyContent: "space-around" }}>
           <Post
