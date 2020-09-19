@@ -21,7 +21,7 @@ function Login_Callback(props) {
           message.info(res.nickname + "님 반갑습니다!", 1);
           return props.history.push({
             pathname: "/",
-            state: { g_access_token: res.access_token },
+            state: { g_access_token: res.access_token, nickname: res.nickname },
           });
         }
       });

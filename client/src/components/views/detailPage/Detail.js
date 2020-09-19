@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { CSSTransition } from "react-transition-group";
 import {
   Comment,
@@ -13,15 +13,16 @@ import {
 import {
   DownOutlined,
   CommentOutlined,
-  LikeOutlined,
+  HeartOutlined,
   DislikeOutlined,
-  LikeFilled,
+  HeartFilled,
   DislikeFilled,
 } from "@ant-design/icons";
 // import BackTop from "../../libs/BackTopButton";
 import moment from "moment";
 import "./Detail.css";
-import Post from "./Post";
+
+import Header from "../../libs/Header/Header";
 
 const { TextArea } = Input;
 
@@ -63,7 +64,7 @@ const Detail = () => {
   const [dislikes, setDisLikes] = useState(0); // 싫어요 수
   const [value, setValue] = useState(""); // 댓글 입력 메시지
 
-  useEffect(() => {
+  React.useEffect(() => {
     console.log("hi");
   }, [comments, islike, isdislike]);
   const toggle = () => {
@@ -104,7 +105,8 @@ const Detail = () => {
   };
 
   return (
-    <section className="container">
+    <section className="view__container">
+      <Header />
       <content>
         <h1>게시물 보기</h1>
         <h3 className="title_text"> 제목제목제목제목제목</h3>
@@ -115,37 +117,45 @@ const Detail = () => {
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat error
           dignissimos veniam excepturi accusantium earum accusamus tempore
           cupiditate obcaecati cum, reiciendis consequatur quibusdam
+          exercitationem mollitia id doloremque? Sit, excepturi inventore. Lorem
+          ipsum dolor sit amet consectetur adipisicing elit. Quaerat error
+          dignissimos veniam excepturi accusantium earum accusamus tempore
+          cupiditate obcaecati cum, reiciendis consequatur quibusdam
           exercitationem mollitia id doloremque? Sit, excepturi inventore.
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
         </div>
-        <div style={{ display: "flex", justifyContent: "space-around" }}>
-          <Post
-            id={1}
-            title={"진라면 맛있게 끓이는 법"}
-            category={"요리"}
-            views={50}
-            likes={50}
-            comments={30}
-            hashtags={["해시태그1", "해시태그2", "해시태그3"]}
-          />
-          <Post
-            id={2}
-            title={"삼양라면 맛있게 끓이는 법"}
-            category={"요리"}
-            views={30}
-            likes={62}
-            comments={32}
-            hashtags={["해시태그1", "해시태그2", "해시태그3"]}
-          />
-          <Post
-            id={2}
-            title={"신라면 맛있게 끓이는 법"}
-            category={"요리"}
-            views={31}
-            likes={52}
-            comments={22}
-            hashtags={["해시태그1", "해시태그2", "해시태그3"]}
-          />
-        </div>
+        <div style={{ display: "flex", justifyContent: "space-around" }}></div>
 
         <BackTop />
       </content>
@@ -155,13 +165,13 @@ const Detail = () => {
             <ul className="menu">
               <li className="menu__list">
                 {islike ? (
-                  <LikeFilled
+                  <HeartFilled
                     className="menu__icon"
                     onClick={handleLike}
-                    style={{ color: "#2196F3" }}
+                    style={{ color: "#e23b3b" }}
                   />
                 ) : (
-                  <LikeOutlined className="menu__icon" onClick={handleLike} />
+                  <HeartOutlined className="menu__icon" onClick={handleLike} />
                 )}
                 <h3>{likes}</h3>
               </li>

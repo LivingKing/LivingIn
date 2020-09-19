@@ -44,7 +44,7 @@ function LoginPage(props) {
         message.info(res.nickname + "님 반갑습니다!", 1);
         return props.history.push({
           pathname: "/",
-          state: { k_access_token: res.access_token },
+          state: { k_access_token: res.access_token, nickname: res.nickname },
         });
       }
     }
@@ -72,7 +72,7 @@ function LoginPage(props) {
       message.info(res.nickname + "님 반갑습니다!", 1);
       return props.history.push({
         pathname: "/",
-        state: { access_token: res.access_token },
+        state: { access_token: res.access_token, nickname: res.nickname },
       });
     } else {
       return message.error(res.message);

@@ -10,6 +10,16 @@ router.get("/users", (req, res) => {
   });
 });
 
+router.get("/userinfo", async (req, res) => {
+  try {
+    const { email } = req.query;
+    const user = await User.findOneByEmail(email);
+    res.status(200).json({ result: "success", user: user });
+  } catch (err) {
+    res.status(404).json({ result: "fail" });
+  }
+});
+
 router.get("/forget/user", async (req, res) => {
   try {
     const { email } = req.query;
@@ -39,6 +49,17 @@ router.get("/delete/", (req, res) => {
     res.json({
       message: "success delete",
     });
+  });
+});
+
+router.get("/getUserIcon", async (req, res) => {
+  const { nickname } = req.query;
+  const user = await User.findOneByNick(nickname);
+  console.log(user);
+  User.findOne({ nickname: nickname }, (err, user) => {
+    if (err) throw err;
+    console.log(user);
+    res.status(200).json(user);
   });
 });
 
