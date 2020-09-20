@@ -1,0 +1,25 @@
+@import '~antd/dist/antd.css';
+
+.write__container {
+    margin : 60px;
+    width : 60%;
+}
+.tags__tag {
+    width : 100%;
+}
+
+.title__container {
+    display: inline;
+}
+
+.container__Button {
+    text-align: right;
+}
+
+.ant-btn-dashed {
+    margin: 20px;
+}
+
+#editor {
+    height: 60%;
+}
