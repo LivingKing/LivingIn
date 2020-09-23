@@ -12,6 +12,10 @@
     display: inline;
 }
 
+.title__Input {
+    width : 77%;
+}
+
 .container__Button {
     text-align: right;
 }
@@ -20,6 +24,11 @@
     margin: 20px;
 }
 
+.ql-editor{
+    min-height: 250px;
+}
+
 #editor {
     height: 60%;
 }
+
