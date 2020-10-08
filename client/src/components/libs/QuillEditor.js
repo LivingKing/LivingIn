@@ -18,16 +18,17 @@ class QuillEditor extends React.Component {
   modules = {
     syntax: false,
     toolbar: [
-      [{ header: [1, 2, false] }],
       ["bold", "italic", "underline", "strike", "blockquote"],
+      [{ size: ["small", false, "large", "huge"] }, { color: [] }],
       [
         { list: "ordered" },
         { list: "bullet" },
         { indent: "-1" },
         { indent: "+1" },
+        { align: [] }
       ],
       ["link", "image", "video"],
-      ["clean"],
+      ["clean"]
     ],
   };
 
@@ -37,14 +38,17 @@ class QuillEditor extends React.Component {
     "italic",
     "underline",
     "strike",
+    "blockquote",
+    "size",
+    "color",
+    "list",
+    "bullet",
+    "indent",
+    "link",
     "image",
     "video",
-    "file",
-    "link",
-    "code-block",
-    "video",
-    "blockquote",
-    "clean",
+    "align",
+    "clean"
   ];
 }
 

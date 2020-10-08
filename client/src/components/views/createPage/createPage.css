@@ -1,34 +1,36 @@
-@import '~antd/dist/antd.css';
+@import "~antd/dist/antd.css";
 
+.body {
+  background-color: #3f00ff;
+}
 .write__container {
-    margin : 60px;
-    width : 60%;
+  margin: 60px;
+  width: 60%;
 }
 .tags__tag {
-    width : 100%;
+  width: 100%;
 }
 
 .title__container {
-    display: inline;
+  display: inline;
 }
 
 .title__Input {
-    width : 77%;
+  width: 81.8%;
 }
 
 .container__Button {
-    text-align: right;
+  text-align: right;
 }
 
 .ant-btn-dashed {
-    margin: 20px;
+  margin: 20px;
 }
 
-.ql-editor{
-    min-height: 250px;
+.ql-editor {
+  min-height: 250px;
 }
 
 #editor {
-    height: 60%;
+  height: 60%;
 }
-

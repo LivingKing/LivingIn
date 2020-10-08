@@ -5,8 +5,7 @@ import Header from "../../libs/Header/Header";
 import { Typography, Input, Select, Divider, Button, Checkbox, Popconfirm } from "antd";
 import "react-quill/dist/quill.snow.css";
 import "./createPage.css";
-import { withRouter } from 'react-router-dom';
-
+import { withRouter } from "react-router-dom";
 
 function handleChange(value) {
   console.log(`selected ${value}`);
@@ -21,11 +20,7 @@ function onChange(e) {
 const { Title, Text } = Typography;
 const children = [];
 const { Option } = Select;
-const text = 'Are you sure to delete this post?';
-
-const goBack = () => {
-  this.props.history.goBack();
-}
+const text = "Are you sure to delete this post?";
 
 /*
 const categoryMenu = () => {
@@ -44,7 +39,7 @@ const CreatePost = () => {
     <section className="write__container">
       <div className="container__title">
         <Title level={3}>Title</Title>
-        <Input placeholder="Add a Title" className="title__Input" />
+        <Input placeholder="Add a Title" className="title__Input" allowClear />
         <Select defaultValue="카테고리를 선택해 주세요." onChange={handleChange}>
           <Option value="1">자취방 개꿀팁</Option>
           <Option value="2">내가 요리왕이다</Option>
@@ -59,23 +54,21 @@ const CreatePost = () => {
       <div className="container__Description">
         <Divider />
         <Title level={3}>Description</Title>
-        <div className = "container__editor">
-        <QuillEditor placeholder={"Start Posting Something"} className="description__Editor"/>
+        <div className="container__editor">
+          <QuillEditor placeholder={"Start Posting Something"} className="description__Editor" />
         </div>
       </div>
       <div className="container__Setting">
         <Divider />
-        <Title level={3}>
-          Settings
-        </Title>
+        <Title level={3}>Settings</Title>
         <Checkbox onChange={onChange}>Close comments</Checkbox>
         <Checkbox onChange={onChange}>Secret Post</Checkbox>
       </div>
       <div className="container__Button">
         <Divider />
         <Button type="dashed">Update</Button>
-        <Popconfirm placement="right" title={text} onConfirm={()=> {}}>
-        <Button danger>Cancel</Button>
+        <Popconfirm placement="right" title={text}>
+          <Button danger>Cancel</Button>
         </Popconfirm>
       </div>
     </section>

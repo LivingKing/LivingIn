@@ -1,18 +1,20 @@
-import { Tag, Input, Tooltip } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { Tag, Input, Tooltip } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import React from "react";
+
+const tagColor = ["magenta", "red", "volcano", "orange", "gold", "lime", "green", "cyan", "blue", "geekblue"];
 
 class EditableTagGroup extends React.Component {
   state = {
-    tags: [ 'Tag 2', 'Tag 3'],
+    tags: ["#태그를 입력해 주세요.", "#나라는신이존재"],
     inputVisible: false,
-    inputValue: '',
+    inputValue: "",
     editInputIndex: -1,
-    editInputValue: '',
+    editInputValue: "",
   };
 
-  handleClose = removedTag => {
-    const tags = this.state.tags.filter(tag => tag !== removedTag);
+  handleClose = (removedTag) => {
+    const tags = this.state.tags.filter((tag) => tag !== removedTag);
     console.log(tags);
     this.setState({ tags });
   };
@@ -21,7 +23,7 @@ class EditableTagGroup extends React.Component {
     this.setState({ inputVisible: true }, () => this.input.focus());
   };
 
-  handleInputChange = e => {
+  handleInputChange = (e) => {
     this.setState({ inputValue: e.target.value });
   };
 
@@ -35,11 +37,11 @@ class EditableTagGroup extends React.Component {
     this.setState({
       tags,
       inputVisible: false,
-      inputValue: '',
+      inputValue: "",
     });
   };
 
-  handleEditInputChange = e => {
+  handleEditInputChange = (e) => {
     this.setState({ editInputValue: e.target.value });
   };
 
@@ -51,16 +53,16 @@ class EditableTagGroup extends React.Component {
       return {
         tags: newTags,
         editInputIndex: -1,
-        editInputValue: '',
+        editInputValue: "",
       };
     });
   };
 
-  saveInputRef = input => {
+  saveInputRef = (input) => {
     this.input = input;
   };
 
-  saveEditInputRef = input => {
+  saveEditInputRef = (input) => {
     this.editInput = input;
   };
 
@@ -85,16 +87,10 @@ class EditableTagGroup extends React.Component {
           }
 
           const isLongTag = tag.length > 20;
-
           const tagElem = (
-            <Tag
-              className="edit-tag"
-              key={tag}
-              closable={index !== 0}
-              onClose={() => this.handleClose(tag)}
-            >
+            <Tag className="edit-tag" key={tag} closable={index !== 0} onClose={() => this.handleClose(tag)}>
               <span
-                onDoubleClick={e => {
+                onDoubleClick={(e) => {
                   if (index !== 0) {
                     this.setState({ editInputIndex: index, editInputValue: tag }, () => {
                       this.editInput.focus();
@@ -128,8 +124,8 @@ class EditableTagGroup extends React.Component {
           />
         )}
         {!inputVisible && (
-          <Tag className="site-tag-plus" onClick={this.showInput}>
-            <PlusOutlined /> New Tag
+          <Tag className="site-tag-plus" onClick={this.showInput} color="blue">
+            <PlusOutlined /> 새로운 태그를 입력해주세요.
           </Tag>
         )}
       </>
