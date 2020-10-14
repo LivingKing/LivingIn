@@ -36,42 +36,49 @@ const categoryMenu = () => {
 
 const CreatePost = () => {
   return (
-    <section className="write__container">
-      <div className="container__title">
-        <Title level={3}>Title</Title>
-        <Input placeholder="Add a Title" className="title__Input" allowClear />
-        <Select defaultValue="카테고리를 선택해 주세요." onChange={handleChange}>
-          <Option value="1">자취방 개꿀팁</Option>
-          <Option value="2">내가 요리왕이다</Option>
-          <Option value="3">나라는 신이 존재</Option>
-        </Select>
-      </div>
-      <div className="container__tags">
-        <Divider />
-        <Title level={3}>Tags</Title>
-        <Tags />
-      </div>
-      <div className="container__Description">
-        <Divider />
-        <Title level={3}>Description</Title>
-        <div className="container__editor">
-          <QuillEditor placeholder={"Start Posting Something"} className="description__Editor" />
+    <div className="total__container">
+      <Header />
+      <section className="write__container">
+        <div className="container__title">
+          <Title level={3}>Title</Title>
+          <Input placeholder="Add a Title" className="title__Input" allowClear />
+          <Select defaultValue="카테고리를 선택해 주세요." onChange={handleChange}>
+            <Option value="1">자취방 개꿀팁</Option>
+            <Option value="2">내가 요리왕이다</Option>
+            <Option value="3">나라는 신이 존재</Option>
+          </Select>
         </div>
-      </div>
-      <div className="container__Setting">
-        <Divider />
-        <Title level={3}>Settings</Title>
-        <Checkbox onChange={onChange}>Close comments</Checkbox>
-        <Checkbox onChange={onChange}>Secret Post</Checkbox>
-      </div>
-      <div className="container__Button">
-        <Divider />
-        <Button type="dashed">Update</Button>
-        <Popconfirm placement="right" title={text}>
-          <Button danger>Cancel</Button>
-        </Popconfirm>
-      </div>
-    </section>
+        <div className="container__tags">
+          <Divider />
+          <Title level={3}>Tags</Title>
+          <Tags className="tgs" />
+        </div>
+        <div className="container__Description">
+          <Divider />
+          <Title level={3}>Description</Title>
+          <div className="container__editor">
+            <QuillEditor placeholder={"Start Posting Something"} className="description__Editor" />
+          </div>
+        </div>
+        <div className="container__Setting">
+          <Divider />
+          <Title level={3}>Settings</Title>
+          <Checkbox onChange={onChange}>Close comments</Checkbox>
+          <Checkbox onChange={onChange}>Secret Post</Checkbox>
+        </div>
+        <div className="container__Button">
+          <Divider />
+          <Button type="dashed" className="buttons updateButton">
+            Update
+          </Button>
+          <Popconfirm placement="right" title={text}>
+            <Button danger className="buttons dangerButton">
+              Cancel
+            </Button>
+          </Popconfirm>
+        </div>
+      </section>
+    </div>
   );
 };
 

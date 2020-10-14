@@ -4,8 +4,9 @@
   background-color: #3f00ff;
 }
 .write__container {
-  margin: 60px;
+  margin: 3%;
   width: 60%;
+  margin-left: 20%;
 }
 .tags__tag {
   width: 100%;
@@ -16,7 +17,7 @@
 }
 
 .title__Input {
-  width: 81.8%;
+  width: 75%;
 }
 
 .container__Button {
@@ -29,6 +30,19 @@
 
 .ql-editor {
   min-height: 250px;
+}
+
+.buttons {
+  cursor: pointer;
+  transition: transform 100ms ease;
+}
+
+.buttons:hover {
+  transform: scale(1.1);
+}
+
+.tgs {
+  cursor: pointer;
 }
 
 #editor {
