@@ -1,0 +1,50 @@
+@import "~antd/dist/antd.css";
+
+.body {
+  background-color: #3f00ff;
+}
+.write__container {
+  margin: 3%;
+  width: 60%;
+  margin-left: 20%;
+}
+.tags__tag {
+  width: 100%;
+}
+
+.title__container {
+  display: inline;
+}
+
+.title__Input {
+  width: 75%;
+}
+
+.container__Button {
+  text-align: right;
+}
+
+.ant-btn-dashed {
+  margin: 20px;
+}
+
+.ql-editor {
+  min-height: 250px;
+}
+
+.buttons {
+  cursor: pointer;
+  transition: transform 100ms ease;
+}
+
+.buttons:hover {
+  transform: scale(1.1);
+}
+
+.tgs {
+  cursor: pointer;
+}
+
+#editor {
+  height: 60%;
+}

@@ -5,6 +5,8 @@ import {
   AppstoreOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
+import "./Menu.css"
+
 
 const { SubMenu } = Menu;
 
@@ -12,7 +14,7 @@ const MenuItem = (e) => {
   console.log("click", e);
 
   return (
-    <Menu style={{ width: 256 }} mode="vertical">
+    <Menu className = "menu__sideMenu">
       <SubMenu key="sub1" icon={<MailOutlined />} title="음식">
         <Menu.ItemGroup title="백주부">
           <Menu.Item key="1">한식</Menu.Item>

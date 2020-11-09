@@ -2,20 +2,86 @@
   display: flex;
   justify-content: center;
   flex-direction: column;
-  margin-left: calc(5%);
+  margin-left: calc(15%);
   bottom: 0;
-  width: calc(90%);
+  width: calc(70%);
   background-color: white;
   position: fixed;
   border-radius: 10px 10px 0 0;
   box-shadow: 0 -2px 3px rgba(0, 0, 0, 0.12), 0 -2px 3px rgba(0, 0, 0, 0.24);
 }
 
+content {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  margin-left: calc(15%);
+  width: calc(70%);
+  background-color: white;
+}
+
+.backimg {
+  background-image: url(https://cdn.pixabay.com/photo/2017/08/07/13/18/people-2603773_960_720.jpg);
+  height: 450px;
+  margin-bottom: calc(3%);
+  background-size: 100% 180%;
+}
+
+.backcover {
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.3);
+  height: 450px;
+  margin-bottom: calc(3%);
+}
+
+.cate {
+  border-radius: 5px;
+  position: relative;
+  top: 150px;
+  width: 90px;
+  text-align: center;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  background-color: #616db1;
+}
+
+.cate:hover {
+  color: #5c6bc0;
+  background-color: white;
+}
+
+.title_text {
+  color: white;
+  position: relative;
+  font-size: 40px;
+  top: 150px;
+  text-align: center;
+}
+
+.nick_box {
+  color: white;
+  position: relative;
+  top: 270px;
+}
+
+.date {
+  color: white;
+  position: relative;
+  top: 270px;
+}
+
+.count {
+  color: white;
+  position: relative;
+  top: 270px;
+}
+
 .outer .menu {
   display: flex;
   justify-content: space-around;
   padding: 5px 0 5px 0;
-  background-color: #e6ee9c;
+  background-color: white;
   border-radius: 10px 10px 0 0;
   margin: 0;
 }
@@ -51,7 +117,7 @@
   top: 0;
   padding: 5px 0 0 0;
   position: sticky;
-  background-color: #e6ee9c;
+  background-color: white;
   text-align: center;
   z-index: 500;
   border-radius: 10px 10px 0 0;

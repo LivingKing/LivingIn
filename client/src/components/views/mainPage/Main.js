@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { message, Menu, List, Card } from "antd";
+import { message, Menu, List, Card, Layout } from "antd";
 import { withRouter } from "react-router-dom";
 import Verify from "../../libs/Verify";
 import LogOut from "../../libs/LogOut";
 import "./Main.css";
 import Header from "../../libs/Header/Header.js";
 import ModalButton from "./Modal/ModalButton.js";
+import Content from "../../libs/Content/Content";
 
 function MainPage(props) {
   const [isLoading, setIsLoading] = useState(true);
-  const [token, setToken] = useState("");
+  const [tokeninfo, setTokenInfo] = useState([]);
   const [nickname, setNickName] = useState("");
   useEffect(() => {
     if (
@@ -30,15 +31,15 @@ function MainPage(props) {
     } = props.history.location.state;
     if (access_token) {
       Verify(access_token, "local", props);
-      setToken(access_token);
+      setTokenInfo({ access_token: access_token, type: "local" });
     } else if (g_access_token) {
       Verify(g_access_token, "google", props);
-      setToken(g_access_token);
+      setTokenInfo({ access_token: g_access_token, type: "google" });
     } else if (k_access_token) {
       Verify(k_access_token, "kakao", props);
-      setToken(k_access_token);
+      setTokenInfo({ access_token: k_access_token, type: "kakao" });
     }
-  }, [props, isLoading]);
+  }, [props, isLoading, setTokenInfo]);
 
   // 메인 젤 위 메뉴이동
   const [now, setNow] = useState("요리");
@@ -48,23 +49,111 @@ function MainPage(props) {
   };
 
   const listData = [];
+  listData.push({
+    href: "link",
+    title: `1번째 게시글`,
+    avatar: "src",
+    description: "description",
+    content:          
+    <Content
+      id={1}
+      title={"진라면 맛있게 끓이는 법"}
+      category={"요리"}
+      views={50}
+      likes={50}
+      liked={false}
+      comments={30}
+      hashtags={["음식", "만두라면", "해시태그3"]}
+      content={"진라면 끓이는 방법 ㅎㅎ"}
+      Image = {"jin"}
+    />
+  });
+  listData.push({
+    href: "link",
+    title: `2번째 게시글`,
+    avatar: "src",
+    description: "description",
+    content:          
+    <Content
+      id={1}
+      title={"삼양라면을 맛있게 끓여보장"}
+      category={"요리"}
+      views={30}
+      likes={10}
+      liked={false}
+      comments={79}
+      hashtags={["라면", "삼양라면", "해시태그3"]}
+      content={"삼양라면 끓이는 방법 ㅎㅎㅎ1. 물을넣는다. 2. 스프넣는다. 3. 면을넣는다 4. 보글보글 지글지글 자글자글"}
+      Image = {"ansung"}
+    />
+  });
+  listData.push({
+    href: "link",
+    title: `3번째 게시글`,
+    avatar: "src",
+    description: "description",
+    content:          
+    <Content
+      id={1}
+      title={"신라면을 맛있게 끓여보장"}
+      category={"요리"}
+      views={49}
+      likes={78}
+      liked={false}
+      comments={21}
+      hashtags={["신라면", "요리킹조리킹", "해시태그3"]}
+      content={"신라면은 요리킹 조리킹 이리저리 킹킹 끓이면 됩니당."}
+      Image = {"shin"}
+    />
+  });
+  listData.push({
+    href: "link",
+    title: `4번째 게시글`,
+    avatar: "src",
+    description: "description",
+    content:          
+    <Content
+      id={1}
+      title={"라면 또 뭐있냐"}
+      category={"요리"}
+      views={99}
+      likes={5}
+      liked={false}
+      comments={13}
+      hashtags={["라면", "이제생각안남", "해시태그3"]}
+      content={"그냥 라면 끓이는 법. 냄비에 라면 넣고 팔팔 !"}
+      Image = {"ramen"}
+    />
+  });
+
   for (let i = 1; i <= 100; i++) {
-    listData.push({
+   listData.push({
       href: "link",
       title: `${i}번째 게시글`,
       avatar: "src",
       description: "description",
-      content: "content",
+      content:          
+      <Content
+        id={1}
+        title={"진라면 맛있게 끓이는 법"}
+        category={"요리"}
+        views={50}
+        likes={50}
+        liked={false}
+        comments={30}
+        hashtags={["해시태그1", "해시태그2", "해시태그3"]}
+        Image = {"./ramen.jpg"}
+      />
     });
   }
 
   return (
     <div className="main_page">
       {/* header */}
-      {isLoading ? <></> : <Header token={token} nickname={nickname} />}
+      {isLoading ? <></> : <Header tokeninfo={tokeninfo} nickname={nickname} history={props.history} />}
 
-      {/* navigation */}
-      <section className="main">
+ {/* navigation */}
+ <section className="main">
         <nav>
           <Menu
             onClick={handleClick}
@@ -91,6 +180,7 @@ function MainPage(props) {
                 <a
                   className="logout"
                   onClick={() => {
+                    localStorage.clear();
                     LogOut(props);
                   }}
                 >
@@ -117,11 +207,7 @@ function MainPage(props) {
               renderItem={(item) => (
                 <List.Item className="aa">
                   <Card title={item.title}>
-                    {now}
-                    <br />
-                    <br />
-                    <br />
-                    <br />
+                    {item.content}
                   </Card>
                 </List.Item>
               )}

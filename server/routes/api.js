@@ -3,6 +3,10 @@ const router = express.Router();
 const User = require("../models/User");
 const tokenGenerator = require("../libs/tokenGenerator");
 const sendEmail = require("../libs/sendEmail");
+const jwt = require("jsonwebtoken");
+const axios = require("axios");
+const config = require("../config/config");
+
 router.get("/users", (req, res) => {
   User.find({}, (err, users) => {
     if (err) throw err;
@@ -12,8 +16,23 @@ router.get("/users", (req, res) => {
 
 router.get("/userinfo", async (req, res) => {
   try {
-    const { email } = req.query;
+    const { access_token, type } = req.query;
+    console.log(access_token, type);
+    let result;
+    let email;
+    if (type === "local") {
+      result = await jwt.verify(access_token, config.secret);
+      email = result.email;
+    } else if (type === "google") {
+      result = await axios({
+        method: "GET",
+        url: `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${access_token}`,
+      });
+      email = result.data.email;
+    }
+
     const user = await User.findOneByEmail(email);
+    console.log(user);
     res.status(200).json({ result: "success", user: user });
   } catch (err) {
     res.status(404).json({ result: "fail" });

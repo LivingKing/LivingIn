@@ -18,6 +18,7 @@ import { Switch, BrowserRouter } from "react-router-dom";
 const App = () => {
   return (
     <BrowserRouter>
+    
       <Switch>
         <Route exact path="/" component={MainPage} />
         <Route exact path="/login" component={LoginPage} />

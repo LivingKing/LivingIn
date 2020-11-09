@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const apiRouter = require("./routes/api");
 const loginRouter = require("./routes/auth");
 const createRouter = require("./routes/create");
+const postRouter = require("./routes/post");
 const db = require("./libs/db");
 const cors = require("cors");
 
@@ -19,6 +20,7 @@ app.use(express.static("public"));
 app.use("/api", apiRouter);
 app.use("/auth", loginRouter);
 app.use("/create", createRouter);
+app.use("/post", postRouter);
 
 app.use((req, res, next) => {
   res.status(404).send("Sorry cant find that!");

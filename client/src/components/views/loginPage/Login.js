@@ -5,6 +5,7 @@ import logo from "./logo.png";
 import "./Login.css";
 import KakaoLogin from "react-kakao-login";
 import { withRouter, Link } from "react-router-dom";
+
 import axios from "axios";
 
 function LoginPage(props) {
@@ -19,6 +20,7 @@ function LoginPage(props) {
   };
 
   const responseGoogle = async () => {
+    localStorage.onSave=0;
     const res = await axios("/auth/google", {
       method: "POST",
       headers: {
@@ -29,6 +31,7 @@ function LoginPage(props) {
   };
 
   const responseKakao = async (values) => {
+    localStorage.onSave=0;
     const res = await fetch("/auth/kakao", {
       method: "POST",
       body: JSON.stringify(values),
@@ -51,6 +54,7 @@ function LoginPage(props) {
   };
 
   const onFinish = async (values) => {
+    localStorage.onSave=0;
     let res = await fetch("/auth/login", {
       method: "POST",
       body: JSON.stringify(values),

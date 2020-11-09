@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Popover } from "antd";
+import { Popover,Button } from "antd";
 import { UserOutlined, CaretDownOutlined } from "@ant-design/icons";
 import "./Header.css";
 import UserInfo from "./UserInfo.js";
@@ -16,13 +16,29 @@ function Header(props) {
     });
   });
 
-  const content = <UserInfo nickname={props.nickname} token={props.token} />;
+  const content = (
+    <UserInfo nickname={props.nickname} tokeninfo={props.tokeninfo} />
+  );
 
   return (
     <header className={scroll ? "header" : "header_scroll"}>
       <a className="header__mainhome" href="/">
         자취인
       </a>
+      <Button
+                  type="text"
+                  className="logout"
+                  style={{color:"white"}}
+                  onClick={() => {
+                    console.log(props);
+                    return props.history.push({
+                      pathname: "/write",
+                      state: { tokeninfo: props.tokeninfo, nickname: props.nickname },
+                    });
+                  }}
+                >
+                글쓰기
+          </Button>
       <UserOutlined className="header__person" />
       <Popover
         placement="bottomRight"

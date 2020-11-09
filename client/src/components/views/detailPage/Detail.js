@@ -108,11 +108,14 @@ const Detail = () => {
     <section className="view__container">
       <Header />
       <content>
-        <h1>게시물 보기</h1>
-        <h3 className="title_text"> 제목제목제목제목제목</h3>
-        <div className="nick_box">닉네임</div>
-        <span className="date">2020.09.01 19:20 </span>
-        <span className="count">조회 13</span>
+        <div className="backimg">
+          <h3 className="cate">Category</h3>
+          <h1 className="title_text"> 게시물보기페이지입니다</h1>
+          <div className="nick_box">닉네임</div>
+          <span className="date">2020.09.01 19:20 </span>
+          <span className="count">조회 13</span>
+          <div className="backcover"></div>
+        </div>
         <div id="rectangle">
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat error
           dignissimos veniam excepturi accusantium earum accusamus tempore
@@ -121,7 +124,32 @@ const Detail = () => {
           ipsum dolor sit amet consectetur adipisicing elit. Quaerat error
           dignissimos veniam excepturi accusantium earum accusamus tempore
           cupiditate obcaecati cum, reiciendis consequatur quibusdam
-          exercitationem mollitia id doloremque? Sit, excepturi inventore.
+          exercitationem mollitia id doloremque? Sit, excepturi
+          inventore.sasdsadasdasdasdasdsa
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
+          <p>a</p>
           <p>a</p>
           <p>a</p>
           <p>a</p>
