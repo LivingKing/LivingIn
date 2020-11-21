@@ -51,6 +51,7 @@ router.post("/verify", async (req, res) => {
       const user = await User.findOneByEmail(result.email);
       await jwt.verify(user.refresh_token, config.secret);
       const token = await tokenGenerator(user, token_exp);
+      console.log(token);
       respond(token);
     } else {
       respond("");
@@ -195,10 +196,12 @@ router.post("/login", async (req, res) => {
   };
   const respond = (result) => {
     console.log(result);
-    const { access_token, nickname } = result;
+    const { access_token, nickname,email,icon } = result;
     res.status(200).json({
       message: "logged in successfully",
       nickname,
+      email,
+      icon,
       access_token,
     });
   };
@@ -212,11 +215,13 @@ router.post("/login", async (req, res) => {
 });
 router.post("/google/callback", (req, res) => {
   const respond = (result) => {
-    const { access_token, nickname } = result;
+    const { access_token, nickname, email, icon } = result;
     res.status(200).json({
       message: "logged in successfully",
       access_token,
       nickname,
+      email,
+      icon
     });
   };
   axios({
@@ -254,7 +259,8 @@ router.post("/google/callback", (req, res) => {
         }
         user.refresh_token = refresh_token;
         user.save();
-        respond({ nickname: res.data.name, access_token: access_token });
+        console.log(user);
+        respond({ nickname: res.data.name, access_token: access_token, email:user.email, icon:user.icon });
       });
     });
   });
@@ -291,6 +297,8 @@ router.post("/kakao", (req, res) => {
       message: "logged in successfully",
       nickname: req.body.profile.properties.nickname,
       access_token: req.body.response.access_token,
+      email:user.email,
+      icon:user.icon,
     });
   };
 

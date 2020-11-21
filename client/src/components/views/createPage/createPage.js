@@ -3,61 +3,41 @@ import QuillEditor from "../../libs/QuillEditor";
 import Tags from "../../libs/EditableTagGroup";
 import Header from "../../libs/Header/Header";
 import Verify from "../../libs/Verify";
-import { Typography, Input, Select, Divider, Button, Checkbox, Popconfirm, message } from "antd";
+import { Typography, Input, Select, Divider, Button,  Popconfirm, message } from "antd";
 import "react-quill/dist/quill.snow.css";
 import "./createPage.css";
 import { withRouter } from "react-router-dom";
 import axios from "axios";
 
-function onChange(e) {
-  console.log(`checked = ${e.target.checked}`);
-}
 
-
-
-const { Title, Text } = Typography;
-const children = [];
+const { Title } = Typography;
 const { Option } = Select;
 const text = "Are you sure to delete this post?";
 
 
 const CreatePost = (props) => {
-  const [isLoading, setIsLoading] = useState(true);
   const [content, setContent] = useState("");
-  const [tokeninfo, setTokenInfo] = useState([]);
-  const [nickname, setNickName] = useState("");
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [tags, setTags] =useState([]);
-
+  
   useEffect(() => {
-    if (
-      !props.history.location.state ||
-      Object.keys(props.history.location.state).length === 0
-    ) {
+    if(!sessionStorage.getItem('isLogin')){
       message.error("로그인이 필요합니다.");
       return props.history.push("/login");
+    }else{
+      const res = Verify(JSON.parse(sessionStorage.getItem('token_info')).access_token, JSON.parse(sessionStorage.getItem('token_info')).token_type, props);
+      res.then((result)=>{
+        if(result !== undefined){
+          try{
+            const token_type = JSON.parse(sessionStorage.getItem('token_info')).token_type;
+            sessionStorage.removeItem('token_info');
+            sessionStorage.setItem('token_info',JSON.stringify({'token_type':token_type, 'access_token':result.access_token}));
+          }catch{}
+          }
+       })
     }
-    if (isLoading) {
-      setNickName(props.history.location.state.nickname);
-      setIsLoading(false);
-    }
-    const {
-      access_token,
-      g_access_token,
-      k_access_token,
-    } = props.history.location.state;
-    if (access_token) {
-      Verify(access_token, "local", props);
-      setTokenInfo({ access_token: access_token, type: "local" });
-    } else if (g_access_token) {
-      Verify(g_access_token, "google", props);
-      setTokenInfo({ access_token: g_access_token, type: "google" });
-    } else if (k_access_token) {
-      Verify(k_access_token, "kakao", props);
-      setTokenInfo({ access_token: k_access_token, type: "kakao" });
-    }
-  }, [props, isLoading]);
+  }, [props]);
 
   const contentHandleChange = (value)=>{
       setContent(value);
@@ -71,11 +51,10 @@ const CreatePost = (props) => {
     console.log(category);
     console.log(tags);
     console.log(content);
-    console.log(nickname);
     const res = await axios.post("/post",{
       title:title,
       content:content,
-      writer:nickname,
+      writer:JSON.parse(sessionStorage.getItem('user')).nickname,
       tags:tags.values,
       category:category
     })
@@ -114,7 +93,7 @@ const CreatePost = (props) => {
 
   return (
     <div className="total__container">
-      {isLoading ? <></> : <Header tokeninfo={tokeninfo} nickname={nickname} history={props.history} />}
+      <Header {...props} />
       <section className="write__container">
         <form className="writeForm" onSubmit={onTest}>
         <div className="container__title">

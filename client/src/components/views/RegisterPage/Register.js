@@ -19,6 +19,7 @@ import bcrypt from "bcryptjs";
 import logo from "./logo.png";
 import "./Register.css";
 import axios from "axios";
+import Tags from "../../libs/EditableTagGroup";
 
 function RegistrationPage(props) {
   const [form] = Form.useForm();
@@ -34,6 +35,7 @@ function RegistrationPage(props) {
   const [loading, setLoading] = useState(false);
   const [is_email_vaild, setIsEmailVaild] = useState(false);
   const [is_nick_vaild, setIsNickVaild] = useState(false);
+  const [hashTags, setHashTags] = useState([]);
   const emailInput = useRef();
   const nickInput = useRef();
 
@@ -47,7 +49,8 @@ function RegistrationPage(props) {
     }
   };
   const onFinish = (values) => {
-    const result = Object.assign({ imageUrl: imageUrl }, values);
+    console.log(hashTags);
+    const result = Object.assign({ imageUrl: imageUrl, hashTags:hashTags.values }, values);
     if (!email_checked)
       return message.error({
         content: "이메일 중복체크를 실시해주시기 바랍니다.",
@@ -148,6 +151,10 @@ function RegistrationPage(props) {
       });
     }
   };
+  const tagHandleChange = (values)=>{
+    setHashTags({values});
+    console.log(values);
+  }
   const uploadButton = (
     <div>
       {loading ? <LoadingOutlined /> : <PlusOutlined />}
@@ -169,6 +176,7 @@ function RegistrationPage(props) {
             scrollToFirstError
           >
             <Form.Item label="아이콘">
+              <div style={{display:"table", marginLeft:"auto", marginRight:"auto",paddingRight:"2vw"}}>
               <Upload
                 listType="picture-card"
                 className="avatar-uploader"
@@ -183,6 +191,7 @@ function RegistrationPage(props) {
                   uploadButton
                 )}
               </Upload>
+              </div>
             </Form.Item>
             <Form.Item
               label="이메일"
@@ -360,7 +369,11 @@ function RegistrationPage(props) {
                 </Button>
               </Form.Item>
             </Form.Item>
-
+            <Form.Item
+            name="hashtag"
+            label="관심 분야">
+               <Tags tags={hashTags} onTagsChange={tagHandleChange} className="tgs" />
+            </Form.Item>
             <Form.Item
               name="agreement"
               valuePropName="checked"

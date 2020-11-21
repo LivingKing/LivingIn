@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CSSTransition } from "react-transition-group";
 import {
   Comment,
@@ -23,7 +23,8 @@ import moment from "moment";
 import "./Detail.css";
 
 import Header from "../../libs/Header/Header";
-
+import axios from "axios";
+import parse from 'html-react-parser'
 const { TextArea } = Input;
 
 const CommentList = ({ comments }) => (
@@ -53,7 +54,7 @@ const Editor = ({ onChange, onSubmit, submitting, value }) => (
   </>
 );
 
-const Detail = () => {
+const Detail = (props) => {
   const [visible, setVisible] = useState(false); // 댓글창 눌렀는지
   const [comments, setComments] = useState([]); // 댓글 state
   const [submitting, setSubmitting] = useState(false); // 댓글 달기 요청 중인지
@@ -64,9 +65,43 @@ const Detail = () => {
   const [dislikes, setDisLikes] = useState(0); // 싫어요 수
   const [value, setValue] = useState(""); // 댓글 입력 메시지
 
-  React.useEffect(() => {
-    console.log("hi");
-  }, [comments, islike, isdislike]);
+  const [id, setId] = useState("");
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [writer, setWriter] = useState("");
+  const [category, setCategory] = useState("");
+  const [created_at, setCreated_At] = useState("");
+  const [hits, setHits] = useState(0);
+  
+  const [isLoading, setIsLoading] = useState(true);
+
+  const getPost = async() =>{
+    const res = await axios.get(`/api/getPost?id=${props.match.params.id}`)
+    if(res.status===200)
+      return res.data;
+    
+  }
+  
+  useEffect(() => {
+    if(isLoading){
+      const fetchPost = async()=>{
+        const post = await getPost();
+        setTitle(post.title);
+        setContent(post.content);
+        setWriter(post.writer);
+        setCategory(post.category);
+        setCreated_At(post.created_at);
+        setHits(post.hits);
+      }
+      fetchPost();
+      setId(props.match.params.id);
+      setIsLoading(false);
+    }
+  }, [getPost, isLoading, props.match.params.id]);
+
+
+  
+
   const toggle = () => {
     setVisible(!visible);
   };
@@ -109,80 +144,14 @@ const Detail = () => {
       <Header />
       <content>
         <div className="backimg">
-          <h3 className="cate">Category</h3>
-          <h1 className="title_text"> 게시물보기페이지입니다</h1>
-          <div className="nick_box">닉네임</div>
-          <span className="date">2020.09.01 19:20 </span>
-          <span className="count">조회 13</span>
+          <h3 className="cate">{category}</h3>
+          <h1 className="title_text"> {title}</h1>
+          <div className="nick_box">{writer}</div>
+          <span className="date">{created_at}</span>
+          <span className="count">조회 {hits}</span>
           <div className="backcover"></div>
         </div>
-        <div id="rectangle">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat error
-          dignissimos veniam excepturi accusantium earum accusamus tempore
-          cupiditate obcaecati cum, reiciendis consequatur quibusdam
-          exercitationem mollitia id doloremque? Sit, excepturi inventore. Lorem
-          ipsum dolor sit amet consectetur adipisicing elit. Quaerat error
-          dignissimos veniam excepturi accusantium earum accusamus tempore
-          cupiditate obcaecati cum, reiciendis consequatur quibusdam
-          exercitationem mollitia id doloremque? Sit, excepturi
-          inventore.sasdsadasdasdasdasdsa
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-          <p>a</p>
-        </div>
+        <div id="rectangle">{parse(content)}</div>
         <div style={{ display: "flex", justifyContent: "space-around" }}></div>
 
         <BackTop />

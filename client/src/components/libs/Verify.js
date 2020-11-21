@@ -17,23 +17,12 @@ const Verify = async (token, token_type, props) => {
       "로그인이 필요합니다.",
       2,
       props.history.push("/login")
-    );
-  }
+      );
+    }
   const re_token = res.data.result.access_token;
-  const { type } = res.data.result;
+  
   if (re_token) {
-    if (type === "local")
-      props.history.replace({
-        state: { access_token: re_token },
-      });
-    else if (type === "kakao")
-      props.history.replace({
-        state: { k_access_token: re_token },
-      });
-    else if (type === "google")
-      props.history.replace({
-        state: { g_access_token: re_token },
-      });
+    return {access_token:re_token};
   }
 };
 

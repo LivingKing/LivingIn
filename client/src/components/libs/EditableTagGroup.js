@@ -106,15 +106,16 @@ class EditableTagGroup extends React.Component {
               />
             );
           }
-
           const isLongTag = tag.length > 20;
           const tagElem = (
             <Tag
               className="edit-tag"
               key={tag}
-              closable={index !== 0}
+              closable={true}
+              color={tagColor[this.state.tags.indexOf(tag)%tagColor.length]}
               onClose={() => this.handleClose(tag)}
             >
+              
               <span
                 onDoubleClick={(e) => {
                   if (index !== 0) {

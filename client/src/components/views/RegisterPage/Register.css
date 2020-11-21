@@ -2,8 +2,8 @@
   display: grid;
   justify-content: center;
   align-items: center;
-  grid-template-rows: 0.04fr 0.6fr;
-  grid-template-columns: 0.4fr 0.3fr 0.4fr;
+  grid-template-rows: 0.01fr 0.3fr;
+  grid-template-columns: 0.4fr 0.4fr 0.4fr;
 }
 
 .Register .container {
@@ -19,11 +19,11 @@
 }
 
 .container .logo {
-  width: 60%;
+  width: 50%;
   pointer-events: none;
   margin-bottom: 3vh;
 }
 .container .RegisterForm {
   margin: 0 auto;
-  width: 40vh;
+  width: 60vh;
 }

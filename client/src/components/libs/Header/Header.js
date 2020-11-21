@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Popover,Button } from "antd";
+import { Popover } from "antd";
 import { UserOutlined, CaretDownOutlined } from "@ant-design/icons";
 import "./Header.css";
 import UserInfo from "./UserInfo.js";
+import QuickSearch from "./Drawer";
 
 function Header(props) {
   // 스크롤 시 헤더 색 변경
@@ -17,38 +18,32 @@ function Header(props) {
   });
 
   const content = (
-    <UserInfo nickname={props.nickname} tokeninfo={props.tokeninfo} />
+    <UserInfo {...props} />
   );
 
   return (
     <header className={scroll ? "header" : "header_scroll"}>
-      <a className="header__mainhome" href="/">
-        자취인
+      <section className="headermain">
+        <a className="header__mainhome" href="/">
+          자취인
       </a>
-      <Button
-                  type="text"
-                  className="logout"
-                  style={{color:"white"}}
-                  onClick={() => {
-                    console.log(props);
-                    return props.history.push({
-                      pathname: "/write",
-                      state: { tokeninfo: props.tokeninfo, nickname: props.nickname },
-                    });
-                  }}
-                >
-                글쓰기
-          </Button>
-      <UserOutlined className="header__person" />
-      <Popover
-        placement="bottomRight"
-        content={content}
-        trigger="hover"
-        className="top"
-      >
-        <CaretDownOutlined className="header__info" />
-      </Popover>
+      
+        <Popover
+          placement="bottomRight"
+          content={content}
+          trigger="hover"
+          className="top"
+        >
+          <CaretDownOutlined className="header__info" />
+        </Popover>
+        <UserOutlined className="header__person" />
+      
+        <QuickSearch/>
+      </section>
+
+      
     </header>
+    
   );
 }
 

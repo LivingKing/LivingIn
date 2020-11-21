@@ -7,7 +7,8 @@ const config = require("../config/config");
 const moment = require("moment");
 
 router.post("/", (req, res) => {
-  const { email, password, nickname, imageUrl, name, birthday } = req.body;
+  const { email, password, nickname, imageUrl, name, birthday, hashTags } = req.body;
+  console.log(hashTags);
   const create = (user) => {
     if (user) throw new Error("username exists");
     return User.create(
@@ -16,7 +17,8 @@ router.post("/", (req, res) => {
       nickname,
       imageUrl,
       name,
-      moment(birthday).format("yyyy-MM-DD")
+      moment(birthday).format("yyyy-MM-DD"),
+      hashTags,
     );
   };
   const respond = (user) => {
@@ -89,6 +91,7 @@ router.post("/kakao", (req, res) => {
       "",
       post.profile.properties.nickname,
       post.profile.properties.profile_image,
+      [],
       post.profile.id
     );
   };

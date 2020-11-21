@@ -28,8 +28,7 @@ const Post = (props) => {
           zIndex: "201",
         }}
         to={{
-          pathname: "/detail",
-          search: `?id=${props.id}`,
+          pathname: `/detail/${props.id}`,
         }}
       />
       <div className="post__category">

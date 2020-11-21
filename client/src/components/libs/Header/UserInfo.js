@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Avatar, message, Card } from "antd";
+import { Avatar, Card } from "antd";
 import {
   EditOutlined,
   EllipsisOutlined,
@@ -15,51 +15,19 @@ function UserInfo(props) {
   // 유저 아이콘 이메일 저장
   const [icon, setIcon] = useState("");
   const [email, setEmail] = useState("");
-
-  // 새로고침 등 다시 불러올때 저장용
-  const dataSave={
-    iconData: "",
-    emailData: ""
-  };
+  const [nickname,setNick] = useState("");
 
   useEffect(() => {
     // 올렸을 때 & 유저정보 불러온적 있을때
-    if (isLoading && localStorage.onSave === "1"){
+    if (isLoading && sessionStorage.isLogin === "1"){
       console.log("reload");
-      setIcon(JSON.parse(localStorage.dataSave).iconData);
-      setEmail(JSON.parse(localStorage.dataSave).emailData);
-      setIsLoading(false);
-    } // localStorage에서 값 가져옴
-
-    // 올렸을 때 & 처음 불러올 때
-    else if (isLoading && localStorage.onSave === "0") {
-      const onLoad = async () => {
-        console.log("first load");
-        const res = await fetch(`/api/getUserIcon?nickname=${props.nickname}`, {
-          method: "GET",
-        });
-        if (res.status === 200) {
-          const result = await res.json();
-          if (!result) {
-            setIcon();
-            setEmail("(일반로그인만 작동됨)");
-          } else {
-            setIcon(result.icon);
-            setEmail(result.email);
-          } // 서버에서 유저 정보 가져옴
-          dataSave.iconData = result.icon;
-          dataSave.emailData = result.email;
-          localStorage.dataSave = JSON.stringify(dataSave);
-          localStorage.onSave = 1;
-          // localstorage에 유저정보 저
-        } else {
-          message.error("불러오기 실패!");
-        }
-      };
-      onLoad();
+      const user = JSON.parse(sessionStorage.getItem("user"));
+      setIcon(user.icon);
+      setEmail(user.email);
+      setNick(user.nickname);
       setIsLoading(false);
     }
-  }, [props, isLoading, dataSave]);
+  }, [props, isLoading]);
 
   const { Meta } = Card;
 
@@ -77,21 +45,32 @@ function UserInfo(props) {
         >
           <SettingOutlined key="setting" />
         </Link>,
-        <EditOutlined key="edit" />,
+        <EditOutlined key="edit"
+
+        type="text"
+        className="header__write"
+        onClick={() => {
+          console.log(props);
+          return props.history.push({
+            pathname: "/write",
+          });
+        }}
+      />
+      ,
         <EllipsisOutlined key="ellipsis" />,
       ]}
     >
       <Meta
         avatar={
           icon === ""? (
-            <Avatar>{props.nickname}</Avatar>
+            <Avatar>{nickname}</Avatar>
           ) : (
             <Avatar size="large" src={icon}>
-              {props.nickname}
+              {nickname}
             </Avatar>
           )
         }
-        title={props.nickname + "님 환영환영^^*."}
+        title={nickname + "님 환영환영^^*."}
         description={email}
       />
     </Card>

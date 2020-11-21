@@ -24,7 +24,7 @@ const userSchema = new Schema({
   created_At: { type: Date, default: getCurrentDate() },
   social_id: { type: String },
   icon: String,
-  favorite_HashTag: String,
+  hashTags: {type:Array},
   refresh_token: String,
   is_admin: { type: Boolean, required: true, default: false },
   is_active: { type: Boolean, required: true, default: false },
@@ -37,6 +37,7 @@ userSchema.statics.create = function (
   icon,
   name,
   birthday,
+  hashTags,
   social_id,
   is_admin
 ) {
@@ -47,6 +48,7 @@ userSchema.statics.create = function (
     icon,
     name,
     birthday,
+    hashTags,
     social_id,
     is_admin,
   });

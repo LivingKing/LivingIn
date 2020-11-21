@@ -3,6 +3,12 @@
   background-color: white;
 }
 
-.test::-webkit-scrollbar {
-  width: 0.1px;
+/*포스트 부분 스크롤바 안보이게*/
+.Scrollbar {
+  overflow: hidden;
+  flex-direction: row;
+}
+
+.ant-layout-content-children {
+  flex-direction: row;
 }

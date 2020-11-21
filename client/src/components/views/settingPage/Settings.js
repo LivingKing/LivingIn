@@ -20,6 +20,7 @@ import "./Settings.css";
 import bcrypt from "bcryptjs";
 import axios from "axios";
 import moment from "moment";
+import Tags from "../../libs/EditableTagGroup";
 
 const Settings = (props) => {
   const [form] = Form.useForm();
@@ -36,6 +37,8 @@ const Settings = (props) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isPwChange, setIsPwChange] = useState(false);
   const [isNickChange, setIsNickChange] = useState(false);
+  const [isTagChange, setIsTagChnage] = useState(false);
+  const [hashTags, setHashTags] = useState([]);
   const emailInput = useRef();
   const nickInput = useRef();
 
@@ -43,13 +46,14 @@ const Settings = (props) => {
 
   useEffect(() => {
     const getUserInfo = async () => {
-      const { access_token, type } = props.history.location.state.tokeninfo;
+      const { access_token, token_type } = JSON.parse(sessionStorage.getItem('token_info'));
       const result = await axios(
-        `http://localhost:8000/api/userinfo?access_token=${access_token}&type=${type}`
+        `http://localhost:8000/api/userinfo?access_token=${access_token}&type=${token_type}`
       );
       setImageUrl(result.data.user.icon);
       result.data.user.birthday = moment(result.data.user.birthday);
       setUserInfo(result.data.user);
+      setHashTags(result.data.user.hashTags);
       setIsLoading(false);
     };
     if (isLoading) getUserInfo();
@@ -78,6 +82,9 @@ const Settings = (props) => {
         if (err) throw err;
         result = Object.assign(result, { password: res });
       });
+    }
+    if(isTagChange){
+      result = Object.assign(result,{hashTags:hashTags});
     }
     if (result) {
       const res = await axios.post("/update", result);
@@ -143,6 +150,11 @@ const Settings = (props) => {
       });
     }
   };
+  const tagHandleChange = (values)=>{
+    setHashTags({values});
+    setIsTagChnage(true);
+    console.log(values);
+  }
   const uploadButton = (
     <div>
       {loading ? (
@@ -397,6 +409,11 @@ const Settings = (props) => {
                     </>
                   )}
                 </Form.Item>
+                <Form.Item
+            name="hashtag"
+            label="관심 분야">
+               <Tags tags={hashTags} onTagsChange={tagHandleChange} />
+            </Form.Item>
               </Form>
             </div>
           </div>

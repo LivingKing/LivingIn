@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Spin, message } from "antd";
 
 function Login_Callback(props) {
+
   useEffect(() => {
     let params = props.history.location.search.split("=");
     params = params[1].split("&");
@@ -18,14 +19,22 @@ function Login_Callback(props) {
       })
       .then((res) => {
         if (res.message === "logged in successfully") {
-          message.info(res.nickname + "님 반갑습니다!", 1);
-          return props.history.push({
-            pathname: "/",
-            state: { g_access_token: res.access_token, nickname: res.nickname },
-          });
+          new Promise((resolve,reject)=>{
+            console.log(res);
+            sessionStorage.setItem('isLogin', 1);
+          sessionStorage.setItem('user',JSON.stringify({email:res.email, nickname:res.nickname, icon:res.icon}));
+          sessionStorage.setItem('token_info',JSON.stringify({token_type:'google',access_token:res.access_token}));
+            resolve(1);
+          }).then((value)=>{
+            if(value ===1){
+              message.info(res.nickname + "님 반갑습니다!", 1);
+              return props.history.push('/');
+            }
+          })
         }
       });
   });
+  
   return (
     <div>
       <Spin size="large" />

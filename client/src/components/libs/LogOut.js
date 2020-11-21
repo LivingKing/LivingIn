@@ -1,24 +1,19 @@
 import axios from "axios";
+import { message } from "antd";
 const LogOut = async (props) => {
-  let result = "";
-  const { access_token, g_access_token, k_access_token } = props.location.state;
-  let token, url;
-  if (access_token) {
-    token = access_token;
+  let url;
+  const {token_type, access_token} = JSON.parse(sessionStorage.getItem('token_info'));
+  if (token_type === 'local') {
     url = "/auth/logout/";
-  } else if (g_access_token) {
-    token = g_access_token;
+  } else if (token_type === 'google') {
     url = "auth/google/logout";
-  } else if (k_access_token) {
-    token = k_access_token;
+  } else if (token_type === 'kakao') {
     url = "auth/kakao/logout";
   }
-
-  result = await axios.post(url, { access_token: token });
-  if (result.data.success)
-    props.history.replace({
-      state: {},
-    });
+  sessionStorage.clear();
+  await axios.post(url, { access_token: access_token });
+  message.success("로그아웃 완료!", 1);
+  return props.history.push("/login");
 };
 
 export default LogOut;
