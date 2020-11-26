@@ -45,10 +45,7 @@ const Post = (props) => {
         <div className="info__detail1">
           <p className="post__title">{props.title}</p>
           <span className="post__content">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Culpa
-            temporibus earum in optio aliquam quaerat sapiente ab! Fugit illum
-            non optio perferendis ut nemo necessitatibus. Odio nihil quas
-            necessitatibus illum.
+            {props.content}
           </span>
         </div>
         <div className="info__detail2">
@@ -67,8 +64,9 @@ const Post = (props) => {
             <span>{props.comments}</span>
           </div>
         </div>
+        <div className="abcabc"></div>
       </div>
-
+      
       <div className="post__like">
         <span className="like__icon" onClick={() => setLiked(!liked)}>
           <svg
@@ -80,7 +78,9 @@ const Post = (props) => {
           </svg>
         </span>
       </div>
+      
     </div>
+    
   );
 };
 

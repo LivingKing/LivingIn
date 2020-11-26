@@ -106,6 +106,14 @@ router.get("/getPostList", (req, res) => {
   }).sort({created_At:-1}).limit(5);
 });
 
+router.get("/getBoardPost", (req, res) => {
+  Post.find({}, (err, post) => {
+    if (err) throw err;
+    console.log(post);
+    res.status(200).json(post);
+  }).sort({created_At:-1});
+});
+
 router.get("/getCategoryPost", async (req, res) => {
   const { category } = req.query;
 

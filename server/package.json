@@ -9,7 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "pm2 start main.js --watch --no-daemon",
-    "stop" : "pm2 kill"
+    "stop": "pm2 kill"
   },
   "author": "",
   "license": "ISC",
