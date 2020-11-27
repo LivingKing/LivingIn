@@ -7,8 +7,8 @@ import ModalButton from "./Modal/ModalButton.js";
 import NewPost from "./Post/NewPost";
 import { PlusOutlined } from "@ant-design/icons";
 import CategoryPost from "./Post/CategoryPost";
-import Header from '../../libs/Header/Header'
-import Footer from '../../libs/Footer/Footer'
+import Header from "../../libs/Header/Header";
+import Footer from "../../libs/Footer/Footer";
 import LogOut from "../../libs/LogOut";
 
 function MainPage(props) {
@@ -18,22 +18,32 @@ function MainPage(props) {
     if (isLoading) {
       setIsLoading(false);
     }
-    if(!sessionStorage.isLogin){
+    if (!sessionStorage.isLogin) {
       message.error("로그인이 필요합니다.");
       return props.history.push("/login");
-    }else{
-      const res = Verify(JSON.parse(sessionStorage.getItem('token_info')).access_token, JSON.parse(sessionStorage.getItem('token_info')).token_type, props);
-      res.then((result)=>{
-        if(result !== undefined){
-          try{
-            const token_type = JSON.parse(sessionStorage.getItem('token_info')).token_type;
-            sessionStorage.removeItem('token_info');
-            sessionStorage.setItem('token_info',JSON.stringify({'token_type':token_type, 'access_token':result.access_token}));
-          }catch{}
-          }
-       })
+    } else {
+      const res = Verify(
+        JSON.parse(sessionStorage.getItem("token_info")).access_token,
+        JSON.parse(sessionStorage.getItem("token_info")).token_type,
+        props
+      );
+      res.then((result) => {
+        if (result !== undefined) {
+          try {
+            const token_type = JSON.parse(sessionStorage.getItem("token_info"))
+              .token_type;
+            sessionStorage.removeItem("token_info");
+            sessionStorage.setItem(
+              "token_info",
+              JSON.stringify({
+                token_type: token_type,
+                access_token: result.access_token,
+              })
+            );
+          } catch {}
+        }
+      });
     }
-
   }, [isLoading, props]);
 
   // 메인 젤 위 메뉴이동
@@ -59,38 +69,62 @@ function MainPage(props) {
               {isLoading ? (
                 <div></div>
               ) : (
-                  <div>
-                    <a
-                      className="logout"
-                      onClick={() => {
-                        LogOut(props);
-                      }}
-                    >
-                      로그아웃
-                </a>
-                  </div>
-                )}
+                <div>
+                  <a
+                    className="logout"
+                    onClick={() => {
+                      LogOut(props);
+                    }}
+                  >
+                    로그아웃
+                  </a>
+                </div>
+              )}
               <Menu
                 onClick={handleClick}
                 selectedKeys={[now]}
                 mode="horizontal"
               >
-                <Menu.Item key="요리" className="content_title">
-                  <b>요리</b>
-                </Menu.Item>
-                <Menu.Item key="가전" className="content_title">
-                  <b>가전</b>
-                </Menu.Item>
-                <Menu.Item key="생활" className="content_title">
-                  <b>생활</b>
-                </Menu.Item>
-                <Menu.Item key="욕실" className="content_title">
-                  <b>욕실</b>
-                </Menu.Item>
+                {now === "요리" ? (
+                  <Menu.Item key="요리" className="content_title_select">
+                    <b>요리</b>
+                  </Menu.Item>
+                ) : (
+                  <Menu.Item key="요리" className="content_title">
+                    <b>요리</b>
+                  </Menu.Item>
+                )}
+
+                {now === "가전" ? (
+                  <Menu.Item key="가전" className="content_title_select">
+                    <b>가전</b>
+                  </Menu.Item>
+                ) : (
+                  <Menu.Item key="가전" className="content_title">
+                    <b>가전</b>
+                  </Menu.Item>
+                )}
+
+                {now === "생활" ? (
+                  <Menu.Item key="생활" className="content_title_select">
+                    <b>생활</b>
+                  </Menu.Item>
+                ) : (
+                  <Menu.Item key="생활" className="content_title">
+                    <b>생활</b>
+                  </Menu.Item>
+                )}
+
+                {now === "욕실" ? (
+                  <Menu.Item key="욕실" className="content_title_select">
+                    <b>욕실</b>
+                  </Menu.Item>
+                ) : (
+                  <Menu.Item key="욕실" className="content_title">
+                    <b>욕실</b>
+                  </Menu.Item>
+                )}
               </Menu>
-
-
-
             </header>
 
             <div className="margin"></div>
@@ -147,7 +181,7 @@ function MainPage(props) {
       <div className="box2"></div>
 
       {/* footer */}
-      <Footer/>
+      <Footer />
     </div>
   );
 }

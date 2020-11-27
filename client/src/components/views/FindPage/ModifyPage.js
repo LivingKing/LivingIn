@@ -11,7 +11,7 @@ const ModifyPage = (props) => {
       if (err) throw err;
       values.password = result;
       values.confirm = result;
-      const res = await Axios.post("http://localhost:8000/auth/modify", {
+      const res = await Axios.put("http://localhost:8000/users", {
         token: params[1],
         password: values.password,
       });

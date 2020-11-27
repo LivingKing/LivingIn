@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { CSSTransition } from "react-transition-group";
 import {
   Comment,
@@ -9,6 +9,7 @@ import {
   Avatar,
   BackTop,
   Skeleton,
+  Tag,
 } from "antd";
 import {
   DownOutlined,
@@ -19,14 +20,37 @@ import {
   DislikeFilled,
 } from "@ant-design/icons";
 // import BackTop from "../../libs/BackTopButton";
-import moment from "moment";
 import "./Detail.css";
 
 import Header from "../../libs/Header/Header";
 import axios from "axios";
-import parse from 'html-react-parser'
+import parse from "html-react-parser";
+import getFormatDate from "../../libs/getFormatDate";
 const { TextArea } = Input;
 
+const timeForToday = (value) => {
+  const today = new Date();
+  let timeValue = new Date(value);
+  const betweenTime = Math.floor(
+    (today.getTime() - timeValue.getTime()) / 1000 / 60
+  );
+  if (betweenTime < 1) return "방금전";
+  if (betweenTime < 60) {
+    return `${betweenTime}분전`;
+  }
+
+  const betweenTimeHour = Math.floor(betweenTime / 60);
+  if (betweenTimeHour < 24) {
+    return `${betweenTimeHour}시간전`;
+  }
+
+  const betweenTimeDay = Math.floor(betweenTime / 60 / 24);
+  if (betweenTimeDay < 365) {
+    return `${betweenTimeDay}일전`;
+  }
+
+  return `${Math.floor(betweenTimeDay / 365)}년전`;
+};
 const CommentList = ({ comments }) => (
   <List
     dataSource={comments}
@@ -72,59 +96,97 @@ const Detail = (props) => {
   const [category, setCategory] = useState("");
   const [created_at, setCreated_At] = useState("");
   const [hits, setHits] = useState(0);
-  
+  const [hashTags, setHashTags] = useState([]);
+
   const [isLoading, setIsLoading] = useState(true);
 
-  const getPost = async() =>{
-    const res = await axios.get(`/api/getPost?id=${props.match.params.id}`)
-    if(res.status===200)
-      return res.data;
-    
-  }
-  
+  const getPost = async () => {
+    const res = await axios.get(`/posts`, {
+      params: {
+        id: props.match.params.id,
+      },
+    });
+    if (res.status === 200) return res.data;
+  };
+
+  const getComment = useCallback(async () => {
+    const res = await axios.get("/comments", {
+      params: {
+        post_id: props.match.params.id,
+      },
+    });
+    if (res.status === 200) {
+      let result = [];
+      for (let i = 0; i < res.data.length; i++) {
+        result.push({
+          author: res.data[i].writer,
+          avatar: res.data[i].icon,
+          content: <p>{res.data[i].content}</p>,
+          datetime: timeForToday(getFormatDate(res.data[i].created_At)),
+        });
+      }
+      return result;
+    }
+  });
+
   useEffect(() => {
-    if(isLoading){
-      const fetchPost = async()=>{
+    if (isLoading) {
+      const fetchPost = async () => {
         const post = await getPost();
+        console.log(post);
+        await post.hash_Tags.map((value) => hashTags.push(value));
         setTitle(post.title);
         setContent(post.content);
         setWriter(post.writer);
         setCategory(post.category);
-        setCreated_At(post.created_at);
+        setCreated_At(getFormatDate(post.created_At));
         setHits(post.hits);
-      }
+      };
       fetchPost();
       setId(props.match.params.id);
       setIsLoading(false);
     }
-  }, [getPost, isLoading, props.match.params.id]);
-
-
-  
+    if (isCommentLoading) {
+      const fetchComment = async () => {
+        const comment = await getComment();
+        if (comment.length !== 0) setComments(comment);
+      };
+      fetchComment();
+      setIsCommentLoading(false);
+    }
+  }, [
+    comments,
+    getComment,
+    getPost,
+    hashTags,
+    isCommentLoading,
+    isLoading,
+    props.match.params.id,
+  ]);
 
   const toggle = () => {
     setVisible(!visible);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!value) {
       return;
     }
-
     setSubmitting(true);
 
     setSubmitting(false);
     setValue("");
-    setComments([
-      {
-        author: "Han Solo",
-        avatar:
-          "https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png",
-        content: <p>{value}</p>,
-        datetime: moment().fromNow(),
-      },
-      ...comments,
-    ]);
+    const res = await axios.post("/comments", {
+      post_id: id,
+      content: value,
+      access_token: JSON.parse(sessionStorage.getItem("token_info"))
+        .access_token,
+      token_type: JSON.parse(sessionStorage.getItem("token_info")).token_type,
+    });
+    if (res.status === 200) {
+      const comment = await getComment();
+      setComments(comment);
+    }
   };
 
   const handleChange = (e) => {
@@ -138,7 +200,6 @@ const Detail = (props) => {
     if (islike) setIsLike(!islike);
     setIsdislike(!isdislike);
   };
-
   return (
     <section className="view__container">
       <Header />
@@ -147,8 +208,14 @@ const Detail = (props) => {
           <h3 className="cate">{category}</h3>
           <h1 className="title_text"> {title}</h1>
           <div className="nick_box">{writer}</div>
-          <span className="date">{created_at}</span>
+          <span className="date">{created_at} </span>
           <span className="count">조회 {hits}</span>
+          <div className="hashtag">
+            {hashTags.map((tag, i) => (
+              <Tag key={i}>{tag}</Tag>
+            ))}
+          </div>
+
           <div className="backcover"></div>
         </div>
         <div id="rectangle">{parse(content)}</div>
@@ -190,7 +257,7 @@ const Detail = (props) => {
               </li>
               <li className="menu__list">
                 <CommentOutlined className="menu__icon" onClick={toggle} />
-                <h3>0</h3>
+                <h3>{comments.length}</h3>
               </li>
             </ul>
           </div>
@@ -211,10 +278,18 @@ const Detail = (props) => {
             <Comment
               className="comment__box"
               avatar={
-                <Avatar
-                  src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-                  alt="Han Solo"
-                />
+                JSON.parse(sessionStorage.getItem("user")).icon === "" ? (
+                  <Avatar>
+                    {JSON.parse(sessionStorage.getItem("user")).nickname}
+                  </Avatar>
+                ) : (
+                  <Avatar
+                    size="large"
+                    src={JSON.parse(sessionStorage.getItem("user")).icon}
+                  >
+                    {JSON.parse(sessionStorage.getItem("user")).nickname}
+                  </Avatar>
+                )
               }
               content={
                 <Editor

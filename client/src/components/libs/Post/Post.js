@@ -23,8 +23,8 @@ const Post = (props) => {
       <Link
         style={{
           position: "absolute",
-          width: "300px",
-          height: "450px",
+          width: "610px",
+          height: "400px",
           zIndex: "201",
         }}
         to={{
@@ -44,12 +44,7 @@ const Post = (props) => {
       <div className="post__info">
         <div className="info__detail1">
           <p className="post__title">{props.title}</p>
-          <span className="post__content">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Culpa
-            temporibus earum in optio aliquam quaerat sapiente ab! Fugit illum
-            non optio perferendis ut nemo necessitatibus. Odio nihil quas
-            necessitatibus illum.
-          </span>
+          <span className="post__content">{props.content}</span>
         </div>
         <div className="info__detail2">
           <ul className="post__hashtag">
@@ -68,7 +63,7 @@ const Post = (props) => {
           </div>
         </div>
       </div>
-
+      <div className="abcabc"></div>
       <div className="post__like">
         <span className="like__icon" onClick={() => setLiked(!liked)}>
           <svg

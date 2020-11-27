@@ -19,9 +19,12 @@ const FindPage = () => {
     setActiveKey(activeKey);
   };
   const onIdFinish = async (values) => {
-    const res = await fetch(`/api/user?name=${values.name}&birthday=${date}`, {
-      method: "GET",
-    });
+    const res = await fetch(
+      `/users/forgot/id/?name=${values.name}&birthday=${date}`,
+      {
+        method: "GET",
+      }
+    );
     if (res.status === 200) {
       const result = await res.json();
       setEmail(result);
@@ -33,7 +36,7 @@ const FindPage = () => {
 
   const onPwFinish = async (values) => {
     setEmail(values.email);
-    const res = await fetch(`api/forget/user?email=${values.email}`);
+    const res = await fetch(`users/forgot/password/?email=${values.email}`);
     if (res.status === 200) setPw_find(true);
   };
   const handleChange = (activeKey) => {

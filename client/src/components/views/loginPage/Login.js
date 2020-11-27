@@ -22,7 +22,7 @@ function LoginPage(props) {
   };
 
   const responseGoogle = async () => {
-    const res = await axios("/auth/google", {
+    const res = await axios("/auth/login/google", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -32,7 +32,7 @@ function LoginPage(props) {
   };
 
   const responseKakao = async (values) => {
-    const res = await fetch("/auth/kakao", {
+    const res = await fetch("/auth/login/kakao", {
       method: "POST",
       body: JSON.stringify(values),
       headers: {
@@ -44,22 +44,35 @@ function LoginPage(props) {
     if (res.status === 403) return;
     else {
       if (res.message === "logged in successfully") {
-        new Promise((resolve,reject)=>{
+        new Promise((resolve, reject) => {
           console.log(res);
-          sessionStorage.setItem('isLogin', 1);
-          sessionStorage.setItem('user',JSON.stringify({email:res.email, nickname:res.nickname, icon:res.icon}));
-          sessionStorage.setItem('token_info',JSON.stringify({token_type:'kakao',access_token:res.access_token}));
+          sessionStorage.setItem("isLogin", 1);
+          sessionStorage.setItem(
+            "user",
+            JSON.stringify({
+              email: res.email,
+              nickname: res.nickname,
+              icon: res.icon,
+            })
+          );
+          sessionStorage.setItem(
+            "token_info",
+            JSON.stringify({
+              token_type: "kakao",
+              access_token: res.access_token,
+            })
+          );
           resolve(1);
-        }).then((value)=>{
-          if(value ===1){
+        }).then((value) => {
+          if (value === 1) {
             message.info(res.nickname + "님 반갑습니다!", 1);
-            return props.history.push('/');
+            return props.history.push("/");
           }
-        })
+        });
+      }
     }
   };
-  }
-  
+
   const onFinish = async (values) => {
     let res = await fetch("/auth/login", {
       method: "POST",
@@ -79,20 +92,30 @@ function LoginPage(props) {
       passwordInput.current.focus();
       return message.error("비밀번호가 틀립니다.");
     } else if (res.message === "logged in successfully") {
-      new Promise((resolve,reject)=>{
-          sessionStorage.setItem('isLogin', 1);
-          sessionStorage.setItem('user',JSON.stringify({email:res.email, nickname:res.nickname, icon:res.icon}));
-          sessionStorage.setItem('token_info',JSON.stringify({token_type:'local',access_token:res.access_token}));
+      new Promise((resolve, reject) => {
+        sessionStorage.setItem("isLogin", 1);
+        sessionStorage.setItem(
+          "user",
+          JSON.stringify({
+            email: res.email,
+            nickname: res.nickname,
+            icon: res.icon,
+          })
+        );
+        sessionStorage.setItem(
+          "token_info",
+          JSON.stringify({
+            token_type: "local",
+            access_token: res.access_token,
+          })
+        );
         resolve(1);
-      }).then((value)=>{
-        if(value ===1){
+      }).then((value) => {
+        if (value === 1) {
           message.info(res.nickname + "님 반갑습니다!", 1);
-          return props.history.push('/');
+          return props.history.push("/");
         }
-      })
-        
-      
-     
+      });
     } else {
       return message.error(res.message);
     }
@@ -124,7 +147,9 @@ function LoginPage(props) {
                 ref={emailInput}
                 prefix={<MailOutlined className="site-form-item-icon" />}
                 placeholder="이메일"
-                onChange={(e)=>{setEmail(e.target.value)}}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
               />
             </Form.Item>
             <Form.Item
@@ -145,9 +170,14 @@ function LoginPage(props) {
             </Form.Item>
             <Form.Item>
               <Form.Item name="remember" dependencies={["password"]} noStyle>
-                <Checkbox checked={isRemember} onChange={(e)=>{
-                  setIsRemember(e.target.checked);
-                  }}>ID 저장하기</Checkbox>
+                <Checkbox
+                  checked={isRemember}
+                  onChange={(e) => {
+                    setIsRemember(e.target.checked);
+                  }}
+                >
+                  ID 저장하기
+                </Checkbox>
               </Form.Item>
               <Button type="link" onClick={findUser}>
                 이메일/비밀번호 찾기

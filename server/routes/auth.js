@@ -64,7 +64,7 @@ router.post("/verify", async (req, res) => {
   }
 });
 
-router.post("/google/verify", (req, res) => {
+router.post("/verify/google", (req, res) => {
   const access_token = req.headers["x-access-token"];
   const check_token = () => {
     return new Promise((resolve, reject) => {
@@ -112,7 +112,7 @@ router.post("/google/verify", (req, res) => {
   check_token().then(get_token).then(respond).catch(onError);
 });
 
-router.post("/kakao/verify", (req, res) => {
+router.post("/verify/kakao", (req, res) => {
   const access_token = req.headers["x-access-token"];
   const check_token = () => {
     return new Promise((resolve, reject) => {
@@ -196,7 +196,7 @@ router.post("/login", async (req, res) => {
   };
   const respond = (result) => {
     console.log(result);
-    const { access_token, nickname,email,icon } = result;
+    const { access_token, nickname, email, icon } = result;
     res.status(200).json({
       message: "logged in successfully",
       nickname,
@@ -213,7 +213,7 @@ router.post("/login", async (req, res) => {
 
   User.findOneByEmail(email).then(check).then(respond).catch(onError);
 });
-router.post("/google/callback", (req, res) => {
+router.post("/login/google/callback", (req, res) => {
   const respond = (result) => {
     const { access_token, nickname, email, icon } = result;
     res.status(200).json({
@@ -221,7 +221,7 @@ router.post("/google/callback", (req, res) => {
       access_token,
       nickname,
       email,
-      icon
+      icon,
     });
   };
   axios({
@@ -257,16 +257,22 @@ router.post("/google/callback", (req, res) => {
             },
           });
         }
+        user.access_token = access_token;
         user.refresh_token = refresh_token;
         user.save();
         console.log(user);
-        respond({ nickname: res.data.name, access_token: access_token, email:user.email, icon:user.icon });
+        respond({
+          nickname: res.data.name,
+          access_token: access_token,
+          email: user.email,
+          icon: user.icon,
+        });
       });
     });
   });
 });
 
-router.post("/google", (req, res) => {
+router.post("/login/google", (req, res) => {
   const scopes = "email profile";
   const url = client.generateAuthUrl({
     scope: scopes,
@@ -278,7 +284,7 @@ router.post("/google", (req, res) => {
   res.json({ url: url });
 });
 
-router.post("/kakao", (req, res) => {
+router.post("/login/kakao", (req, res) => {
   const email = req.body.profile.kakao_account.email;
   const check = (user) => {
     if (!user) {
@@ -291,14 +297,15 @@ router.post("/kakao", (req, res) => {
         },
       });
     }
+    user.access_token = req.body.response.access_token;
     user.refresh_token = req.body.response.refresh_token;
     user.save();
     res.status(200).json({
       message: "logged in successfully",
       nickname: req.body.profile.properties.nickname,
       access_token: req.body.response.access_token,
-      email:user.email,
-      icon:user.icon,
+      email: user.email,
+      icon: user.icon,
     });
   };
 
@@ -310,13 +317,14 @@ router.post("/logout", async (req, res) => {
   const verify = await jwt.verify(access_token, config.secret);
   const user = await User.findOneByEmail(verify.email);
   user.refresh_token = "";
+  user.access_token = "";
   await user.save();
-  if (user.refresh_token === "")
+  if (user.refresh_token === "" && user.access_token === "")
     res.status(200).json({ success: true, message: "로그아웃 성공!" });
   else res.status(500).json({ success: false });
 });
 
-router.post("/google/logout", async (req, res) => {
+router.post("/logout/google", async (req, res) => {
   const { access_token } = req.body;
   const userInfo = await axios({
     method: "GET",
@@ -332,8 +340,9 @@ router.post("/google/logout", async (req, res) => {
   if (revoke.status === 200) {
     const user = await User.findOneByEmail(userInfo.data.email);
     user.refresh_token = "";
+    user.access_token = "";
     await user.save();
-    if (user.refresh_token === "")
+    if (user.refresh_token === "" && user.access_token === "")
       res.status(200).json({ success: true, message: "로그아웃 성공!" });
     else onError;
   } else onError;
@@ -342,7 +351,7 @@ router.post("/google/logout", async (req, res) => {
   };
 });
 
-router.post("/kakao/logout", async (req, res) => {
+router.post("/logout/kakao", async (req, res) => {
   const { access_token } = req.body;
   const revoke = await axios({
     method: "POST",
@@ -354,8 +363,9 @@ router.post("/kakao/logout", async (req, res) => {
   if (revoke.status === 200) {
     const user = await User.findOneBySocialId(revoke.data.id);
     user.refresh_token = "";
+    user.access_token = "";
     await user.save();
-    if (user.refresh_token === "")
+    if (user.refresh_token === "" && user.access_token === "")
       res.status(200).json({ success: true, message: "로그아웃 성공!" });
     else onError;
   } else {
@@ -366,16 +376,4 @@ router.post("/kakao/logout", async (req, res) => {
   };
 });
 
-router.post("/modify", async (req, res) => {
-  try {
-    const { token, password } = req.body;
-    const result = await jwt.verify(token, config.secret);
-    const user = await User.findOneByEmail(result.email);
-    user.password = password;
-    user.save();
-    res.status(200).json({ result: "success" });
-  } catch (err) {
-    res.status(404).json({ result: "fail" });
-  }
-});
 module.exports = router;

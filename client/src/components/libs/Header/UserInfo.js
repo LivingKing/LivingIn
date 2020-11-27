@@ -38,24 +38,21 @@ function UserInfo(props) {
         <Link
           to={{
             pathname: "/settings",
-            state: {
-              access_token: props.token,
-            },
           }}
         >
           <SettingOutlined key="setting" />
         </Link>,
-        <EditOutlined key="edit"
+         <Link
+         to={{
+           pathname :"/write",
+         }}
+         >
+           <EditOutlined key="edit"
 
-        type="text"
-        className="header__write"
-        onClick={() => {
-          console.log(props);
-          return props.history.push({
-            pathname: "/write",
-          });
-        }}
-      />
+          type="text"
+          className="header__write"
+          />
+         </Link>
       ,
         <EllipsisOutlined key="ellipsis" />,
       ]}

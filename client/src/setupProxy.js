@@ -16,14 +16,28 @@ module.exports = (app) => {
     })
   );
   app.use(
-    "/create",
+    "/users",
     createProxyMiddleware({
       target: "http://localhost:8000/",
       changeOrigin: true,
     })
   );
   app.use(
-    "/post",
+    "/posts",
+    createProxyMiddleware({
+      target: "http://localhost:8000/",
+      changeOrigin: true,
+    })
+  );
+  app.use(
+    "/comments",
+    createProxyMiddleware({
+      target: "http://localhost:8000/",
+      changeOrigin: true,
+    })
+  );
+  app.use(
+    "/search",
     createProxyMiddleware({
       target: "http://localhost:8000/",
       changeOrigin: true,

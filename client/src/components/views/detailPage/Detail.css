@@ -77,6 +77,10 @@ content {
   top: 270px;
 }
 
+.hashtag {
+  position: relative;
+  top: 270px;
+}
 .outer .menu {
   display: flex;
   justify-content: space-around;

@@ -46,10 +46,13 @@ const Settings = (props) => {
 
   useEffect(() => {
     const getUserInfo = async () => {
-      const { access_token, token_type } = JSON.parse(sessionStorage.getItem('token_info'));
+      const { access_token, token_type } = JSON.parse(
+        sessionStorage.getItem("token_info")
+      );
       const result = await axios(
         `http://localhost:8000/api/userinfo?access_token=${access_token}&type=${token_type}`
       );
+      console.log(result.data);
       setImageUrl(result.data.user.icon);
       result.data.user.birthday = moment(result.data.user.birthday);
       setUserInfo(result.data.user);
@@ -83,8 +86,8 @@ const Settings = (props) => {
         result = Object.assign(result, { password: res });
       });
     }
-    if(isTagChange){
-      result = Object.assign(result,{hashTags:hashTags});
+    if (isTagChange) {
+      result = Object.assign(result, { hashTags: hashTags });
     }
     if (result) {
       const res = await axios.post("/update", result);
@@ -150,11 +153,11 @@ const Settings = (props) => {
       });
     }
   };
-  const tagHandleChange = (values)=>{
-    setHashTags({values});
+  const tagHandleChange = (values) => {
+    setHashTags({ values });
     setIsTagChnage(true);
     console.log(values);
-  }
+  };
   const uploadButton = (
     <div>
       {loading ? (
@@ -409,11 +412,9 @@ const Settings = (props) => {
                     </>
                   )}
                 </Form.Item>
-                <Form.Item
-            name="hashtag"
-            label="관심 분야">
-               <Tags tags={hashTags} onTagsChange={tagHandleChange} />
-            </Form.Item>
+                <Form.Item name="hashtag" label="관심 분야">
+                  <Tags tags={hashTags} onTagsChange={tagHandleChange} />
+                </Form.Item>
               </Form>
             </div>
           </div>

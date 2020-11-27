@@ -50,7 +50,10 @@ function RegistrationPage(props) {
   };
   const onFinish = (values) => {
     console.log(hashTags);
-    const result = Object.assign({ imageUrl: imageUrl, hashTags:hashTags.values }, values);
+    const result = Object.assign(
+      { imageUrl: imageUrl, hashTags: hashTags.values },
+      values
+    );
     if (!email_checked)
       return message.error({
         content: "이메일 중복체크를 실시해주시기 바랍니다.",
@@ -68,7 +71,7 @@ function RegistrationPage(props) {
       if (err) throw err;
       result.password = res;
       result.confirm = res;
-      const res2 = await axios.post("/create", result);
+      const res2 = await axios.post("/users", result);
       if (res2.status === 200) {
         message
           .success(
@@ -125,6 +128,7 @@ function RegistrationPage(props) {
     const reader = new FileReader();
     reader.addEventListener("load", () => callback(reader.result));
     reader.readAsDataURL(img);
+    console.log(reader);
   }
 
   function beforeUpload(file) {
@@ -136,25 +140,21 @@ function RegistrationPage(props) {
     if (!isLt2M) {
       message.error("이미지는 2MB보다 작아야합니다!");
     }
+    console.log(isJpgOrPng, isLt2M);
     return isJpgOrPng && isLt2M;
   }
 
   const handleChange = (info) => {
-    if (info.file.status === "uploading") {
-      setLoading(true);
-      return;
-    }
-    if (info.file.status === "done") {
-      getBase64(info.file.originFileObj, (imageUrl) => {
-        setImageUrl(imageUrl);
-        setLoading(false);
-      });
-    }
+    getBase64(info.file.originFileObj, (imageUrl) => {
+      console.log("done");
+      setImageUrl(imageUrl);
+      setLoading(false);
+    });
   };
-  const tagHandleChange = (values)=>{
-    setHashTags({values});
+  const tagHandleChange = (values) => {
+    setHashTags({ values });
     console.log(values);
-  }
+  };
   const uploadButton = (
     <div>
       {loading ? <LoadingOutlined /> : <PlusOutlined />}
@@ -176,21 +176,31 @@ function RegistrationPage(props) {
             scrollToFirstError
           >
             <Form.Item label="아이콘">
-              <div style={{display:"table", marginLeft:"auto", marginRight:"auto",paddingRight:"2vw"}}>
-              <Upload
-                listType="picture-card"
-                className="avatar-uploader"
-                showUploadList={false}
-                action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-                beforeUpload={beforeUpload}
-                onChange={handleChange}
+              <div
+              // style={{
+              //   display: "table",
+              //   marginLeft: "auto",
+              //   marginRight: "auto",
+              //   paddingRight: "2vw",
+              // }}
               >
-                {imageUrl ? (
-                  <img src={imageUrl} alt="avatar" style={{ width: "100%" }} />
-                ) : (
-                  uploadButton
-                )}
-              </Upload>
+                <Upload
+                  listType="picture-card"
+                  className="avatar-uploader"
+                  showUploadList={false}
+                  beforeUpload={beforeUpload}
+                  onChange={handleChange}
+                >
+                  {imageUrl ? (
+                    <img
+                      src={imageUrl}
+                      alt="avatar"
+                      style={{ width: "100%" }}
+                    />
+                  ) : (
+                    uploadButton
+                  )}
+                </Upload>
               </div>
             </Form.Item>
             <Form.Item
@@ -369,10 +379,12 @@ function RegistrationPage(props) {
                 </Button>
               </Form.Item>
             </Form.Item>
-            <Form.Item
-            name="hashtag"
-            label="관심 분야">
-               <Tags tags={hashTags} onTagsChange={tagHandleChange} className="tgs" />
+            <Form.Item name="hashtag" label="관심 분야">
+              <Tags
+                tags={hashTags}
+                onTagsChange={tagHandleChange}
+                className="tgs"
+              />
             </Form.Item>
             <Form.Item
               name="agreement"

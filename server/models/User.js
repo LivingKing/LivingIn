@@ -12,8 +12,10 @@ const getCurrentDate = () => {
   var minutes = date.getMinutes();
   var seconds = date.getSeconds();
   var milliseconds = date.getMilliseconds();
-  return new Date(Date.UTC(year, month, today, hours, minutes, seconds, milliseconds));
-}
+  return new Date(
+    Date.UTC(year, month, today, hours, minutes, seconds, milliseconds)
+  );
+};
 
 const userSchema = new Schema({
   email: { type: String, required: true, unique: true },
@@ -24,7 +26,7 @@ const userSchema = new Schema({
   created_At: { type: Date, default: getCurrentDate() },
   social_id: { type: String },
   icon: String,
-  hashTags: {type:Array},
+  hashTags: { type: Array },
   refresh_token: String,
   is_admin: { type: Boolean, required: true, default: false },
   is_active: { type: Boolean, required: true, default: false },
