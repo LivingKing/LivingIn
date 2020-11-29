@@ -48,10 +48,14 @@ const Post = (props) => {
         </div>
         <div className="info__detail2">
           <ul className="post__hashtag">
-            {props.hashtags.map((hashtag, index) => {
-              if (index === 2) return <li key={index}></li>;
-              return <li key={index}>#{hashtag}</li>;
-            })}
+            {props.hashtags !== undefined ? (
+              props.hashtags.map((hashtag, index) => {
+                if (index === 2) return <li key={index}></li>;
+                return <li key={index}>#{hashtag}</li>;
+              })
+            ) : (
+              <></>
+            )}
           </ul>
           <div className="post__etc">
             <HeartFilled style={{ fontSize: "20px" }} />

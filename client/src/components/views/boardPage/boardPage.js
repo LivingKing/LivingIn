@@ -8,7 +8,7 @@ import NewCon from "./NewCon.js";
 
 const BoardPage = (props) => {
   const [Loading, setLoading] = useState(true);
-  let [boardList, setboardList] = useState("");
+  let [boardList, setboardList] = useState();
 
   const scrollTop = document.documentElement.scrollTop;
   const clientHeight = document.documentElement.clientHeight;
@@ -43,8 +43,9 @@ const BoardPage = (props) => {
         }
       };
       onLoad();
+      setLoading(false);
     }
-  }, [Loading]);
+  }, [Loading, boardList]);
 
   return (
     <div>

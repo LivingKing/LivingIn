@@ -1,3 +1,4 @@
+const host = require("../config/host");
 module.exports = (nickname, token) => {
   const html = `
     <table width="100%" border="0" cellspacing="0" style="width: 100% !important">
@@ -105,7 +106,7 @@ module.exports = (nickname, token) => {
                           line-height: 24px;
                         "
                       >
-                        <a href="http://localhost:3000/modify?token=${token}"
+                        <a href="${host.clientHost()}/modify?token=${token}"
                         style="color: #067df7; text-decoration: none"
                         target="_blank">변경하기</a>
                       </p>

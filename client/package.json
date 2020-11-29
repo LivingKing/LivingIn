@@ -2,6 +2,7 @@
   "name": "livingin_client",
   "version": "0.1.0",
   "private": true,
+  "state":"DEV",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
@@ -35,6 +36,7 @@
   "eslintConfig": {
     "extends": "react-app"
   },
+  "homepage": "https://livingin.netlify.app",
   "browserslist": {
     "production": [
       ">0.2%",

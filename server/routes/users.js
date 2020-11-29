@@ -5,6 +5,8 @@ const tokenGenerator = require("../libs/tokenGenerator");
 const sendEmail = require("../libs/sendEmail");
 const jwt = require("jsonwebtoken");
 const config = require("../config/config");
+const moment = require("moment");
+const host = require("../config/host");
 
 // 유저 조회 api
 router.get("/", (req, res) => {
@@ -69,20 +71,20 @@ router.delete("/", (req, res) => {
 });
 
 // 로컬 유저 생성 api
-router.post("/", (req, res) => {
-  const {
-    email,
-    password,
-    nickname,
-    imageUrl,
-    name,
-    birthday,
-    hashTags,
-  } = req.body;
-  console.log(hashTags);
-  const create = (user) => {
+router.post("/", async (req, res) => {
+  try {
+    const {
+      email,
+      password,
+      nickname,
+      imageUrl,
+      name,
+      birthday,
+      hashTags,
+    } = req.body;
+    let user = await User.findOneByEmail(email);
     if (user) throw new Error("username exists");
-    return User.create(
+    user = await User.create(
       email,
       password,
       nickname,
@@ -91,8 +93,6 @@ router.post("/", (req, res) => {
       moment(birthday).format("yyyy-MM-DD"),
       hashTags
     );
-  };
-  const respond = (user) => {
     jwt.sign(
       {
         email: user.email,
@@ -107,58 +107,52 @@ router.post("/", (req, res) => {
         issuer: "LivingIn.com",
         subject: "userInfo",
       },
-      (err, token) => {
+      async (err, token) => {
         if (err) throw err;
-        sendMail(user.email, token, user.nickname, "welcome");
-        res.status(200).json({
-          message: "registered successfully",
-          success: true,
-        });
+        console.log("success!!!!!!");
+        await sendEmail(user.email, token, user.nickname, "welcome");
       }
     );
-  };
-
-  const onError = (error) => {
+    res.status(200).json({
+      message: "registered successfully",
+      success: true,
+    });
+  } catch (error) {
     console.log(error.message);
     res.status(409).json({
       message: error.message,
       success: false,
     });
-  };
-
-  User.findOneByEmail(email).then(create).then(respond).catch(onError);
+  }
 });
 
 //구글 계정 생성 api
-router.post("/google", (req, res) => {
-  const { email, imageUrl, nickname } = req.body.googledata;
-  const create = (user) => {
+router.post("/google", async (req, res) => {
+  try {
+    const { email, imageUrl, nickname } = req.body.googledata;
+    const user = await User.findOneByEmail(email);
     if (user) throw new Error("username exists");
-    return User.create(email, "", nickname, imageUrl);
-  };
-
-  const respond = () => {
+    await User.create(email, "", nickname, imageUrl);
     res.status(200).json({
       message: "registered successfully",
     });
-  };
-
-  const onError = (error) => {
-    res.status(409).json({
-      message: error.message,
-    });
-  };
-
-  User.findOneByEmail(email).then(create).then(respond).catch(onError);
+  } catch (error) {
+    const onError = (error) => {
+      res.status(409).json({
+        message: error.message,
+      });
+    };
+  }
 });
 
 //카카오 계정 생성 pai
-router.post("/kakao", (req, res) => {
-  const post = req.body.kakaodata;
-  const email = post.profile.kakao_account.email;
-  const create = (user) => {
+router.post("/kakao", async (req, res) => {
+  try {
+    const post = req.body.kakaodata;
+    const email = post.profile.kakao_account.email;
+    const user = await User.findOneByEmail(email);
     if (user) throw new Error("username exists");
-    return User.create(
+    await User.create(
       post.profile.kakao_account.email,
       "",
       post.profile.properties.nickname,
@@ -166,26 +160,19 @@ router.post("/kakao", (req, res) => {
       [],
       post.profile.id
     );
-  };
-
-  const respond = () => {
     res.status(200).json({
       message: "registered successfully",
       success: true,
     });
-  };
-
-  const onError = (error) => {
+  } catch (error) {
     res.status(409).json({
       message: error.message,
     });
-  };
-
-  User.findOneByEmail(email).then(create).then(respond).catch(onError);
+  }
 });
 
 // 로컬 가입 승인
-router.put("/confirm", async (req, res) => {
+router.get("/confirm", async (req, res) => {
   try {
     const { token } = req.query;
     const result = await jwt.verify(token, config.secret);
@@ -193,16 +180,16 @@ router.put("/confirm", async (req, res) => {
     if (!user.is_active) {
       user.is_active = true;
       await user.save();
-      res.redirect("http://localhost:3000/confirm/success");
+      res.redirect(`${host.clientHost()}/confirm/success`);
     } else {
-      res.redirect("http://localhost:3000/confirm/fail");
+      res.redirect(`${host.clientHost()}/confirm/fail`);
     }
   } catch (err) {
     if (err.name === "TokenExpiredError") {
       const { email } = req.query;
       await User.remove({ email: email });
     }
-    res.redirect("http://localhost:3000/confirm/fail");
+    res.redirect(`${host.clientHost()}/confirm/fail`);
   }
 });
 module.exports = router;

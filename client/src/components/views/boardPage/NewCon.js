@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { message, List } from "antd";
 import Post from "../../libs/Post/Post";
+import axios from "axios";
 
 function NewPost(props) {
   const [isLoading, setIsLoading] = useState(true);
   const [items, setItems] = useState([]);
   const [isLoadAll, setIsLoadAll] = useState(false);
+  const [fetching, setFetching] = useState(false); // 추가 데이터를 로드하는지 아닌지를 담기위한 state
 
   // 스크롤 이벤트 핸들러
   const handleScroll = useCallback(() => {
@@ -23,34 +25,26 @@ function NewPost(props) {
       !isLoadAll
     ) {
       // 페이지 끝에 도달하면 추가 데이터를 받아온다
-      fetchMoreInstaFeeds();
+      if (!fetching) fetchMoreInstaFeeds();
     }
   });
   const fetchInstaFeeds = async () => {
-    setItems([
-      {
-        id: props.board[0]._id,
-        title: props.board[0].title,
-        category: props.board[0].category,
-        content: props.board[0].content,
-        views: props.board[0].hits,
-        likes: props.board[0].likes,
-        liked: props.board[0].liked,
-        comments: props.board[0].comments,
-        hashtags: props.board[0].hash_Tags,
-      },
-      {
-        id: props.board[1]._id,
-        title: props.board[1].title,
-        category: props.board[1].category,
-        content: props.board[1].content,
-        views: props.board[1].hits,
-        likes: props.board[1].likes,
-        liked: props.board[1].liked,
-        comments: props.board[1].comments,
-        hashtags: props.board[1].hash_Tags,
-      },
-    ]);
+    let item = [];
+    for (let i = 0; i < props.board.length; i++) {
+      item.push({
+        id: props.board[i]._id,
+        title: props.board[i].title,
+        category: props.board[i].category,
+        content: props.board[i].content,
+        views: props.board[i].hits,
+        likes: props.board[i].likes,
+        liked: props.board[i].liked,
+        comments: props.board[i].comments,
+        hashtags: props.board[i].hash_Tags,
+      });
+    }
+    console.log(item);
+    setItems(item);
   };
 
   useEffect(() => {
@@ -65,31 +59,38 @@ function NewPost(props) {
     };
   }, [isLoading, handleScroll, items, fetchInstaFeeds]);
 
-  const [fetching, setFetching] = useState(false); // 추가 데이터를 로드하는지 아닌지를 담기위한 state
-
   const fetchMoreInstaFeeds = async () => {
     // 추가 데이터를 로드하는 상태로 전환
     setFetching(true);
 
-    console.log(items.length);
-
-    const item = {
-      id: props.board[items.length]._id,
-      title: props.board[items.length].title,
-      category: props.board[items.length].category,
-      content: props.board[items.length].content,
-      views: props.board[items.length].hits,
-      likes: props.board[items.length].likes,
-      liked: props.board[items.length].liked,
-      comments: props.board[items.length].comments,
-      hashtags: props.board[items.length].hash_Tags,
-    };
-    setItems([...items, item]);
+    const res = await axios.get(`/posts`, {
+      params: {
+        length: items.length,
+      },
+    });
+    if (res.status === 200) {
+      let item = [...items];
+      for (let i = 0; i < res.data.length; i++) {
+        item.push({
+          id: res.data[i]._id,
+          title: res.data[i].title,
+          category: res.data[i].category,
+          content: res.data[i].content,
+          views: res.data[i].hits,
+          likes: res.data[i].likes,
+          liked: res.data[i].liked,
+          comments: res.data[i].comments,
+          hashtags: res.data[i].hash_Tags,
+        });
+      }
+      setItems(item);
+    }
     // 추가 데이터 로드 끝
     setFetching(false);
   };
 
   useEffect(() => {
+    console.log(items.length);
     // scroll event listener 등록
     window.addEventListener("scroll", handleScroll);
     return () => {

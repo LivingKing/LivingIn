@@ -8,6 +8,9 @@ const { OAuth2Client } = require("google-auth-library");
 const client = new OAuth2Client(config.google_clientID);
 const tokenGenerator = require("../libs/tokenGenerator");
 const qs = require("querystring");
+const { resolve } = require("path");
+const host = require("../config/host");
+const { rejects } = require("assert");
 
 const token_exp = "1h";
 router.post("/vaild_check", (req, res) => {
@@ -174,6 +177,7 @@ router.post("/verify/kakao", (req, res) => {
 
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
+  console.log(req.body);
   const check = (user) => {
     if (!user) {
       throw new Error("user not exist");
@@ -213,7 +217,8 @@ router.post("/login", async (req, res) => {
 
   User.findOneByEmail(email).then(check).then(respond).catch(onError);
 });
-router.post("/login/google/callback", (req, res) => {
+
+router.post("/login/google/callback", async (req, res) => {
   const respond = (result) => {
     const { access_token, nickname, email, icon } = result;
     res.status(200).json({
@@ -224,51 +229,50 @@ router.post("/login/google/callback", (req, res) => {
       icon,
     });
   };
-  axios({
+  const logined = await axios({
     method: "POST",
     url: "https://oauth2.googleapis.com/token",
     data: {
       code: decodeURIComponent(req.body.code),
       client_id: config.google_clientID,
       client_secret: config.google_client_secret,
-      redirect_uri: "http://localhost:3000/login/callback",
+      redirect_uri: `${host.clientHost()}/login/callback`,
       grant_type: "authorization_code",
     },
-  }).then((res) => {
-    const { access_token, refresh_token } = res.data;
-    axios({
-      method: "GET",
-      url: `https://oauth2.googleapis.com/tokeninfo?id_token=${res.data.id_token}`,
-    }).then((res) => {
-      const { email } = res.data;
-      User.findOneByEmail(email).then((user) => {
-        if (!user) {
-          console.log("user not found!");
-          const data = {
-            email: res.data.email,
-            nickname: res.data.name,
-            imageUrl: res.data.picture,
-          };
-          axios({
-            method: "post",
-            url: "http://localhost:8000/create/google",
-            data: {
-              googledata: data,
-            },
-          });
-        }
-        user.access_token = access_token;
-        user.refresh_token = refresh_token;
-        user.save();
-        console.log(user);
-        respond({
-          nickname: res.data.name,
-          access_token: access_token,
-          email: user.email,
-          icon: user.icon,
-        });
-      });
+  });
+  const { access_token, refresh_token } = logined.data;
+  const getInfo = await axios({
+    method: "GET",
+    url: `https://oauth2.googleapis.com/tokeninfo?id_token=${logined.data.id_token}`,
+  });
+  const { email } = getInfo.data;
+  let user = await User.findOneByEmail(email);
+  if (!user) {
+    const data = {
+      email: getInfo.data.email,
+      nickname: getInfo.data.name,
+      imageUrl: getInfo.data.picture,
+    };
+    const create = await axios({
+      method: "post",
+      url: `${host.serverHost()}/users/google`,
+      data: {
+        googledata: data,
+      },
     });
+    if (create.status === 200) {
+      console.log("success");
+      user = await User.findOneByEmail(email);
+    }
+  }
+  user.access_token = access_token;
+  user.refresh_token = refresh_token;
+  user.save();
+  respond({
+    nickname: getInfo.data.name,
+    access_token: access_token,
+    email: user.email,
+    icon: user.icon,
   });
 });
 
@@ -278,38 +282,41 @@ router.post("/login/google", (req, res) => {
     scope: scopes,
     access_type: "offline",
     prompt: "consent",
-    redirect_uri: "http://localhost:3000/login/callback",
+    redirect_uri: `${host.clientHost()}/login/callback`,
     client_id: config.google_clientID,
   });
   res.json({ url: url });
 });
 
-router.post("/login/kakao", (req, res) => {
+router.post("/login/kakao", async (req, res) => {
   const email = req.body.profile.kakao_account.email;
-  const check = (user) => {
-    if (!user) {
-      console.log("user not found!");
-      axios({
-        method: "post",
-        url: "http://localhost:8000/create/kakao",
-        data: {
-          kakaodata: req.body,
-        },
-      });
-    }
-    user.access_token = req.body.response.access_token;
-    user.refresh_token = req.body.response.refresh_token;
-    user.save();
-    res.status(200).json({
-      message: "logged in successfully",
-      nickname: req.body.profile.properties.nickname,
-      access_token: req.body.response.access_token,
-      email: user.email,
-      icon: user.icon,
-    });
-  };
 
-  User.findOneByEmail(email).then(check);
+  let user = await User.findOneByEmail(email);
+
+  if (!user) {
+    console.log("user not found!");
+    const create = await axios({
+      method: "post",
+      url: `${host.serverHost()}/users/kakao`,
+      data: {
+        kakaodata: req.body,
+      },
+    });
+    if (create.status === 200) {
+      console.log("success");
+      user = await User.findOneByEmail(email);
+    }
+  }
+  user.access_token = req.body.response.access_token;
+  user.refresh_token = req.body.response.refresh_token;
+  user.save();
+  res.status(200).json({
+    message: "logged in successfully",
+    nickname: req.body.profile.properties.nickname,
+    access_token: req.body.response.access_token,
+    email: user.email,
+    icon: user.icon,
+  });
 });
 
 router.post("/logout", async (req, res) => {

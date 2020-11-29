@@ -73,6 +73,7 @@ const CreatePost = (props) => {
       content: content,
       access_token: JSON.parse(sessionStorage.getItem("token_info"))
         .access_token,
+      token_type: JSON.parse(sessionStorage.getItem("token_info")).token_type,
       tags: tags.values,
       category: category,
     });

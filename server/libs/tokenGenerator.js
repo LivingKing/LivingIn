@@ -16,7 +16,12 @@ const tokenGenerator = async (user, time) => {
       subject: "userInfo",
     }
   );
-  return { access_token: token, email:user.email, nickname: user.nickname, icon: user.icon };
+  return {
+    access_token: token,
+    email: user.email,
+    nickname: user.nickname,
+    icon: user.icon,
+  };
 };
 
 module.exports = tokenGenerator;

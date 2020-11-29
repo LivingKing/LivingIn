@@ -1,5 +1,4 @@
 const getFormatdate = (date) => {
-  console.log(date);
   let date2 = new Date(date);
   date2.setMilliseconds(date2.getMilliseconds() - 9 * 60 * 60 * 1000);
   const year = date2.getFullYear();

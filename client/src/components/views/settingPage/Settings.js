@@ -50,7 +50,7 @@ const Settings = (props) => {
         sessionStorage.getItem("token_info")
       );
       const result = await axios(
-        `http://localhost:8000/api/userinfo?access_token=${access_token}&type=${token_type}`
+        `/api/userinfo?access_token=${access_token}&type=${token_type}`
       );
       console.log(result.data);
       setImageUrl(result.data.user.icon);

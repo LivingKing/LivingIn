@@ -15,7 +15,7 @@ function LoginPage(props) {
 
   const findUser = () => {
     window.open(
-      "http://localhost:3000/find",
+      "/find",
       "아이디/비밀번호 찾기",
       "width=300,height=330,scrollbars=no"
     );
