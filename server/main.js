@@ -35,4 +35,4 @@ app.use((err, req, res, next) => {
 });
 
 const port = process.env.PORT || 8000;
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+app.listen(port, () => console.log(`LivingIn listening on port ${port}!`));

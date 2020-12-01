@@ -62,24 +62,24 @@ content {
 .nick_box {
   color: white;
   position: relative;
-  top: 270px;
+  top: 260px;
 }
 
 .date {
   color: white;
   position: relative;
-  top: 270px;
+  top: 260px;
 }
 
 .count {
   color: white;
   position: relative;
-  top: 270px;
+  top: 260px;
 }
 
 .hashtag {
   position: relative;
-  top: 270px;
+  top: 260px;
 }
 .outer .menu {
   display: flex;

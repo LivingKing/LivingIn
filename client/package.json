@@ -2,7 +2,7 @@
   "name": "livingin_client",
   "version": "0.1.0",
   "private": true,
-  "state":"DEV",
+  "state": "DEV",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
@@ -16,6 +16,7 @@
     "http-proxy-middleware": "^1.0.5",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-dropzone": "^11.2.4",
     "react-google-login": "^5.1.21",
     "react-infinite-scroll-component": "^5.1.0",
     "react-kakao-login": "^1.2.2",

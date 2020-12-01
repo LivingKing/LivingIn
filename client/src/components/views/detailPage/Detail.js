@@ -51,15 +51,6 @@ const timeForToday = (value) => {
 
   return `${Math.floor(betweenTimeDay / 365)}년전`;
 };
-const CommentList = ({ comments }) => (
-  <List
-    dataSource={comments}
-    header={`댓글 ${comments.length}`}
-    itemLayout="horizontal"
-    renderItem={(props) => <Comment {...props} />}
-  />
-);
-
 const Editor = ({ onChange, onSubmit, submitting, value }) => (
   <>
     <Form.Item>
@@ -100,6 +91,19 @@ const Detail = (props) => {
 
   const [isLoading, setIsLoading] = useState(true);
 
+  const tagColor = [
+    "magenta",
+    "red",
+    "volcano",
+    "orange",
+    "gold",
+    "lime",
+    "green",
+    "cyan",
+    "blue",
+    "geekblue",
+  ];
+
   const getPost = async () => {
     const res = await axios.get(`/posts`, {
       params: {
@@ -119,6 +123,7 @@ const Detail = (props) => {
       let result = [];
       for (let i = 0; i < res.data.length; i++) {
         result.push({
+          id: res.data[i]._id,
           author: res.data[i].writer,
           avatar: res.data[i].icon,
           content: <p>{res.data[i].content}</p>,
@@ -147,9 +152,10 @@ const Detail = (props) => {
       setIsLoading(false);
     }
     if (isCommentLoading) {
+      console.log("123");
       const fetchComment = async () => {
         const comment = await getComment();
-        if (comment.length !== 0) setComments(comment);
+        setComments(comment);
       };
       fetchComment();
       setIsCommentLoading(false);
@@ -174,7 +180,6 @@ const Detail = (props) => {
     }
     setSubmitting(true);
 
-    setSubmitting(false);
     setValue("");
     const res = await axios.post("/comments", {
       post_id: id,
@@ -187,6 +192,7 @@ const Detail = (props) => {
       const comment = await getComment();
       setComments(comment);
     }
+    setSubmitting(false);
   };
 
   const handleChange = (e) => {
@@ -200,6 +206,21 @@ const Detail = (props) => {
     if (islike) setIsLike(!islike);
     setIsdislike(!isdislike);
   };
+
+  const deleteComment = async (e) => {
+    const res = await axios.delete("/comments", {
+      params: {
+        access_token: JSON.parse(sessionStorage.getItem("token_info"))
+          .access_token,
+        token_type: JSON.parse(sessionStorage.getItem("token_info")).token_type,
+        id: e.target.getAttribute("comment-id"),
+      },
+    });
+    if (res.status === 200) {
+      const comments = await getComment();
+      setComments(comments);
+    }
+  };
   return (
     <section className="view__container">
       <Header />
@@ -212,7 +233,9 @@ const Detail = (props) => {
           <span className="count">조회 {hits}</span>
           <div className="hashtag">
             {hashTags.map((tag, i) => (
-              <Tag key={i}>{tag}</Tag>
+              <Tag key={i} color={tagColor[i]}>
+                {tag}
+              </Tag>
             ))}
           </div>
 
@@ -301,10 +324,45 @@ const Detail = (props) => {
               }
             />
             <div className="comment__list">
-              {isCommentLoading && (
+              {isCommentLoading ? (
                 <Skeleton avatar paragraph={{ rows: 4 }} active />
+              ) : (
+                <List
+                  header={`댓글 ${comments.length}`}
+                  itemLayout="horizontal"
+                >
+                  {comments.length > 0 &&
+                    comments.map((comment, i) => {
+                      return (
+                        <Comment
+                          key={i}
+                          actions={
+                            JSON.parse(sessionStorage.getItem("user"))
+                              .nickname === comment.author && [
+                              <span
+                                key={comment.id}
+                                comment-id={comment.id}
+                                onClick={deleteComment}
+                              >
+                                삭제
+                              </span>,
+                            ]
+                          }
+                          avatar={
+                            comment.avatar ? (
+                              comment.avatar
+                            ) : (
+                              <Avatar>{comment.author}</Avatar>
+                            )
+                          }
+                          author={comment.author}
+                          content={comment.content}
+                          datetime={comment.datetime}
+                        />
+                      );
+                    })}
+                </List>
               )}
-              {comments.length > 0 && <CommentList comments={comments} />}
             </div>
           </div>
         </CSSTransition>

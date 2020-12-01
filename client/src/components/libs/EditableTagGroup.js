@@ -16,11 +16,11 @@ const tagColor = [
 ];
 
 class EditableTagGroup extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
   }
   state = {
-    tags: [],
+    tags: this.props.tags,
     inputVisible: false,
     inputValue: "",
     editInputIndex: -1,
@@ -112,10 +112,9 @@ class EditableTagGroup extends React.Component {
               className="edit-tag"
               key={tag}
               closable={true}
-              color={tagColor[this.state.tags.indexOf(tag)%tagColor.length]}
+              color={tagColor[this.state.tags.indexOf(tag) % tagColor.length]}
               onClose={() => this.handleClose(tag)}
             >
-              
               <span
                 onDoubleClick={(e) => {
                   if (index !== 0) {

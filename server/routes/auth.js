@@ -54,7 +54,6 @@ router.post("/verify", async (req, res) => {
       const user = await User.findOneByEmail(result.email);
       await jwt.verify(user.refresh_token, config.secret);
       const token = await tokenGenerator(user, token_exp);
-      console.log(token);
       respond(token);
     } else {
       respond("");
@@ -177,7 +176,6 @@ router.post("/verify/kakao", (req, res) => {
 
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  console.log(req.body);
   const check = (user) => {
     if (!user) {
       throw new Error("user not exist");
@@ -199,7 +197,6 @@ router.post("/login", async (req, res) => {
     }
   };
   const respond = (result) => {
-    console.log(result);
     const { access_token, nickname, email, icon } = result;
     res.status(200).json({
       message: "logged in successfully",
@@ -261,7 +258,6 @@ router.post("/login/google/callback", async (req, res) => {
       },
     });
     if (create.status === 200) {
-      console.log("success");
       user = await User.findOneByEmail(email);
     }
   }
@@ -294,7 +290,6 @@ router.post("/login/kakao", async (req, res) => {
   let user = await User.findOneByEmail(email);
 
   if (!user) {
-    console.log("user not found!");
     const create = await axios({
       method: "post",
       url: `${host.serverHost()}/users/kakao`,
@@ -303,7 +298,6 @@ router.post("/login/kakao", async (req, res) => {
       },
     });
     if (create.status === 200) {
-      console.log("success");
       user = await User.findOneByEmail(email);
     }
   }

@@ -7,11 +7,11 @@ const jwt = require("jsonwebtoken");
 const config = require("../config/config");
 const moment = require("moment");
 const host = require("../config/host");
+const verifyUser = require("../libs/verifyUser");
 
 // 유저 조회 api
 router.get("/", (req, res) => {
   if (Object.keys(req.query).length !== 0) {
-    console.log(req.query.length);
   } else {
     User.find({}, (err, users) => {
       if (err) throw err;
@@ -23,13 +23,32 @@ router.get("/", (req, res) => {
 // 유저 수정 api
 router.put("/", async (req, res) => {
   try {
-    const { token, password } = req.body;
-    const result = await jwt.verify(token, config.secret);
-    const user = await User.findOneByEmail(result.email);
-    user.password = password;
-    user.save();
+    const result = JSON.parse(req.body.data);
+    if (result.type === "profile") {
+      const {
+        imageUrl,
+        hashTags,
+        password,
+        nickname,
+        access_token,
+        token_type,
+      } = result;
+      const user = await verifyUser(token_type, access_token);
+      if (imageUrl) user.icon = imageUrl;
+      if (hashTags) user.hashTags = hashTags;
+      if (password) user.passwrod = password;
+      if (nickname) user.nickname = nickname;
+      user.save();
+    } else {
+      const { token, password } = req.body;
+      const result = await jwt.verify(token, config.secret);
+      const user = await User.findOneByEmail(result.email);
+      user.password = password;
+      user.save();
+    }
     res.status(200).json({ result: "success" });
   } catch (err) {
+    console.log(err);
     res.status(404).json({ result: "fail" });
   }
 });
@@ -97,7 +116,7 @@ router.post("/", async (req, res) => {
       {
         email: user.email,
         password: user.password,
-        nickname: user.nickanme,
+        nickname: user.nickname,
         name: user.name,
         birthday: user.birthday,
       },
@@ -109,7 +128,6 @@ router.post("/", async (req, res) => {
       },
       async (err, token) => {
         if (err) throw err;
-        console.log("success!!!!!!");
         await sendEmail(user.email, token, user.nickname, "welcome");
       }
     );

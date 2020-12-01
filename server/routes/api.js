@@ -8,7 +8,6 @@ const config = require("../config/config");
 router.get("/userinfo", async (req, res) => {
   try {
     const { access_token, type } = req.query;
-    console.log(access_token, type);
     let result;
     let email;
     let user;
@@ -42,10 +41,8 @@ router.get("/userinfo", async (req, res) => {
 router.get("/getUserIcon", async (req, res) => {
   const { nickname } = req.query;
   const user = await User.findOneByNick(nickname);
-  console.log(user);
   User.findOne({ nickname: nickname }, (err, user) => {
     if (err) throw err;
-    console.log(user);
     res.status(200).json(user);
   });
 });

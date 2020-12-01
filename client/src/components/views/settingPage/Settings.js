@@ -21,6 +21,7 @@ import bcrypt from "bcryptjs";
 import axios from "axios";
 import moment from "moment";
 import Tags from "../../libs/EditableTagGroup";
+import API_KEY from "../../../config/key";
 
 const Settings = (props) => {
   const [form] = Form.useForm();
@@ -37,7 +38,7 @@ const Settings = (props) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isPwChange, setIsPwChange] = useState(false);
   const [isNickChange, setIsNickChange] = useState(false);
-  const [isTagChange, setIsTagChnage] = useState(false);
+  const [isTagChange, setIsTagChange] = useState(false);
   const [hashTags, setHashTags] = useState([]);
   const emailInput = useRef();
   const nickInput = useRef();
@@ -73,9 +74,13 @@ const Settings = (props) => {
   };
 
   const onFinish = async () => {
-    let result;
+    let result = {
+      access_token: JSON.parse(sessionStorage.getItem("token_info"))
+        .access_token,
+      token_type: JSON.parse(sessionStorage.getItem("token_info")).token_type,
+    };
     if (imageUrl) {
-      result = Object.assign({ imageUrl: imageUrl });
+      result = Object.assign(result, { imageUrl: imageUrl });
     }
     if (isNickChange) {
       if (nick_checked) result = Object.assign(result, { nickname: nickname });
@@ -87,10 +92,20 @@ const Settings = (props) => {
       });
     }
     if (isTagChange) {
-      result = Object.assign(result, { hashTags: hashTags });
+      result = Object.assign(result, { hashTags: hashTags.values });
     }
     if (result) {
-      const res = await axios.post("/update", result);
+      sessionStorage.removeItem("user");
+      sessionStorage.setItem(
+        "user",
+        JSON.stringify({
+          email: userinfo.email,
+          nickname: nickname ? nickname : userinfo.nickname,
+          icon: imageUrl,
+        })
+      );
+      result = Object.assign(result, { type: "profile" });
+      const res = await axios.put("/users", { data: JSON.stringify(result) });
       if (res.status === 200) {
         message.success("정상적으로 변경되었습니다!");
         props.history.goBack();
@@ -123,40 +138,36 @@ const Settings = (props) => {
     }
   };
 
-  function getBase64(img, callback) {
-    const reader = new FileReader();
-    reader.addEventListener("load", () => callback(reader.result));
-    reader.readAsDataURL(img);
-  }
-
   function beforeUpload(file) {
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
     if (!isJpgOrPng) {
       message.error("JPG/PNG 파일만 업로드 가능합니다!");
     }
-    const isLt2M = file.size / 1024 / 1024 < 2;
+    const isLt2M = file.size / 1024 / 1024 < 32;
     if (!isLt2M) {
-      message.error("이미지는 2MB보다 작아야합니다!");
+      message.error("이미지는 32MB보다 작아야합니다!");
     }
     return isJpgOrPng && isLt2M;
   }
 
-  const handleChange = (info) => {
-    if (info.file.status === "uploading") {
-      setLoading(true);
-      return;
-    }
-    if (info.file.status === "done") {
-      getBase64(info.file.originFileObj, (imageUrl) => {
-        setImageUrl(imageUrl);
-        setLoading(false);
-      });
-    }
+  const handleChange = async (info) => {
+    setLoading(true);
+    let body = new FormData();
+    body.set("key", API_KEY.imgbb_API_KEY);
+    body.append("image", info.file.originFileObj);
+
+    const res = await axios({
+      method: "post",
+      url: "https://api.imgbb.com/1/upload",
+      data: body,
+    });
+    console.log("done");
+    setImageUrl(res.data.data.thumb.url);
+    setLoading(false);
   };
   const tagHandleChange = (values) => {
     setHashTags({ values });
-    setIsTagChnage(true);
-    console.log(values);
+    setIsTagChange(true);
   };
   const uploadButton = (
     <div>
@@ -174,10 +185,10 @@ const Settings = (props) => {
     <div className="settings__container">
       <Header />
       {isLoading ? (
-        <div></div>
+        <LoadingOutlined />
       ) : (
         <div style={{ textAlign: "center" }}>
-          {(imageUrl || nick_checked || isPwChange) && (
+          {(imageUrl || nick_checked || isPwChange || isTagChange) && (
             <Button
               type="primary"
               style={{
@@ -220,7 +231,6 @@ const Settings = (props) => {
                       listType="picture-card"
                       className="avatar-uploader"
                       showUploadList={false}
-                      action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                       beforeUpload={beforeUpload}
                       onChange={handleChange}
                     >

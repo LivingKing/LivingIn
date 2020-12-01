@@ -5,30 +5,11 @@ const Comment = require("../models/Comment");
 const config = require("../config/config");
 const jwt = require("jsonwebtoken");
 const axios = require("axios");
+const verifyUser = require("../libs/verifyUser");
 // 댓글 생성 api
 router.post("/", async (req, res) => {
   const { post_id, access_token, token_type, content } = req.body;
-  let result;
-  let user;
-  if (token_type === "local") {
-    result = await jwt.verify(access_token, config.secret);
-    user = await User.findOneByEmail(result.email);
-  } else if (token_type === "kakao") {
-    result = await axios({
-      method: "GET",
-      url: "https://kapi.kakao.com./v1/user/access_token_info",
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
-    });
-    user = await User.findOneBySocialId(result.data.id);
-  } else if (token_type === "google") {
-    result = await axios({
-      method: "GET",
-      url: `https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${access_token}`,
-    });
-    user = await User.findOneByEmail(result.data.email);
-  }
+  const user = await verifyUser(token_type, access_token);
   Comment.create(post_id, user.nickname, user.icon, content).then(() => {
     res.status(200).json({
       message: "comment successfully",
@@ -43,11 +24,27 @@ router.get("/", async (req, res) => {
   if (post_id) {
     comment = await Comment.findByPostId(post_id);
   } else {
-    comment = await Comment.find({});
+    comment = await Comment.find({ is_Deleted: false });
   }
   if (comment !== null) {
     return res.status(200).json(comment);
   }
 });
 
+router.delete("/", async (req, res) => {
+  try {
+    const { access_token, token_type, id } = req.query;
+    const user = await verifyUser(token_type, access_token);
+    const comment = await Comment.findOne({ _id: id });
+    if (user.nickname === comment.writer) {
+      comment.is_Deleted = true;
+      comment.save();
+      return res.status(200).json({ status: "success" });
+    } else {
+      return res.status(400).json({ status: "fail" });
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
 module.exports = router;

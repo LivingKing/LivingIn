@@ -28,7 +28,9 @@ commentSchema.statics.create = function (post_id, writer, icon, content) {
 };
 
 commentSchema.statics.findByPostId = function (post_id) {
-  return this.find({ post_id }).sort({ created_At: -1 }).exec();
+  return this.find({ post_id, is_Deleted: false })
+    .sort({ created_At: -1 })
+    .exec();
 };
 
 module.exports = mongoose.model("Comment", commentSchema);

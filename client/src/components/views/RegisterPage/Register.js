@@ -20,6 +20,7 @@ import logo from "./logo.png";
 import "./Register.css";
 import axios from "axios";
 import Tags from "../../libs/EditableTagGroup";
+import API_KEY from "../../../config/key";
 
 function RegistrationPage(props) {
   const [form] = Form.useForm();
@@ -124,32 +125,33 @@ function RegistrationPage(props) {
     }
   };
 
-  function getBase64(img, callback) {
-    const reader = new FileReader();
-    reader.addEventListener("load", () => callback(reader.result));
-    reader.readAsDataURL(img);
-    console.log(reader);
-  }
-
   function beforeUpload(file) {
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
     if (!isJpgOrPng) {
       message.error("JPG/PNG 파일만 업로드 가능합니다!");
     }
-    const isLt2M = file.size / 1024 / 1024 < 2;
+    const isLt2M = file.size / 1024 / 1024 < 16;
     if (!isLt2M) {
-      message.error("이미지는 2MB보다 작아야합니다!");
+      message.error("이미지는 32MB보다 작아야합니다!");
     }
     console.log(isJpgOrPng, isLt2M);
     return isJpgOrPng && isLt2M;
   }
 
-  const handleChange = (info) => {
-    getBase64(info.file.originFileObj, (imageUrl) => {
-      console.log("done");
-      setImageUrl(imageUrl);
-      setLoading(false);
+  const handleChange = async (info) => {
+    setLoading(true);
+    let body = new FormData();
+    body.set("key", API_KEY.imgbb_API_KEY);
+    body.append("image", info.file.originFileObj);
+
+    const res = await axios({
+      method: "post",
+      url: "https://api.imgbb.com/1/upload",
+      data: body,
     });
+    console.log("done");
+    setImageUrl(res.data.data.thumb.url);
+    setLoading(false);
   };
   const tagHandleChange = (values) => {
     setHashTags({ values });
@@ -177,12 +179,12 @@ function RegistrationPage(props) {
           >
             <Form.Item label="아이콘">
               <div
-              // style={{
-              //   display: "table",
-              //   marginLeft: "auto",
-              //   marginRight: "auto",
-              //   paddingRight: "2vw",
-              // }}
+                style={{
+                  display: "table",
+                  marginLeft: "auto",
+                  marginRight: "auto",
+                  paddingRight: "2vw",
+                }}
               >
                 <Upload
                   listType="picture-card"
