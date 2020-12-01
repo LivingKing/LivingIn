@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { message, List } from "antd";
+import axios from "axios";
 import "./NewPost.css";
 
 function NewPost(props) {
@@ -9,15 +10,12 @@ function NewPost(props) {
   useEffect(() => {
     if (isLoading) {
       const onLoad = async () => {
-        const res = await fetch(`/posts`, {
-          method: "GET",
-        });
+        const res = await axios.get(`/posts`);
         if (res.status === 200) {
-          const result = await res.json();
-          if (!result) {
+          if (!res.data) {
             console.log("empty");
           } else {
-            setboardList(result);
+            setboardList(res.data);
           }
         } else {
           message.error("불러오기 실패!");

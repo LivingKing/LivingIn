@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
-  "state":"DEV",
+  "state": "DEV",
   "directories": {
     "lib": "lib"
   },
@@ -14,7 +14,7 @@
   },
   "engines": {
     "node": "v12.18.2",
-    "npm" : "6.14.5"
+    "npm": "6.14.5"
   },
   "author": "",
   "license": "ISC",

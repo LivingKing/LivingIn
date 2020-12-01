@@ -2,53 +2,74 @@ import React, { useEffect, useState, useCallback } from "react";
 import { message, List } from "antd";
 import Post from "../../libs/Post/Post";
 import axios from "axios";
-
-function NewPost(props) {
+import check from "./check.png";
+import "./NewCon.css";
+function NewPost() {
   const [isLoading, setIsLoading] = useState(true);
   const [items, setItems] = useState([]);
   const [isLoadAll, setIsLoadAll] = useState(false);
   const [fetching, setFetching] = useState(false); // 추가 데이터를 로드하는지 아닌지를 담기위한 state
+  const [sort_type, setSort_type]=useState("created_At");
 
   // 스크롤 이벤트 핸들러
   const handleScroll = useCallback(() => {
-    if (items.length === props.board.length - 1) {
-      if (!isLoadAll) {
-        setIsLoadAll(true);
-      }
-    }
+    // if (items.length === props.board.length - 1) {
+    //   if (!isLoadAll) {
+    //     setIsLoadAll(true);
+    //   }
+    // }
     const scrollHeight = document.documentElement.scrollHeight;
     const scrollTop = document.documentElement.scrollTop;
     const clientHeight = document.documentElement.clientHeight;
     if (
       scrollTop + clientHeight === scrollHeight &&
-      fetching === false &&
-      !isLoadAll
+      fetching === false
+      // &&!isLoadAll
     ) {
       // 페이지 끝에 도달하면 추가 데이터를 받아온다
       if (!fetching) fetchMoreInstaFeeds();
     }
   });
+
+
   const fetchInstaFeeds = async () => {
-    let item = [];
-    for (let i = 0; i < props.board.length; i++) {
-      item.push({
-        id: props.board[i]._id,
-        title: props.board[i].title,
-        category: props.board[i].category,
-        content: props.board[i].content,
-        views: props.board[i].hits,
-        likes: props.board[i].likes,
-        liked: props.board[i].liked,
-        comments: props.board[i].comments,
-        hashtags: props.board[i].hash_Tags,
+    const onLoad = async () => {
+      const res = await axios.get(`/posts`, {
+        params: {
+          length: 0,
+          sort_type: sort_type,
+        },
       });
-    }
-    console.log(item);
-    setItems(item);
+      if (res.status === 200) {
+        if (!res.data) {
+          console.log("empty");
+        } else {
+          const item = [];
+          for (let i = 0; i < res.data.length; i++) {
+            item.push({
+              id: res.data[i]._id,
+              title: res.data[i].title,
+              category: res.data[i].category,
+              content: res.data[i].content,
+              views: res.data[i].hits,
+              likes: res.data[i].likes,
+              liked: res.data[i].liked,
+              comments: res.data[i].comments,
+              hashtags: res.data[i].hash_Tags,
+            });
+          }
+          setItems(item);
+        }
+      } else {
+        message.error("불러오기 실패!");
+      }
+
+    };
+    onLoad();
   };
 
   useEffect(() => {
-    if (isLoading) {
+     if (isLoading) {
       fetchInstaFeeds();
       setIsLoading(false);
     }
@@ -66,6 +87,7 @@ function NewPost(props) {
     const res = await axios.get(`/posts`, {
       params: {
         length: items.length,
+        sort_type: sort_type,
       },
     });
     if (res.status === 200) {
@@ -90,7 +112,6 @@ function NewPost(props) {
   };
 
   useEffect(() => {
-    console.log(items.length);
     // scroll event listener 등록
     window.addEventListener("scroll", handleScroll);
     return () => {
@@ -100,9 +121,65 @@ function NewPost(props) {
   });
 
   return (
-    <div className="Scrollbar">
-      {items.map((i, index) => (
-        <Post
+    <div style={{display:"flex", flexDirection:"column"}}>
+      <div className="list_wrap">
+            <div className="top_sort">
+              <div className="btn_wrap">
+                <button type="button" data-sort="DISTANCE" className="btn_new" onClick={()=>{
+                  setSort_type("created_At"); 
+                  setIsLoading(true);
+                }
+                  }>
+                    {sort_type === "created_At"?<img
+                    src={check}
+                    width="22"
+                    height="22"
+                    className="asdfasdf"
+                  />:<></>}
+                  
+                  <span>최신 순</span>
+                </button>
+                <button type="button" data-sort="LOWPRICE" className="btn_view" onClick={()=>{
+                  setSort_type("hits"); 
+                  setIsLoading(true);
+                }
+                  }>
+                     {sort_type === "hits"?<img
+                    src={check}
+                    width="22"
+                    height="22"
+                    className="asdfasdf"
+                  />:<></>}
+                  <span>조회수 순</span>
+                </button>
+                <button type="button" data-sort="HIGHPRICE" className="btn_likes" onClick={()=>{
+                  setSort_type("likes"); 
+                  setIsLoading(true);
+                }
+                  }>
+                     {sort_type === "likes"?<img
+                    src={check}
+                    width="22"
+                    height="22"
+                    className="asdfasdf"
+                  />:<></>}
+                  <span>좋아요 순</span>
+                </button>
+              </div>
+              {/* <button type="button" class="btn_map" onclick="pop_map_pc();">지도</button> */}
+            </div>
+
+            <div id="poduct_list_area">
+              <div class="title">
+                <h3>전체 게시판&nbsp;</h3>
+                <span>최신 순</span>
+              </div>
+            </div>
+          </div>
+      <div className="Scrollbar">
+        
+        {items.map((i, index) => (
+          <Post
           key={items[index].id}
           id={items[index].id}
           title={items[index].title}
@@ -113,31 +190,10 @@ function NewPost(props) {
           comments={items[index].comments}
           content={items[index].content}
           hashtags={items[index].hashtags}
-        />
-      ))}
+          />
+          ))}
+      </div>
     </div>
-
-    // <List
-    //     size="small"
-    //     bordered
-    //     // header={<div>Header</div>}
-    //     // footer={<div>Footer</div>}
-    //     dataSource=
-    //     {boardList? boardList.map((c, index) => {
-    //         return <Post
-    //             key={index}
-    //             id={c._id}
-    //             category={c.category}
-    //             hits={c.hits}
-    //             create={c.created_At}
-    //             content={c.content}
-    //             writer={c.writer}
-    //             title={c.title}
-    //             link={"/detail/" + c._id}
-    //         />
-    //     }) : ""}
-    //     renderItem={item => <List.Item>{item}</List.Item>}
-    // />
   );
 }
 

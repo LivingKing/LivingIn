@@ -37,39 +37,46 @@ router.post("/", async (req, res) => {
 
 // 글 조회 api
 router.get("/", async (req, res) => {
-  if (Object.keys(req.query).length !== 0) {
-    const { id } = req.query;
-    if (id) {
-      const post = await Post.findById(id);
-      if (post) {
-        post.hits = post.hits + 1;
-        post.save();
-        res.status(200).json(post);
+  try {
+    if (Object.keys(req.query).length !== 0) {
+      const { id } = req.query;
+      if (id) {
+        const post = await Post.findById(id);
+        if (post) {
+          post.hits = post.hits + 1;
+          post.save();
+          return res.status(200).json(post);
+        }
       }
+      const { category } = req.query;
+      if (category) {
+        const post = await Post.find({ category: category }).sort({ hits: -1 });
+        return res.status(200).json(post);
+      }
+      console.log("asdasd"+req.query);
+      let length = Number(req.query.length);
+      let sort_type = req.query.sort_type;
+      if (!length) {
+        length = 0;
+      }
+      if(!sort_type){
+        sort_type="created_At";
+      }
+      let obj = {};
+      obj[sort_type] = -1;
+      const post = await Post.find()
+        .sort(obj)
+        .skip(length)
+        .limit(5);
+      return res.status(200).json(post);
+    }else{
+      const post = await Post.find()
+        .sort({created_At:-1})
+        .limit(5);
+      return res.status(200).json(post);
     }
-    const { category } = req.query;
-    if (category) {
-      Post.find({ category: category }, (err, post) => {
-        if (err) throw err;
-        res.status(200).json(post);
-      }).sort({ hits: -1 });
-    }
-    let length = Number(req.query.length);
-    if (!length) {
-      length = 0;
-    }
-    const post = await Post.find()
-      .sort({ created_At: -1 })
-      .skip(length)
-      .limit(5);
-    res.status(200).json(post);
-  } else {
-    Post.find({}, (err, post) => {
-      if (err) throw err;
-      res.status(200).json(post);
-    })
-      .sort({ created_At: -1 })
-      .limit(5);
+  } catch (err) {
+    console.log(err);
   }
 });
 
