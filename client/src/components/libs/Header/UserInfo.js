@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Avatar, Card, Modal } from "antd";
+import { Avatar, Card, Modal, Skeleton } from "antd";
 import {
   EditOutlined,
   EllipsisOutlined,
@@ -61,45 +61,51 @@ function UserInfo(props) {
   };
   return (
     <>
-      <Card
-        style={{ width: 300 }}
-        actions={[
-          <Link
-            to={{
-              pathname: "/settings",
-            }}
-          >
-            <SettingOutlined key="setting" />
-          </Link>,
-          <Link
-            to={{
-              pathname: "/write",
-            }}
-          >
-            <EditOutlined key="edit" type="text" className="header__write" />
-          </Link>,
-          <EllipsisOutlined key="ellipsis" onClick={info} />,
-        ]}
-      >
-        <Meta
-          avatar={
-            icon === "" ? (
-              <Avatar>{nickname}</Avatar>
-            ) : (
-              <Avatar size="large" src={icon}>
-                {nickname}
-              </Avatar>
-            )
-          }
-          title={nickname + "님 환영환영^^*."}
-          description={email}
-        />
-        <br></br>
-        <span>
-          선호하는 카테고리 :{" "}
-          <b>{Favcategory ? Favcategory : "데이터 수집중!"}</b>
-        </span>
-      </Card>
+      {isLoading ? (
+        <div style={{ width: 300 }}>
+          <Skeleton avatar paragraph={{ rows: 4 }} active />
+        </div>
+      ) : (
+        <Card
+          style={{ width: 300 }}
+          actions={[
+            <Link
+              to={{
+                pathname: "/settings",
+              }}
+            >
+              <SettingOutlined key="setting" />
+            </Link>,
+            <Link
+              to={{
+                pathname: "/write",
+              }}
+            >
+              <EditOutlined key="edit" type="text" className="header__write" />
+            </Link>,
+            <EllipsisOutlined key="ellipsis" onClick={info} />,
+          ]}
+        >
+          <Meta
+            avatar={
+              icon === "" ? (
+                <Avatar>{nickname}</Avatar>
+              ) : (
+                <Avatar size="large" src={icon}>
+                  {nickname}
+                </Avatar>
+              )
+            }
+            title={nickname + "님 환영환영^^*."}
+            description={email}
+          />
+          <br></br>
+          <span>
+            선호하는 카테고리 :{" "}
+            <b>{Favcategory ? Favcategory : "데이터 수집중!"}</b>
+          </span>
+        </Card>
+      )}
     </>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { message, List } from "antd";
+import { message, List, Spin } from "antd";
 import "./CategoryPost.css";
 import gold from "./gold.png";
 import silver from "./silver.png";
@@ -47,43 +47,58 @@ function CategoryPost(props) {
   }, [props.category, boardList, isLoading, category]);
 
   return (
-    <List
-      className="bb"
-      pagination={{
-        onChange: (e) => {
-          console.log(e);
-          setPage(e);
-        },
-        pageSize: 4,
-        showSizeChanger: false,
-        simple: true,
-        position: "bottom",
-        current: page,
-      }}
-      grid={{ gutter: 16, column: 4 }}
-      dataSource={
-        boardList
-          ? boardList.map((c, index) => {
-              return (
-                <CategoryPostData
-                  rank={index + 1}
-                  key={index}
-                  id={c._id}
-                  category={c.category}
-                  hits={c.hits}
-                  create={getFormatDate(c.created_At)}
-                  content={c.content}
-                  writer={c.writer}
-                  title={c.title}
-                  likes={c.likes}
-                  link={"/detail/" + c._id}
-                />
-              );
-            })
-          : ""
-      }
-      renderItem={(item) => <List.Item>{item}</List.Item>}
-    />
+    <>
+      {isLoading ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: 318,
+          }}
+        >
+          <Spin size="large" tip="Loading..." />
+        </div>
+      ) : (
+        <List
+          className="bb"
+          pagination={{
+            onChange: (e) => {
+              console.log(e);
+              setPage(e);
+            },
+            pageSize: 4,
+            showSizeChanger: false,
+            simple: true,
+            position: "bottom",
+            current: page,
+          }}
+          grid={{ gutter: 16, column: 4 }}
+          dataSource={
+            boardList
+              ? boardList.map((c, index) => {
+                  return (
+                    <CategoryPostData
+                      rank={index + 1}
+                      key={index}
+                      id={c._id}
+                      category={c.category}
+                      hits={c.hits}
+                      create={getFormatDate(c.created_At)}
+                      content={c.content}
+                      writer={c.writer}
+                      title={c.title}
+                      likes={c.likes}
+                      link={"/detail/" + c._id}
+                    />
+                  );
+                })
+              : ""
+          }
+          renderItem={(item) => <List.Item>{item}</List.Item>}
+        />
+      )}
+    </>
   );
 }
 
