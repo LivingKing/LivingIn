@@ -4,6 +4,7 @@ import Post from "../../libs/Post/Post";
 import axios from "axios";
 import check from "./check.png";
 import { LoadingOutlined } from "@ant-design/icons";
+import parse from "html-react-parser";
 import "./NewCon.css";
 function NewPost() {
   const [isLoading, setIsLoading] = useState(true);
@@ -32,6 +33,7 @@ function NewPost() {
   });
 
   const fetchInstaFeeds = async () => {
+    console.log(items);
     const onLoad = async () => {
       const res = await axios.get(`/posts`, {
         params: {
@@ -44,17 +46,17 @@ function NewPost() {
           console.log("empty");
         } else {
           const item = [];
+          console.log(res.data);
           for (let i = 0; i < res.data.length; i++) {
             item.push({
               id: res.data[i]._id,
               title: res.data[i].title,
               category: res.data[i].category,
-              content: res.data[i].content,
               views: res.data[i].hits,
-              likes: res.data[i].likes,
+              likes: res.data[i].likes.length,
               liked: res.data[i].liked,
-              comments: res.data[i].comments,
               hashtags: res.data[i].hash_Tags,
+              thumbnail: res.data[i].thumbnail,
             });
           }
           setItems(item);
@@ -95,12 +97,11 @@ function NewPost() {
           id: res.data[i]._id,
           title: res.data[i].title,
           category: res.data[i].category,
-          content: res.data[i].content,
           views: res.data[i].hits,
-          likes: res.data[i].likes,
+          likes: res.data[i].likes.length,
           liked: res.data[i].liked,
-          comments: res.data[i].comments,
           hashtags: res.data[i].hash_Tags,
+          thumbnail: res.data[i].thumbnail,
         });
       }
       setItems(item);
@@ -138,6 +139,7 @@ function NewPost() {
               className="btn_new"
               onClick={() => {
                 setSort_type("created_At");
+                setItems([]);
                 setIsLoading(true);
               }}
             >
@@ -147,13 +149,15 @@ function NewPost() {
                   alt="check"
                   width="22"
                   height="22"
-                  className="asdfasdf"
+                  className="check_image"
                 />
               ) : (
                 <></>
               )}
 
-              <span>최신 순</span>
+              <span>
+                <b>최신 순</b>
+              </span>
             </button>
             <button
               style={{ outline: "0 none" }}
@@ -162,6 +166,7 @@ function NewPost() {
               className="btn_view"
               onClick={() => {
                 setSort_type("hits");
+                setItems([]);
                 setIsLoading(true);
               }}
             >
@@ -171,12 +176,14 @@ function NewPost() {
                   alt="check"
                   width="22"
                   height="22"
-                  className="asdfasdf"
+                  className="check_image"
                 />
               ) : (
                 <></>
               )}
-              <span>조회수 순</span>
+              <span>
+                <b>조회수 순</b>
+              </span>
             </button>
             <button
               style={{ outline: "0 none" }}
@@ -185,6 +192,7 @@ function NewPost() {
               className="btn_likes"
               onClick={() => {
                 setSort_type("likes");
+                setItems([]);
                 setIsLoading(true);
               }}
             >
@@ -194,21 +202,20 @@ function NewPost() {
                   alt="check"
                   width="22"
                   height="22"
-                  className="asdfasdf"
+                  className="check_image"
                 />
               ) : (
                 <></>
               )}
-              <span>좋아요 순</span>
+              <span>
+                <b>좋아요 순</b>
+              </span>
             </button>
           </div>
         </div>
 
         <div id="poduct_list_area">
-          <div class="title">
-            <h3>전체 게시판&nbsp;</h3>
-            <span>최신 순</span>
-          </div>
+          <div className="title"></div>
         </div>
       </div>
       <div className="Scrollbar">
@@ -229,6 +236,7 @@ function NewPost() {
               comments={items[index].comments}
               content={items[index].content}
               hashtags={items[index].hashtags}
+              thumbnail={items[index].thumbnail}
             />
           ))
         )}

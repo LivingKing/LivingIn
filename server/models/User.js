@@ -30,6 +30,8 @@ const userSchema = new Schema({
   refresh_token: String,
   is_admin: { type: Boolean, required: true, default: false },
   is_active: { type: Boolean, required: true, default: false },
+  favorite_category: { type: String },
+  favorite_score: { type: Array, default: [0, 0, 0, 0] },
 });
 
 userSchema.statics.create = function (

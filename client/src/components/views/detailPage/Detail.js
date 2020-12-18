@@ -10,6 +10,8 @@ import {
   BackTop,
   Skeleton,
   Tag,
+  message,
+  Spin,
 } from "antd";
 import {
   DownOutlined,
@@ -18,9 +20,11 @@ import {
   DislikeOutlined,
   HeartFilled,
   DislikeFilled,
+  LoadingOutlined,
 } from "@ant-design/icons";
 // import BackTop from "../../libs/BackTopButton";
 import "./Detail.css";
+import Verify from "../../libs/Verify";
 
 import Header from "../../libs/Header/Header";
 import axios from "axios";
@@ -108,6 +112,9 @@ const Detail = (props) => {
     const res = await axios.get(`/posts`, {
       params: {
         id: props.match.params.id,
+        access_token: JSON.parse(sessionStorage.getItem("token_info"))
+          .access_token,
+        token_type: JSON.parse(sessionStorage.getItem("token_info")).token_type,
       },
     });
     if (res.status === 200) return res.data;
@@ -135,24 +142,66 @@ const Detail = (props) => {
   });
 
   useEffect(() => {
+    if (!sessionStorage.isLogin) {
+      message.error("로그인이 필요합니다.");
+      return props.history.push("/login");
+    } else {
+      const res = Verify(
+        JSON.parse(sessionStorage.getItem("token_info")).access_token,
+        JSON.parse(sessionStorage.getItem("token_info")).token_type,
+        props
+      );
+      res.then((result) => {
+        if (result !== undefined) {
+          try {
+            const token_type = JSON.parse(sessionStorage.getItem("token_info"))
+              .token_type;
+            sessionStorage.removeItem("token_info");
+            sessionStorage.setItem(
+              "token_info",
+              JSON.stringify({
+                token_type: token_type,
+                access_token: result.access_token,
+              })
+            );
+          } catch {}
+        }
+      });
+    }
     if (isLoading) {
       const fetchPost = async () => {
-        const post = await getPost();
-        console.log(post);
+        const res = await getPost();
+        const post = res.post;
         await post.hash_Tags.map((value) => hashTags.push(value));
         setTitle(post.title);
         setContent(post.content);
         setWriter(post.writer);
         setCategory(post.category);
         setCreated_At(getFormatDate(post.created_At));
+        setIsLike(res.state);
+        setLikes(post.likes.length);
         setHits(post.hits);
+        let result = {
+          type: "score",
+          active: sessionStorage.getItem("search")
+            ? sessionStorage.getItem("search")
+            : "view",
+          category: post.category,
+          access_token: JSON.parse(sessionStorage.getItem("token_info"))
+            .access_token,
+          token_type: JSON.parse(sessionStorage.getItem("token_info"))
+            .token_type,
+        };
+        await axios.put("/users", {
+          data: JSON.stringify(result),
+        });
+        sessionStorage.removeItem("search");
       };
       fetchPost();
       setId(props.match.params.id);
       setIsLoading(false);
     }
     if (isCommentLoading) {
-      console.log("123");
       const fetchComment = async () => {
         const comment = await getComment();
         setComments(comment);
@@ -161,12 +210,14 @@ const Detail = (props) => {
       setIsCommentLoading(false);
     }
   }, [
+    category,
     comments,
     getComment,
     getPost,
     hashTags,
     isCommentLoading,
     isLoading,
+    props,
     props.match.params.id,
   ]);
 
@@ -198,13 +249,45 @@ const Detail = (props) => {
   const handleChange = (e) => {
     setValue(e.target.value);
   };
-  const handleLike = () => {
-    if (isdislike) setIsdislike(!isdislike);
-    setIsLike(!islike);
+
+  const updateLike = async () => {
+    const res = await axios.put("/posts", {
+      data: {
+        type: "liked",
+        id: id,
+        access_token: JSON.parse(sessionStorage.getItem("token_info"))
+          .access_token,
+        token_type: JSON.parse(sessionStorage.getItem("token_info")).token_type,
+      },
+    });
+    if (res.status === 200) {
+      setLikes(res.data.length);
+      setIsLike(res.data.state);
+    }
   };
-  const handleDisLike = () => {
-    if (islike) setIsLike(!islike);
-    setIsdislike(!isdislike);
+  const updateDisLike = async () => {
+    const res = await axios.put("/posts", {
+      data: {
+        type: "disliked",
+        id: id,
+        access_token: JSON.parse(sessionStorage.getItem("token_info"))
+          .access_token,
+        token_type: JSON.parse(sessionStorage.getItem("token_info")).token_type,
+      },
+    });
+    if (res.status === 200) {
+      setDisLikes(res.data.length);
+      setIsdislike(res.data.state);
+    }
+  };
+  const handleLike = async () => {
+    if (isdislike) await updateDisLike();
+    await updateLike();
+  };
+
+  const handleDisLike = async () => {
+    if (islike) await updateLike();
+    await updateDisLike();
   };
 
   const deleteComment = async (e) => {
@@ -224,149 +307,160 @@ const Detail = (props) => {
   return (
     <section className="view__container">
       <Header />
-      <content>
-        <div className="backimg">
-          <h3 className="cate">{category}</h3>
-          <h1 className="title_text"> {title}</h1>
-          <div className="nick_box">{writer}</div>
-          <span className="date">{created_at} </span>
-          <span className="count">조회 {hits}</span>
-          <div className="hashtag">
-            {hashTags.map((tag, i) => (
-              <Tag key={i} color={tagColor[i]}>
-                {tag}
-              </Tag>
-            ))}
-          </div>
+      {isLoading ? (
+        <Spin indicator={<LoadingOutlined style={{ fontSize: 40 }} spin />} />
+      ) : (
+        <div>
+          <content>
+            <div className="backimg">
+              <h3 className="cate">{category}</h3>
+              <h1 className="title_text"> {title}</h1>
+              <div className="nick_box">{writer}</div>
+              <span className="date">{created_at} </span>
+              <span className="count">조회 {hits}</span>
+              <div className="hashtag">
+                {hashTags.map((tag, i) => (
+                  <Tag key={i} color={tagColor[i]}>
+                    {tag}
+                  </Tag>
+                ))}
+              </div>
 
-          <div className="backcover"></div>
-        </div>
-        <div id="rectangle">{parse(content)}</div>
-        <div style={{ display: "flex", justifyContent: "space-around" }}></div>
+              <div className="backcover"></div>
+            </div>
+            <div id="rectangle">{parse(content)}</div>
+            <div
+              style={{ display: "flex", justifyContent: "space-around" }}
+            ></div>
 
-        <BackTop />
-      </content>
-      <footer>
-        {!visible && (
-          <div className="outer">
-            <ul className="menu">
-              <li className="menu__list">
-                {islike ? (
-                  <HeartFilled
-                    className="menu__icon"
-                    onClick={handleLike}
-                    style={{ color: "#e23b3b" }}
-                  />
-                ) : (
-                  <HeartOutlined className="menu__icon" onClick={handleLike} />
-                )}
-                <h3>{likes}</h3>
-              </li>
-              <li className="menu__list">
-                {isdislike ? (
-                  <DislikeFilled
-                    className="menu__icon"
-                    onClick={handleDisLike}
-                    style={{ color: "#F44336" }}
-                  />
-                ) : (
-                  <DislikeOutlined
-                    className="menu__icon"
-                    onClick={handleDisLike}
-                  />
-                )}
+            <BackTop />
+          </content>
+          <footer>
+            {!visible && (
+              <div className="outer">
+                <ul className="menu">
+                  <li className="menu__list">
+                    {islike ? (
+                      <HeartFilled
+                        className="menu__icon"
+                        onClick={handleLike}
+                        style={{ color: "#e23b3b" }}
+                      />
+                    ) : (
+                      <HeartOutlined
+                        className="menu__icon"
+                        onClick={handleLike}
+                      />
+                    )}
+                    <h3>{likes}</h3>
+                  </li>
+                  <li className="menu__list">
+                    {isdislike ? (
+                      <DislikeFilled
+                        className="menu__icon"
+                        onClick={handleDisLike}
+                        style={{ color: "#F44336" }}
+                      />
+                    ) : (
+                      <DislikeOutlined
+                        className="menu__icon"
+                        onClick={handleDisLike}
+                      />
+                    )}
 
-                <h3>{dislikes}</h3>
-              </li>
-              <li className="menu__list">
-                <CommentOutlined className="menu__icon" onClick={toggle} />
-                <h3>{comments.length}</h3>
-              </li>
-            </ul>
-          </div>
-        )}
-
-        <CSSTransition
-          classNames="inner__animation"
-          timeout={300}
-          unmountOnExit
-          in={visible}
-        >
-          <div className="inner">
-            {visible && (
-              <div className="menu">
-                <DownOutlined className="menu__icon" onClick={toggle} />
+                    <h3>{dislikes}</h3>
+                  </li>
+                  <li className="menu__list">
+                    <CommentOutlined className="menu__icon" onClick={toggle} />
+                    <h3>{comments.length}</h3>
+                  </li>
+                </ul>
               </div>
             )}
-            <Comment
-              className="comment__box"
-              avatar={
-                JSON.parse(sessionStorage.getItem("user")).icon === "" ? (
-                  <Avatar>
-                    {JSON.parse(sessionStorage.getItem("user")).nickname}
-                  </Avatar>
-                ) : (
-                  <Avatar
-                    size="large"
-                    src={JSON.parse(sessionStorage.getItem("user")).icon}
-                  >
-                    {JSON.parse(sessionStorage.getItem("user")).nickname}
-                  </Avatar>
-                )
-              }
-              content={
-                <Editor
-                  onChange={handleChange}
-                  onSubmit={handleSubmit}
-                  submitting={submitting}
-                  value={value}
+
+            <CSSTransition
+              classNames="inner__animation"
+              timeout={300}
+              unmountOnExit
+              in={visible}
+            >
+              <div className="inner">
+                {visible && (
+                  <div className="menu">
+                    <DownOutlined className="menu__icon" onClick={toggle} />
+                  </div>
+                )}
+                <Comment
+                  className="comment__box"
+                  avatar={
+                    JSON.parse(sessionStorage.getItem("user")).icon === "" ? (
+                      <Avatar>
+                        {JSON.parse(sessionStorage.getItem("user")).nickname}
+                      </Avatar>
+                    ) : (
+                      <Avatar
+                        size="large"
+                        src={JSON.parse(sessionStorage.getItem("user")).icon}
+                      >
+                        {JSON.parse(sessionStorage.getItem("user")).nickname}
+                      </Avatar>
+                    )
+                  }
+                  content={
+                    <Editor
+                      onChange={handleChange}
+                      onSubmit={handleSubmit}
+                      submitting={submitting}
+                      value={value}
+                    />
+                  }
                 />
-              }
-            />
-            <div className="comment__list">
-              {isCommentLoading ? (
-                <Skeleton avatar paragraph={{ rows: 4 }} active />
-              ) : (
-                <List
-                  header={`댓글 ${comments.length}`}
-                  itemLayout="horizontal"
-                >
-                  {comments.length > 0 &&
-                    comments.map((comment, i) => {
-                      return (
-                        <Comment
-                          key={i}
-                          actions={
-                            JSON.parse(sessionStorage.getItem("user"))
-                              .nickname === comment.author && [
-                              <span
-                                key={comment.id}
-                                comment-id={comment.id}
-                                onClick={deleteComment}
-                              >
-                                삭제
-                              </span>,
-                            ]
-                          }
-                          avatar={
-                            comment.avatar ? (
-                              comment.avatar
-                            ) : (
-                              <Avatar>{comment.author}</Avatar>
-                            )
-                          }
-                          author={comment.author}
-                          content={comment.content}
-                          datetime={comment.datetime}
-                        />
-                      );
-                    })}
-                </List>
-              )}
-            </div>
-          </div>
-        </CSSTransition>
-      </footer>
+                <div className="comment__list">
+                  {isCommentLoading ? (
+                    <Skeleton avatar paragraph={{ rows: 4 }} active />
+                  ) : (
+                    <List
+                      header={`댓글 ${comments.length}`}
+                      itemLayout="horizontal"
+                    >
+                      {comments.length > 0 &&
+                        comments.map((comment, i) => {
+                          return (
+                            <Comment
+                              key={i}
+                              actions={
+                                JSON.parse(sessionStorage.getItem("user"))
+                                  .nickname === comment.author && [
+                                  <span
+                                    key={comment.id}
+                                    comment-id={comment.id}
+                                    onClick={deleteComment}
+                                  >
+                                    삭제
+                                  </span>,
+                                ]
+                              }
+                              avatar={
+                                comment.avatar ? (
+                                  comment.avatar
+                                ) : (
+                                  <Avatar>{comment.author}</Avatar>
+                                )
+                              }
+                              author={comment.author}
+                              content={comment.content}
+                              datetime={comment.datetime}
+                            />
+                          );
+                        })}
+                    </List>
+                  )}
+                </div>
+              </div>
+            </CSSTransition>
+          </footer>
+        </div>
+      )}
     </section>
   );
 };

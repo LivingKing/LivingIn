@@ -13,7 +13,6 @@ import LogOut from "../../libs/LogOut";
 
 function MainPage(props) {
   const [isLoading, setIsLoading] = useState(true);
-  sessionStorage.cat = "";
   useEffect(() => {
     if (isLoading) {
       setIsLoading(false);
@@ -51,8 +50,6 @@ function MainPage(props) {
   const handleClick = (e) => {
     console.log("click ", e);
     setNow(e.key);
-    sessionStorage.cat = now;
-    console.log(sessionStorage.cat);
   };
 
   return (

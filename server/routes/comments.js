@@ -1,19 +1,31 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/User");
 const Comment = require("../models/Comment");
-const config = require("../config/config");
-const jwt = require("jsonwebtoken");
 const axios = require("axios");
 const verifyUser = require("../libs/verifyUser");
+const host = require("../config/host");
+const Post = require("../models/Post");
 // 댓글 생성 api
 router.post("/", async (req, res) => {
   const { post_id, access_token, token_type, content } = req.body;
   const user = await verifyUser(token_type, access_token);
-  Comment.create(post_id, user.nickname, user.icon, content).then(() => {
-    res.status(200).json({
-      message: "comment successfully",
+  Comment.create(post_id, user.nickname, user.icon, content).then(async () => {
+    const post = await Post.findById(post_id);
+    let result = {
+      type: "score",
+      active: "comment",
+      category: post.category,
+      access_token: access_token,
+      token_type: token_type,
+    };
+    const update = await axios.put(host.serverHost() + `/users`, {
+      data: JSON.stringify(result),
     });
+    if (update.status === 200) {
+      res.status(200).json({
+        message: "comment successfully",
+      });
+    }
   });
 });
 

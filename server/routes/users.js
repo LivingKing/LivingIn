@@ -10,8 +10,11 @@ const host = require("../config/host");
 const verifyUser = require("../libs/verifyUser");
 
 // 유저 조회 api
-router.get("/", (req, res) => {
+router.get("/", async (req, res) => {
   if (Object.keys(req.query).length !== 0) {
+    const { email } = req.query;
+    const user = await User.findOneByEmail(email);
+    res.json(user);
   } else {
     User.find({}, (err, users) => {
       if (err) throw err;
@@ -39,6 +42,44 @@ router.put("/", async (req, res) => {
       if (password) user.passwrod = password;
       if (nickname) user.nickname = nickname;
       user.save();
+    } else if (result.type === "score") {
+      const { active, category, token_type, access_token } = result;
+      const user = await verifyUser(token_type, access_token);
+      let index;
+      if (category === "가전") index = 0;
+      else if (category === "요리") index = 1;
+      else if (category === "생활") index = 2;
+      else if (category === "욕실") index = 3;
+
+      console.log(active);
+      if (active === "favorite_search") {
+        user.favorite_score[index] += 24;
+      } else if (active === "normal_search") {
+        user.favorite_score[index] += 17;
+      } else if (active === "view") {
+        user.favorite_score[index] += 10;
+      } else {
+        user.favorite_score[index] += 4;
+      }
+      let max = user.favorite_score[0];
+      index = 0;
+      for (let i = 1; i < 4; i++) {
+        if (max < user.favorite_score[i]) {
+          max = user.favorite_score[i];
+          index = i;
+        }
+      }
+      if (max >= 50) {
+        if (index === 0) user.favorite_category = "가전";
+        else if (index === 1) user.favorite_category = "요리";
+        else if (index === 2) user.favorite_category = "생활";
+        else if (index === 3) user.favorite_category = "욕실";
+      }
+      await User.updateOne(
+        { _id: user._id },
+        { favorite_score: user.favorite_score }
+      );
+      await user.save();
     } else {
       const { token, password } = req.body;
       const result = await jwt.verify(token, config.secret);

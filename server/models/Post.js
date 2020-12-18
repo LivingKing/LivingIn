@@ -14,9 +14,11 @@ const postSchema = new Schema({
   likes: { type: Array, default: [] },
   dislikes: { type: Array, default: [] },
   hits: { type: Number, default: 0 },
+  views: { type: Array, default: [] },
   hash_Tags: { type: Array, default: [] },
   Image_Direct: { type: Array, default: [] },
   is_Deleted: { type: Boolean, default: false },
+  thumbnail: { type: String },
 });
 
 postSchema.statics.create = function (
@@ -24,7 +26,8 @@ postSchema.statics.create = function (
   content,
   writer,
   hash_Tags,
-  category
+  category,
+  thumbnail
 ) {
   const post = new this({
     title,
@@ -32,6 +35,7 @@ postSchema.statics.create = function (
     writer,
     hash_Tags,
     category,
+    thumbnail,
   });
   const date = getCurrentDate();
   post.created_At = date;

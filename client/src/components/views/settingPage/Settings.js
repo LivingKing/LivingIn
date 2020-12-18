@@ -8,6 +8,7 @@ import {
   message,
   Upload,
   DatePicker,
+  Spin,
 } from "antd";
 import {
   QuestionCircleOutlined,
@@ -22,6 +23,7 @@ import axios from "axios";
 import moment from "moment";
 import Tags from "../../libs/EditableTagGroup";
 import API_KEY from "../../../config/key";
+import Verify from "../../libs/Verify";
 
 const Settings = (props) => {
   const [form] = Form.useForm();
@@ -46,6 +48,32 @@ const Settings = (props) => {
   const [userinfo, setUserInfo] = useState([]);
 
   useEffect(() => {
+    if (!sessionStorage.isLogin) {
+      message.error("로그인이 필요합니다.");
+      return props.history.push("/login");
+    } else {
+      const res = Verify(
+        JSON.parse(sessionStorage.getItem("token_info")).access_token,
+        JSON.parse(sessionStorage.getItem("token_info")).token_type,
+        props
+      );
+      res.then((result) => {
+        if (result !== undefined) {
+          try {
+            const token_type = JSON.parse(sessionStorage.getItem("token_info"))
+              .token_type;
+            sessionStorage.removeItem("token_info");
+            sessionStorage.setItem(
+              "token_info",
+              JSON.stringify({
+                token_type: token_type,
+                access_token: result.access_token,
+              })
+            );
+          } catch {}
+        }
+      });
+    }
     const getUserInfo = async () => {
       const { access_token, token_type } = JSON.parse(
         sessionStorage.getItem("token_info")
@@ -185,7 +213,7 @@ const Settings = (props) => {
     <div className="settings__container">
       <Header />
       {isLoading ? (
-        <LoadingOutlined />
+        <Spin indicator={<LoadingOutlined style={{ fontSize: 40 }} spin />} />
       ) : (
         <div style={{ textAlign: "center" }}>
           {(imageUrl || nick_checked || isPwChange || isTagChange) && (
@@ -225,27 +253,25 @@ const Settings = (props) => {
                 }}
                 scrollToFirstError
               >
-                <div style={{ display: "flex", justifyContent: "center" }}>
-                  <Form.Item label="">
-                    <Upload
-                      listType="picture-card"
-                      className="avatar-uploader"
-                      showUploadList={false}
-                      beforeUpload={beforeUpload}
-                      onChange={handleChange}
-                    >
-                      {imageUrl ? (
-                        <img
-                          src={imageUrl}
-                          alt="avatar"
-                          style={{ width: "100%" }}
-                        />
-                      ) : (
-                        uploadButton
-                      )}
-                    </Upload>
-                  </Form.Item>
-                </div>
+                <Form.Item label="">
+                  <Upload
+                    listType="picture-card"
+                    className="avatar-uploader"
+                    showUploadList={false}
+                    beforeUpload={beforeUpload}
+                    onChange={handleChange}
+                  >
+                    {imageUrl ? (
+                      <img
+                        src={imageUrl}
+                        alt="avatar"
+                        style={{ width: "100%" }}
+                      />
+                    ) : (
+                      uploadButton
+                    )}
+                  </Upload>
+                </Form.Item>
                 <Form.Item
                   label="이메일"
                   style={{ marginBottom: 0 }}

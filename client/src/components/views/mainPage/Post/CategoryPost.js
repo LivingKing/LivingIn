@@ -13,51 +13,52 @@ import getFormatDate from "../../../libs/getFormatDate";
 
 function CategoryPost(props) {
   let [boardList, setboardList] = useState("");
-  const [catPage, setCatPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+  const [category, setCategory] = useState("요리");
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
-    if (props.category !== sessionStorage.cat) {
-      if (sessionStorage.getItem(props.category) === null) {
-        const onLoad = async () => {
-          const res = await fetch(`/posts/?category=${props.category}`, {
-            method: "GET",
-          });
-          if (res.status === 200) {
-            const result = await res.json();
-            if (!result) {
-              console.log("empty");
-            } else {
-              setboardList(result);
-              sessionStorage.setItem(props.category, JSON.stringify(result));
-              console.log(boardList);
-            }
-          } else {
-            message.error("불러오기 실패!");
-          }
-        };
-        setCatPage(1);
-        onLoad();
+    const onLoad = async () => {
+      const res = await fetch(`/posts/?category=${props.category}`, {
+        method: "GET",
+      });
+      if (res.status === 200) {
+        const result = await res.json();
+        if (!result) {
+          console.log("empty");
+        } else {
+          setboardList(result);
+          console.log(boardList);
+        }
       } else {
-        setCatPage(1);
-        setboardList(JSON.parse(sessionStorage.getItem(props.category)));
+        message.error("불러오기 실패!");
       }
-      sessionStorage.cat = props.category;
+      setIsLoading(false);
+    };
+    if (isLoading) {
+      onLoad();
+    } else {
+      if (category !== props.category) {
+        setCategory(props.category);
+        setPage(1);
+        setIsLoading(true);
+      }
     }
-  }, [props.category, boardList]);
+  }, [props.category, boardList, isLoading, category]);
 
   return (
     <List
       className="bb"
       pagination={{
-        onChange: (page) => {
-          console.log(page);
-          setCatPage(page);
+        onChange: (e) => {
+          console.log(e);
+          setPage(e);
         },
         pageSize: 4,
         showSizeChanger: false,
         simple: true,
         position: "bottom",
-        current: catPage,
+        current: page,
       }}
       grid={{ gutter: 16, column: 4 }}
       dataSource={
@@ -74,7 +75,7 @@ function CategoryPost(props) {
                   content={c.content}
                   writer={c.writer}
                   title={c.title}
-                  like={c.likes}
+                  likes={c.likes}
                   link={"/detail/" + c._id}
                 />
               );
@@ -128,7 +129,7 @@ const CategoryPostData = (props) => {
           <br></br>
           <span className="gall_name">{props.create}</span>
           <span className="info_num">
-            <b>좋아요</b> {0}개 <b>조회수</b> {props.hits}회{" "}
+            <b>좋아요</b> {props.likes.length}개 <b>조회수</b> {props.hits}회{" "}
           </span>
         </div>
       </a>

@@ -36,15 +36,11 @@ const Post = (props) => {
         <span>{props.category}</span>
       </div>
       <div className="post__thumbnail">
-        <img
-          src="https://lh3.googleusercontent.com/proxy/Mj6E9VxyIemvOcNpTlCRP-1nqTogiL74km8AqViwg7J-X_DaLZ6gEpI0VAd7U43PgccDC7FkLz4-JFVPQNMykClzQK4Vvs4vE06Fm8s3Q_NVXYJkkEdTUcsGSCvtMg3a0aUBPmf0sayTDQGBtsg_2t7mHmNSYxRhtN_jSlakAo_LiCkkP-SHcQQwmKPHvvwS8UhqAq_HYlrgcipgkJMTAboPV_kSAo9G9YTS-TN_EvE8TaKtzk8R-QQyTefOYjVPGpPmPn1RVveLSUiKUMS7hTtNEGz7AhPeuy25T3LAJXJ7vJTHaQcA4If5p1ssN9zw_bg3dupVx3DufuaMc2hAC8expg3dryFJ1A2nOmokZvAwU6_Z7FgjmMcBt5h-CRwgWOfucyjfvo7ZPv1ODG2r"
-          alt="img"
-        />
+        <img src={props.thumbnail} alt="img" />
       </div>
       <div className="post__info">
         <div className="info__detail1">
           <p className="post__title">{props.title}</p>
-          <span className="post__content">{props.content}</span>
         </div>
         <div className="info__detail2">
           <ul className="post__hashtag">
@@ -62,22 +58,8 @@ const Post = (props) => {
             <span>{props.likes}</span>
             <EyeFilled style={{ fontSize: "20px" }} />
             <span>{props.views}</span>
-            <CommentOutlined style={{ fontSize: "20px" }} />
-            <span>{props.comments}</span>
           </div>
         </div>
-      </div>
-      <div className="abcabc"></div>
-      <div className="post__like">
-        <span className="like__icon" onClick={() => setLiked(!liked)}>
-          <svg
-            className={liked ? "like__animation" : "none"}
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-          >
-            <path d="M12 4.248c-3.148-5.402-12-3.825-12 2.944 0 4.661 5.571 9.427 12 15.808 6.43-6.381 12-11.147 12-15.808 0-6.792-8.875-8.306-12-2.944z" />
-          </svg>
-        </span>
       </div>
     </div>
   );

@@ -17,10 +17,24 @@ router.get("/posts", async (req, res) => {
       res.status(200).json(post);
     }).sort({ created_At: -1 });
   }
+  const { tag } = req.query;
+  if (tag) {
+    Post.find({ hash_Tags: { $regex: tag } }, (err, post) => {
+      if (err) throw err;
+      res.status(200).json(post);
+    }).sort({ created_At: -1 });
+  }
   const { value } = req.query;
+  console.log(value);
   if (value) {
     Post.find(
-      { $or: [{ title: { $regex: value } }, { writer: { $regex: value } }] },
+      {
+        $or: [
+          { title: { $regex: value } },
+          { writer: { $regex: value } },
+          { hash_Tags: { $regex: value } },
+        ],
+      },
       (err, post) => {
         if (err) throw err;
         res.status(200).json(post);

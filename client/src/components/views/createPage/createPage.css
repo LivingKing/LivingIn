@@ -45,6 +45,16 @@
   cursor: pointer;
 }
 
+.total__container .avatar-uploader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.total__container .avatar-uploader > .ant-upload {
+  width: 512px;
+  height: 512px;
+}
+
 #editor {
   height: 60%;
 }

@@ -178,32 +178,19 @@ function RegistrationPage(props) {
             scrollToFirstError
           >
             <Form.Item label="아이콘">
-              <div
-                style={{
-                  display: "table",
-                  marginLeft: "auto",
-                  marginRight: "auto",
-                  paddingRight: "2vw",
-                }}
+              <Upload
+                listType="picture-card"
+                className="avatar-uploader"
+                showUploadList={false}
+                beforeUpload={beforeUpload}
+                onChange={handleChange}
               >
-                <Upload
-                  listType="picture-card"
-                  className="avatar-uploader"
-                  showUploadList={false}
-                  beforeUpload={beforeUpload}
-                  onChange={handleChange}
-                >
-                  {imageUrl ? (
-                    <img
-                      src={imageUrl}
-                      alt="avatar"
-                      style={{ width: "100%" }}
-                    />
-                  ) : (
-                    uploadButton
-                  )}
-                </Upload>
-              </div>
+                {imageUrl ? (
+                  <img src={imageUrl} alt="avatar" style={{ width: "100%" }} />
+                ) : (
+                  uploadButton
+                )}
+              </Upload>
             </Form.Item>
             <Form.Item
               label="이메일"

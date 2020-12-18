@@ -17,17 +17,15 @@ function Header(props) {
     });
   });
 
-  const content = (
-    <UserInfo {...props} />
-  );
+  const content = <UserInfo {...props} />;
 
   return (
     <header className={scroll ? "header" : "header_scroll"}>
       <section className="headermain">
         <a className="header__mainhome" href="/">
           자취인
-      </a>
-      
+        </a>
+
         <Popover
           placement="bottomRight"
           content={content}
@@ -37,13 +35,10 @@ function Header(props) {
           <CaretDownOutlined className="header__info" />
         </Popover>
         <UserOutlined className="header__person" />
-      
-        <QuickSearch/>
-      </section>
 
-      
+        <QuickSearch />
+      </section>
     </header>
-    
   );
 }
 

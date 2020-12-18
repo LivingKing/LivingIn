@@ -24,6 +24,5 @@ module.exports = async (token_type, access_token) => {
     });
     user = await User.findOneByEmail(verify.data.email);
   }
-  console.log(user);
   return user;
 };

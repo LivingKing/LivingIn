@@ -27,3 +27,9 @@
   margin: 0 auto;
   width: 60vh;
 }
+
+.container .avatar-uploader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

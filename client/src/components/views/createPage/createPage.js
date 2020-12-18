@@ -11,11 +11,14 @@ import {
   Button,
   Popconfirm,
   message,
+  Upload,
 } from "antd";
+import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
 import "react-quill/dist/quill.snow.css";
 import "./createPage.css";
 import { withRouter } from "react-router-dom";
 import axios from "axios";
+import API_KEY from "../../../config/key";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -26,6 +29,8 @@ const CreatePost = (props) => {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [tags, setTags] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [thumbnailUrl, setThunbnailUrl] = useState("");
 
   useEffect(() => {
     if (!sessionStorage.getItem("isLogin")) {
@@ -56,11 +61,39 @@ const CreatePost = (props) => {
     }
   }, [props]);
 
+  function beforeUpload(file) {
+    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
+    if (!isJpgOrPng) {
+      message.error("JPG/PNG 파일만 업로드 가능합니다!");
+    }
+    const isLt2M = file.size / 1024 / 1024 < 16;
+    if (!isLt2M) {
+      message.error("이미지는 32MB보다 작아야합니다!");
+    }
+    console.log(isJpgOrPng, isLt2M);
+    return isJpgOrPng && isLt2M;
+  }
+
   const contentHandleChange = (value) => {
     setContent(value);
   };
   const titleHandleChange = (e) => {
     setTitle(e.target.value);
+  };
+  const handleChange = async (info) => {
+    setLoading(true);
+    let body = new FormData();
+    body.set("key", API_KEY.imgbb_API_KEY);
+    body.append("image", info.file.originFileObj);
+
+    const res = await axios({
+      method: "post",
+      url: "https://api.imgbb.com/1/upload",
+      data: body,
+    });
+    console.log("done");
+    setThunbnailUrl(res.data.data.url);
+    setLoading(false);
   };
   const onTest = async (e) => {
     e.preventDefault();
@@ -76,6 +109,7 @@ const CreatePost = (props) => {
       token_type: JSON.parse(sessionStorage.getItem("token_info")).token_type,
       tags: tags.values,
       category: category,
+      thumbnail: thumbnailUrl,
     });
     if (res.status === 200) {
       message.success("글 작성 성공!");
@@ -109,7 +143,12 @@ const CreatePost = (props) => {
     setTags({ values });
     console.log(values);
   };
-
+  const uploadButton = (
+    <div>
+      {loading ? <LoadingOutlined /> : <PlusOutlined />}
+      <div className="ant-upload-text">Upload</div>
+    </div>
+  );
   return (
     <div className="total__container">
       <Header {...props} />
@@ -135,10 +174,26 @@ const CreatePost = (props) => {
               <Option value="4">욕실</Option>
             </Select>
           </div>
-          <div className="container__tags">
-            <Divider />
-            <Title level={3}>Tags</Title>
-            <Tags tags={tags} onTagsChange={tagHandleChange} className="tgs" />
+          <Divider />
+          <Title level={3}>Thumbnail</Title>
+          <div className="container__thumbnail">
+            <Upload
+              listType="picture-card"
+              className="avatar-uploader"
+              showUploadList={false}
+              beforeUpload={beforeUpload}
+              onChange={handleChange}
+            >
+              {thumbnailUrl ? (
+                <img
+                  src={thumbnailUrl}
+                  alt="avatar"
+                  style={{ width: "100%" }}
+                />
+              ) : (
+                uploadButton
+              )}
+            </Upload>
           </div>
           <div className="container__Description">
             <Divider />
@@ -151,6 +206,11 @@ const CreatePost = (props) => {
                 className="description__Editor"
               />
             </div>
+          </div>
+          <div className="container__tags">
+            <Divider />
+            <Title level={3}>Tags</Title>
+            <Tags tags={tags} onTagsChange={tagHandleChange} className="tgs" />
           </div>
           <div className="container__Button">
             <Divider />

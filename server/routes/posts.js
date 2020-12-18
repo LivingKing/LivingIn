@@ -5,29 +5,61 @@ const User = require("../models/User");
 const config = require("../config/config");
 const jwt = require("jsonwebtoken");
 const verifyUser = require("../libs/verifyUser");
+const { default: Axios } = require("axios");
+const host = require("../config/host");
 
 // 글 생성 api
 router.post("/", async (req, res) => {
-  const { title, content, access_token, token_type, tags, category } = req.body;
+  const {
+    title,
+    content,
+    access_token,
+    token_type,
+    tags,
+    category,
+    thumbnail,
+  } = req.body;
   const user = await verifyUser(token_type, access_token);
-  Post.create(title, content, user.nickname, tags, category).then(() => {
-    res.status(200).json({
-      message: "post successfully",
-    });
-  });
+  Post.create(title, content, user.nickname, tags, category, thumbnail).then(
+    async () => {
+      let result = {
+        type: "score",
+        active: "create",
+        category: category,
+        access_token: access_token,
+        token_type: token_type,
+      };
+      const update = await Axios.put(host.serverHost() + `/users`, {
+        data: JSON.stringify(result),
+      });
+      if (update.status === 200) {
+        res.status(200).json({
+          message: "post successfully",
+        });
+      }
+    }
+  );
 });
 
 // 글 조회 api
 router.get("/", async (req, res) => {
   try {
     if (Object.keys(req.query).length !== 0) {
-      const { id } = req.query;
+      const { id, access_token, token_type } = req.query;
       if (id) {
         const post = await Post.findById(id);
         if (post) {
+          const user = await verifyUser(token_type, access_token);
+          if (!post.views.includes(user._id)) {
+            post.views.push(user._id);
+          }
+          await Post.updateOne({ _id: post._id }, { views: post.views });
           post.hits = post.hits + 1;
+          let state = false;
+          console.log(post);
           post.save();
-          return res.status(200).json(post);
+          if (post.likes.includes(user._id)) state = true;
+          return res.status(200).json({ post: post, state: state });
         }
       }
       const { category } = req.query;
@@ -58,7 +90,56 @@ router.get("/", async (req, res) => {
 
 //글 수정 api
 router.put("/", async (req, res) => {
-  const { title, content, writer, tags, category } = req.body;
+  const {
+    title,
+    content,
+    writer,
+    tags,
+    category,
+    id,
+    type,
+    access_token,
+    token_type,
+  } = req.body.data;
+  const user = await verifyUser(token_type, access_token);
+  const post = await Post.findById(id);
+  let state = false;
+  if (type === "liked" || type === "disliked") {
+    let result = {
+      type: "score",
+      active: "liked",
+      category: category,
+      access_token: access_token,
+      token_type: token_type,
+    };
+    await Axios.put(host.serverHost() + `/users`, {
+      data: JSON.stringify(result),
+    });
+  }
+  if (type === "liked") {
+    if (!post.likes.includes(user._id)) {
+      post.likes.push(user._id);
+      await Post.updateOne({ _id: id }, { likes: post.likes });
+      state = true;
+    } else {
+      post.likes.splice(post.likes.indexOf(user._id), 1);
+      await Post.updateOne({ _id: id }, { likes: post.likes });
+      state = false;
+    }
+    return res.status(200).json({ length: post.likes.length, state: state });
+  } else if (type === "disliked") {
+    if (!post.dislikes.includes(user._id)) {
+      post.dislikes.push(user._id);
+      await Post.updateOne({ _id: id }, { dislikes: post.dislikes });
+      state = true;
+    } else {
+      post.dislikes.splice(post.dislikes.indexOf(user._id), 1);
+      await Post.updateOne({ _id: id }, { dislikes: post.dislikes });
+      state = false;
+    }
+    console.log(post);
+    return res.status(200).json({ length: post.dislikes.length, state: state });
+  }
 });
 
 //글 삭제 api
