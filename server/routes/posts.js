@@ -64,7 +64,23 @@ router.get("/", async (req, res) => {
       }
       const { category } = req.query;
       if (category) {
-        const post = await Post.find({ category: category }).sort({ hits: -1 });
+        let post;
+        if (req.query.access_token) {
+          const { access_token, type } = req.query;
+          const user = await verifyUser(type, access_token);
+          const user_id = user._id;
+          post = await Post.find({
+            $and: [{ views: { $nin: user_id } }, { category: category }],
+          })
+            .sort({
+              hits: -1,
+            })
+            .limit(5);
+        } else {
+          post = await Post.find({ category: category }).sort({
+            hits: -1,
+          });
+        }
         return res.status(200).json(post);
       }
       let length = Number(req.query.length);
@@ -77,7 +93,7 @@ router.get("/", async (req, res) => {
       }
       let obj = {};
       obj[sort_type] = -1;
-      const post = await Post.find().sort(obj).skip(length).limit(5);
+      const post = await Post.find().sort(obj).skip(length).limit(6);
       return res.status(200).json(post);
     } else {
       const post = await Post.find().sort({ created_At: -1 }).limit(5);

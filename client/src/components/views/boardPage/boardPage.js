@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
-import Menu from "./Menu";
-import { BackTop, message } from "antd";
+import { BackTop, message, Typography } from "antd";
 import Header from "../../libs/Header/Header";
 import "./boardPage.css";
 import NewCon from "./NewCon.js";
 import Verify from "../../libs/Verify";
+
+const { Title } = Typography;
 
 const BoardPage = (props) => {
   const scrollTop = document.documentElement.scrollTop;
@@ -42,20 +43,14 @@ const BoardPage = (props) => {
       <Header />
       <div className="back">
         <div className="sub_top">
-          <h2>전체</h2>
-          <div className="area">
-            <div className="btn_area">전체</div>
-          </div>
+          <Title className="h2" level={2}>
+            팁 게시판
+          </Title>
         </div>
       </div>
 
       <div className="content22">
-        {/* <div class="filter_wrap">
-            <Menu />
-          </div> */}
-        <BackTop />
-
-        {/* <Sider><Menu/></Sider> */}
+        <BackTop style={{ zIndex: "999" }} />
         <NewCon />
       </div>
     </div>

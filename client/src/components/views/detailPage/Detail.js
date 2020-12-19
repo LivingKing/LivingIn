@@ -72,7 +72,6 @@ const Editor = ({ onChange, onSubmit, submitting, value }) => (
     </Form.Item>
   </>
 );
-
 const Detail = (props) => {
   const [visible, setVisible] = useState(false); // 댓글창 눌렀는지
   const [comments, setComments] = useState([]); // 댓글 state

@@ -19,10 +19,10 @@ const App = () => {
   return (
     <BrowserRouter>
       <Switch>
-        <Route exact path="/"component={MainPage}/>
-        <Route exact path="/login"component={LoginPage}/>
-        <Route exact path="/login/callback"component={CallbackPage}/>
-        <Route exact path="/register"component={RegisterPage}/>
+        <Route exact path="/" component={MainPage} />
+        <Route exact path="/login" component={LoginPage} />
+        <Route exact path="/login/callback" component={CallbackPage} />
+        <Route exact path="/register" component={RegisterPage} />
         <Route exact path="/find" component={FindPage} />
         <Route exact path="/modify" component={ModifyPage} />
         <Route exact path="/confirm/success" component={SuccessPage} />

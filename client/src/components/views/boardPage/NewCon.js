@@ -1,16 +1,31 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { message, Spin } from "antd";
+import { message, Spin, Typography } from "antd";
 import Post from "../../libs/Post/Post";
 import axios from "axios";
 import check from "./check.png";
 import { LoadingOutlined } from "@ant-design/icons";
-import parse from "html-react-parser";
+import qs from "querystring";
 import "./NewCon.css";
+const { Title } = Typography;
+
+const getUserInfo = async () => {
+  const { access_token, token_type } = JSON.parse(
+    sessionStorage.getItem("token_info")
+  );
+  const result = await axios.get("/api/userinfo", {
+    params: {
+      access_token: access_token,
+      type: token_type,
+    },
+  });
+  return result.data.user;
+};
 function NewPost() {
   const [isLoading, setIsLoading] = useState(true);
   const [items, setItems] = useState([]);
   const [fetching, setFetching] = useState(false); // 추가 데이터를 로드하는지 아닌지를 담기위한 state
   const [sort_type, setSort_type] = useState("created_At");
+  const [favCategory, setFavCategory] = useState("");
 
   // 스크롤 이벤트 핸들러
   const handleScroll = useCallback(() => {
@@ -69,8 +84,15 @@ function NewPost() {
   };
 
   useEffect(() => {
+    console.log(Object.keys(qs.parse(window.location.search)).length === 0);
     if (isLoading) {
+      const getUser = async () => {
+        const user = await getUserInfo();
+        setFavCategory(user.favorite_category);
+      };
       fetchInstaFeeds();
+      getUser();
+
       setIsLoading(false);
     }
     window.addEventListener("scroll", handleScroll());
@@ -122,7 +144,7 @@ function NewPost() {
   return (
     <div
       style={{
-        width: "40vw",
+        width: "100vw",
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
@@ -215,7 +237,12 @@ function NewPost() {
         </div>
 
         <div id="poduct_list_area">
-          <div className="title"></div>
+          <br></br>
+          {Object.keys(qs.parse(window.location.search)).length !== 0 ? (
+            <Title level={3}>검색 결과</Title>
+          ) : (
+            <></>
+          )}
         </div>
       </div>
       <div className="Scrollbar">

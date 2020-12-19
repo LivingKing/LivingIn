@@ -77,6 +77,58 @@
   position: relative;
   top: 260px;
 }
+.view__container .ql-font-monospace {
+  font-family: monospace;
+}
+
+.view__container .ql-size-small {
+  font-size: 0.75em;
+}
+.view__container .ql-size-large {
+  font-size: 1.5em;
+}
+
+.view__container .ql-size-huge {
+  font-size: 2.5em;
+}
+
+.view__container blockquote {
+  border-left: 4px solid #ccc;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  padding-left: 16px;
+}
+
+.view__container .ql-indent-1 {
+  padding-left: 3em;
+}
+.view__container .ql-indent-2 {
+  padding-left: 6em;
+}
+
+.view__container .ql-indent-3 {
+  padding-left: 9em;
+}
+
+.view__container .ql-indent-4 {
+  padding-left: 12em;
+}
+
+.view__container .ql-indent-5 {
+  padding-left: 15em;
+}
+
+.view__container .ql-indent-6 {
+  padding-left: 18em;
+}
+
+.view__container .ql-indent-7 {
+  padding-left: 21em;
+}
+
+.view__container .ql-indent-8 {
+  padding-left: 24em;
+}
 
 .view__container .hashtag {
   position: relative;

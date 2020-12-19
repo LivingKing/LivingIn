@@ -7,6 +7,8 @@
 .Scrollbar {
   overflow: hidden;
   flex-direction: row;
+  display: grid;
+  grid-template-columns: 0.2fr 0.2fr 0.2fr;
 }
 
 .ant-layout-content-children {
@@ -32,11 +34,9 @@
   padding-top: 1px;
   border-radius: 0;
 }
-.sub_top h2 {
+.sub_top .h2 {
   display: block;
   margin: 12px 0 0 50px;
-  font-size: 38px;
-  font-weight: normal;
   letter-spacing: -1px;
   color: #fff;
 }

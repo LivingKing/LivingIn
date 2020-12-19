@@ -35,10 +35,7 @@
 .buttons {
   cursor: pointer;
   transition: transform 100ms ease;
-}
-
-.buttons:hover {
-  transform: scale(1.1);
+  margin-left: 10px;
 }
 
 .tgs {

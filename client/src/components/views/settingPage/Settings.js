@@ -213,7 +213,18 @@ const Settings = (props) => {
     <div className="settings__container">
       <Header />
       {isLoading ? (
-        <Spin indicator={<LoadingOutlined style={{ fontSize: 40 }} spin />} />
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "58.7vh",
+          }}
+        >
+          <Spin
+            indicator={<LoadingOutlined style={{ fontSize: 100 }} spin />}
+          />
+        </div>
       ) : (
         <div style={{ textAlign: "center" }}>
           {(imageUrl || nick_checked || isPwChange || isTagChange) && (

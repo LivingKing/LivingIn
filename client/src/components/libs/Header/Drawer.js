@@ -3,9 +3,11 @@ import { SearchOutlined } from "@ant-design/icons";
 import { Input, Select, List, Divider, message, Spin, Tag } from "antd";
 import { Drawer } from "antd";
 import "./Header.css";
+import "./Drawer.css";
 import axios from "axios";
 import parse from "html-react-parser";
 import getFormatDate from "../../libs/getFormatDate";
+import Router from "react-router-dom";
 
 const tagColor = [
   "magenta",
@@ -36,31 +38,13 @@ function QuickSearch(props) {
 
   const onSearch = (value) => {
     if (value === "") return;
-    setIsLoading(true);
-    setIsFinish(false);
-    setFirstLoad(false);
 
     console.log(command + value);
     if (!sessionStorage.getItem("search"))
       sessionStorage.setItem("search", "normal_search");
     const onLoad = async () => {
       if (value.includes("#")) value = value.replace("#", "");
-      const res = await fetch(`${command + value}`, {
-        method: "GET",
-      });
-      if (res.status === 200) {
-        const result = await res.json();
-        if (!result) {
-          console.log("empty");
-        } else {
-          console.log(result);
-          setboardList(result);
-        }
-      } else {
-        message.error("불러오기 실패!");
-      }
-      setIsLoading(false);
-      setIsFinish(true);
+      window.location.href = `/board/?search=${value}`;
     };
     onLoad();
   };
@@ -85,6 +69,7 @@ function QuickSearch(props) {
   );
 
   const showDrawer = async () => {
+    if (sessionStorage.getItem("search")) sessionStorage.removeItem("search");
     const user = await axios.get("/users", {
       params: {
         email: JSON.parse(sessionStorage.getItem("user")).email,
@@ -112,13 +97,13 @@ function QuickSearch(props) {
       <SearchOutlined onClick={showDrawer} className="header__search" />
 
       <Drawer
-        title="빠른 게시물 찾기"
+        title="게시물 검색"
         placement="top"
         closable={true}
         onClose={onClose}
         visible={visible}
         width="400px"
-        height="50vh"
+        height="20vh"
         destroyOnClose="true"
       >
         <div

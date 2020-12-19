@@ -22,7 +22,7 @@ import API_KEY from "../../../config/key";
 
 const { Title } = Typography;
 const { Option } = Select;
-const text = "Are you sure to delete this post?";
+const text = "글 작성을 취소하시겠습니까?";
 
 const CreatePost = (props) => {
   const [content, setContent] = useState("");
@@ -155,9 +155,9 @@ const CreatePost = (props) => {
       <section className="write__container">
         <form className="writeForm" onSubmit={onTest}>
           <div className="container__title">
-            <Title level={3}>Title</Title>
+            <Title level={3}>제목</Title>
             <Input
-              placeholder="Add a Title"
+              placeholder="제목을 입력하세요"
               value={title}
               name="title"
               onChange={titleHandleChange}
@@ -175,7 +175,7 @@ const CreatePost = (props) => {
             </Select>
           </div>
           <Divider />
-          <Title level={3}>Thumbnail</Title>
+          <Title level={3}>썸네일</Title>
           <div className="container__thumbnail">
             <Upload
               listType="picture-card"
@@ -197,28 +197,27 @@ const CreatePost = (props) => {
           </div>
           <div className="container__Description">
             <Divider />
-            <Title level={3}>Description</Title>
             <div className="container__editor">
               <QuillEditor
                 value={content}
                 onTextChange={contentHandleChange}
-                placeholder={"Start Posting Something"}
+                placeholder={"내용을 입력하세요!"}
                 className="description__Editor"
               />
             </div>
           </div>
           <div className="container__tags">
             <Divider />
-            <Title level={3}>Tags</Title>
+            <Title level={3}>#해시태그</Title>
             <Tags tags={tags} onTagsChange={tagHandleChange} className="tgs" />
           </div>
           <div className="container__Button">
             <Divider />
             <Button type="primary" htmlType="submit" className={"buttons"}>
-              Update
+              작성하기
             </Button>
             <Popconfirm placement="right" title={text}>
-              <Button className={"buttons"}>Cancel</Button>
+              <Button className={"buttons"}>취소</Button>
             </Popconfirm>
           </div>
         </form>

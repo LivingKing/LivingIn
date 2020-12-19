@@ -16,7 +16,6 @@ const postSchema = new Schema({
   hits: { type: Number, default: 0 },
   views: { type: Array, default: [] },
   hash_Tags: { type: Array, default: [] },
-  Image_Direct: { type: Array, default: [] },
   is_Deleted: { type: Boolean, default: false },
   thumbnail: { type: String },
 });
