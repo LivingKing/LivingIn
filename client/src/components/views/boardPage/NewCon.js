@@ -80,12 +80,14 @@ function NewPost() {
             items.push({
               id: res.data[i]._id,
               title: res.data[i].title,
+              writer: res.data[i].writer,
               category: res.data[i].category,
               views: res.data[i].hits,
               likes: res.data[i].likes.length,
               liked: res.data[i].liked,
               hashtags: res.data[i].hash_Tags,
               thumbnail: res.data[i].thumbnail,
+              created_At: res.data[i].created_At,
             });
           }
           if (
@@ -153,12 +155,14 @@ function NewPost() {
           item.push({
             id: res.data[i]._id,
             title: res.data[i].title,
+            writer: res.data[i].writer,
             category: res.data[i].category,
             views: res.data[i].hits,
             likes: res.data[i].likes.length,
             liked: res.data[i].liked,
             hashtags: res.data[i].hash_Tags,
             thumbnail: res.data[i].thumbnail,
+            created_At: res.data[i].created_At,
           });
         }
         setItems(item);
@@ -285,6 +289,7 @@ function NewPost() {
                 key={"fav" + favItems[index].id}
                 id={favItems[index].id}
                 title={favItems[index].title}
+                writer={favItems[index].writer}
                 category={favItems[index].category}
                 views={favItems[index].views}
                 likes={favItems[index].likes}
@@ -293,6 +298,7 @@ function NewPost() {
                 content={favItems[index].content}
                 hashtags={favItems[index].hashtags}
                 thumbnail={favItems[index].thumbnail}
+                created_At={favItems[index].created_At}
               />
             ))}
           </div>
@@ -319,6 +325,7 @@ function NewPost() {
               key={items[index].id}
               id={items[index].id}
               title={items[index].title}
+              writer={items[index].writer}
               category={items[index].category}
               views={items[index].views}
               likes={items[index].likes}
@@ -327,6 +334,7 @@ function NewPost() {
               content={items[index].content}
               hashtags={items[index].hashtags}
               thumbnail={items[index].thumbnail}
+              created_At={items[index].created_At}
             />
           ))
         )}

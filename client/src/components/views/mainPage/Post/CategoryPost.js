@@ -100,9 +100,6 @@ function CategoryPost(props) {
 }
 
 const CategoryPostData = (props) => {
-  const [postImg, setPostImg] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-
   var v01 = props.title.substr(0, 8);
   var v02 = props.title.substr(8, 8);
 
@@ -127,7 +124,7 @@ const CategoryPostData = (props) => {
             <div className="img-cover"></div>
           </div>
         ) : (
-          <img src={props.thumbnail} width="171" height="171" />
+          <img alt="thumbnail" src={props.thumbnail} width="171" height="171" />
         )}
 
         <img

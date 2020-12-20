@@ -61,27 +61,27 @@
   float: left;
 }
 
-.img {
+.years_box .img {
   position: relative;
   height: 171px;
   width: 171px;
   margin-left: 8px;
+  background-color: rgba(0, 0, 0, 0.05);
   background-size: cover;
 }
 
-.img .content {
+.years_box .img .content {
   position: absolute;
   font-family: "jalnanOTF";
   top: 55%;
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: 15px;
-  color: white;
   z-index: 2;
   text-align: center;
 }
 
-.img .content h1 {
+.years_box .img .content h1 {
   color: white;
   color: #5c6bc0;
 }
