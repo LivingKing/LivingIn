@@ -30,7 +30,7 @@ function QuickSearch(props) {
   const [hashTags, setHashTags] = useState([]);
   let [boardList, setboardList] = useState("");
   const [favKeyword, setFavKeyword] = useState("");
-  const [command, setCommand] = useState(`/search/posts/?value=`);
+  const [command, setCommand] = useState(`/board/?all=`);
 
   const inputRef = useRef();
   const { Search } = Input;
@@ -44,15 +44,13 @@ function QuickSearch(props) {
       sessionStorage.setItem("search", "normal_search");
     const onLoad = async () => {
       if (value.includes("#")) value = value.replace("#", "");
-      window.location.href = `/board/?search=${value}`;
+      window.location.href = `${command}${value}`;
     };
     onLoad();
   };
 
   const selectChange = (value) => {
-    value === "all"
-      ? setCommand(`/search/posts/?value=`)
-      : setCommand(`/search/posts/?${value}=`);
+    setCommand(`/board/?${value}=`);
   };
 
   const selectBefore = (

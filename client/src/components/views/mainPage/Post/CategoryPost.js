@@ -5,10 +5,6 @@ import gold from "./gold.png";
 import silver from "./silver.png";
 import bronze from "./bronze.png";
 import blank from "./blank.png";
-import ansung from "./ansung.jpg";
-import shin from "./shin.jpg";
-import jin from "./jin.jpg";
-import ramen from "./ramen.jpg";
 import getFormatDate from "../../../libs/getFormatDate";
 
 function CategoryPost(props) {
@@ -90,6 +86,7 @@ function CategoryPost(props) {
                       title={c.title}
                       likes={c.likes}
                       link={"/detail/" + c._id}
+                      thumbnail={c.thumbnail}
                     />
                   );
                 })
@@ -103,6 +100,15 @@ function CategoryPost(props) {
 }
 
 const CategoryPostData = (props) => {
+  const [postImg, setPostImg] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  var v01 = props.title.substr(0, 8);
+  var v02 = props.title.substr(8, 8);
+
+  const arr1 = v01.split(" ");
+  const arr2 = v02.split(" ");
+
   return (
     <li className="years_box oldhitL">
       <a
@@ -110,19 +116,19 @@ const CategoryPostData = (props) => {
         className="link_thumb main_log"
         section_code="old_hit"
       >
-        <img
-          src={
-            props.rank === 1
-              ? ramen
-              : props.rank === 2
-              ? ansung
-              : props.rank === 3
-              ? jin
-              : shin
-          }
-          width="171"
-          height="171"
-        />
+        {props.thumbnail == null || props.thumbnail === "" ? (
+          <div className="img">
+            <div className="content">
+              <h1>{arr1[0]}</h1>
+              <h1>{arr1[1]}</h1>
+              <h1>{arr2[0]}</h1>
+              <h1>{arr2[1]}</h1>
+            </div>
+            <div className="img-cover"></div>
+          </div>
+        ) : (
+          <img src={props.thumbnail} width="171" height="171" />
+        )}
 
         <img
           src={

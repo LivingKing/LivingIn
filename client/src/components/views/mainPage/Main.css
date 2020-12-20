@@ -57,6 +57,15 @@
   text-align: center;
   line-height: 90px;
 }
+
+.box3 {
+  width: 800px;
+  margin: 20px auto 0;
+  border: 5px solid #ffffff;
+  height: 20px;
+  text-align: center;
+  line-height: 90px;
+}
 /* 본문 항목 부분 */
 
 .content_title {

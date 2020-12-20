@@ -8,25 +8,25 @@ import qs from "querystring";
 import "./NewCon.css";
 const { Title } = Typography;
 
-const getUserInfo = async () => {
-  const { access_token, token_type } = JSON.parse(
-    sessionStorage.getItem("token_info")
-  );
-  const result = await axios.get("/api/userinfo", {
-    params: {
-      access_token: access_token,
-      type: token_type,
-    },
-  });
-  return result.data.user;
-};
 function NewPost() {
   const [isLoading, setIsLoading] = useState(true);
   const [items, setItems] = useState([]);
+  const [favItems, setFavItems] = useState([]);
   const [fetching, setFetching] = useState(false); // 추가 데이터를 로드하는지 아닌지를 담기위한 state
   const [sort_type, setSort_type] = useState("created_At");
   const [favCategory, setFavCategory] = useState("");
-
+  const getUserInfo = async () => {
+    const { access_token, token_type } = JSON.parse(
+      sessionStorage.getItem("token_info")
+    );
+    const result = await axios.get("/api/userinfo", {
+      params: {
+        access_token: access_token,
+        type: token_type,
+      },
+    });
+    return result.data.user;
+  };
   // 스크롤 이벤트 핸들러
   const handleScroll = useCallback(() => {
     // if (items.length === props.board.length - 1) {
@@ -47,23 +47,37 @@ function NewPost() {
     }
   });
 
-  const fetchInstaFeeds = async () => {
-    console.log(items);
+  const fetchInstaFeeds = async (favorite_category) => {
     const onLoad = async () => {
-      const res = await axios.get(`/posts`, {
-        params: {
-          length: 0,
-          sort_type: sort_type,
-        },
-      });
+      let res;
+      if (
+        window.location.search !== "" &&
+        qs.parse(window.location.search).length !== 0
+      ) {
+        const search_type = Object.keys(qs.parse(window.location.search))[0];
+        const search_word = Object.values(qs.parse(window.location.search))[0];
+        if (favorite_category !== "") {
+          res = await axios.get(
+            `/search/posts${search_type}=${search_word}&&fav=${favorite_category}&&sort_type=${sort_type}`
+          );
+        } else
+          res = await axios.get(`/search/posts${search_type}=${search_word}`);
+      } else {
+        res = await axios.get(`/posts`, {
+          params: {
+            length: 0,
+            sort_type: sort_type,
+          },
+        });
+      }
       if (res.status === 200) {
         if (!res.data) {
           console.log("empty");
         } else {
-          const item = [];
+          const items = [];
           console.log(res.data);
           for (let i = 0; i < res.data.length; i++) {
-            item.push({
+            items.push({
               id: res.data[i]._id,
               title: res.data[i].title,
               category: res.data[i].category,
@@ -74,7 +88,17 @@ function NewPost() {
               thumbnail: res.data[i].thumbnail,
             });
           }
-          setItems(item);
+          if (
+            window.location.search !== "" &&
+            qs.parse(window.location.search).length !== 0 &&
+            favorite_category
+          ) {
+            console.log("123213");
+            setFavItems(items);
+          } else {
+            console.log("4545");
+            setItems(items);
+          }
         }
       } else {
         message.error("불러오기 실패!");
@@ -84,13 +108,12 @@ function NewPost() {
   };
 
   useEffect(() => {
-    console.log(Object.keys(qs.parse(window.location.search)).length === 0);
     if (isLoading) {
       const getUser = async () => {
         const user = await getUserInfo();
         setFavCategory(user.favorite_category);
+        fetchInstaFeeds(user.favorite_category);
       };
-      fetchInstaFeeds();
       getUser();
 
       setIsLoading(false);
@@ -105,31 +128,44 @@ function NewPost() {
   const fetchMoreInstaFeeds = async () => {
     // 추가 데이터를 로드하는 상태로 전환
     setFetching(true);
-
-    const res = await axios.get(`/posts`, {
-      params: {
-        length: items.length,
-        sort_type: sort_type,
-      },
-    });
-    if (res.status === 200) {
-      let item = [...items];
-      for (let i = 0; i < res.data.length; i++) {
-        item.push({
-          id: res.data[i]._id,
-          title: res.data[i].title,
-          category: res.data[i].category,
-          views: res.data[i].hits,
-          likes: res.data[i].likes.length,
-          liked: res.data[i].liked,
-          hashtags: res.data[i].hash_Tags,
-          thumbnail: res.data[i].thumbnail,
-        });
-      }
-      setItems(item);
+    let res;
+    if (
+      window.location.search !== "" &&
+      qs.parse(window.location.search).length !== 0
+    ) {
+      const search_type = Object.keys(qs.parse(window.location.search))[0];
+      const search_word = Object.values(qs.parse(window.location.search))[0];
+      res = await axios.get(
+        `/search/posts${search_type}=${search_word}&&length=${items.length}&&sort_type=${sort_type}`
+      );
+    } else {
+      res = await axios.get(`/posts`, {
+        params: {
+          length: items.length,
+          sort_type: sort_type,
+        },
+      });
     }
-    // 추가 데이터 로드 끝
-    setFetching(false);
+    if (res.status === 200) {
+      if (res.data.length !== 0) {
+        let item = [...items];
+        for (let i = 0; i < res.data.length; i++) {
+          item.push({
+            id: res.data[i]._id,
+            title: res.data[i].title,
+            category: res.data[i].category,
+            views: res.data[i].hits,
+            likes: res.data[i].likes.length,
+            liked: res.data[i].liked,
+            hashtags: res.data[i].hash_Tags,
+            thumbnail: res.data[i].thumbnail,
+          });
+        }
+        setItems(item);
+        // 추가 데이터 로드 끝
+        setFetching(false);
+      }
+    }
   };
 
   useEffect(() => {
@@ -235,16 +271,43 @@ function NewPost() {
             </button>
           </div>
         </div>
-
-        <div id="poduct_list_area">
-          <br></br>
-          {Object.keys(qs.parse(window.location.search)).length !== 0 ? (
-            <Title level={3}>검색 결과</Title>
-          ) : (
-            <></>
-          )}
-        </div>
       </div>
+      {Object.keys(qs.parse(window.location.search)).length !== 0 &&
+      favCategory ? (
+        <>
+          <div>
+            <br></br>
+            <Title level={3}>선호 카테고리 기반 추천 게시물</Title>
+          </div>
+          <div className="Scrollbar">
+            {favItems.map((i, index) => (
+              <Post
+                key={"fav" + favItems[index].id}
+                id={favItems[index].id}
+                title={favItems[index].title}
+                category={favItems[index].category}
+                views={favItems[index].views}
+                likes={favItems[index].likes}
+                liked={favItems[index].liked}
+                comments={favItems[index].comments}
+                content={favItems[index].content}
+                hashtags={favItems[index].hashtags}
+                thumbnail={favItems[index].thumbnail}
+              />
+            ))}
+          </div>
+        </>
+      ) : (
+        <></>
+      )}
+      {Object.keys(qs.parse(window.location.search)).length !== 0 ? (
+        <div>
+          <br></br>
+          <Title level={3}>검색 결과</Title>
+        </div>
+      ) : (
+        <></>
+      )}
       <div className="Scrollbar">
         {isLoading ? (
           <Spin

@@ -135,6 +135,7 @@ function MainPage(props) {
                 </div>
               )}
             </div>
+            <div className="box3"></div>
           </article>
         )}
 
