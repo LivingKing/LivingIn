@@ -55,11 +55,19 @@ router.get("/", async (req, res) => {
           }
           await Post.updateOne({ _id: post._id }, { views: post.views });
           post.hits = post.hits + 1;
-          let state = false;
+          let like_state = false;
+          let dislike_state = false;
           console.log(post);
           post.save();
-          if (post.likes.includes(user._id)) state = true;
-          return res.status(200).json({ post: post, state: state });
+          if (post.likes.includes(user._id)) like_state = true;
+          if (post.dislikes.includes(user._id)) dislike_state = true;
+          return res
+            .status(200)
+            .json({
+              post: post,
+              like_state: like_state,
+              dislike_state: dislike_state,
+            });
         }
       }
       const { category } = req.query;
@@ -119,7 +127,8 @@ router.put("/", async (req, res) => {
   } = req.body.data;
   const user = await verifyUser(token_type, access_token);
   const post = await Post.findById(id);
-  let state = false;
+  let like_state = false;
+  let dislike_state = false;
   if (type === "liked" || type === "disliked") {
     let result = {
       type: "score",
@@ -136,25 +145,29 @@ router.put("/", async (req, res) => {
     if (!post.likes.includes(user._id)) {
       post.likes.push(user._id);
       await Post.updateOne({ _id: id }, { likes: post.likes });
-      state = true;
+      like_state = true;
     } else {
       post.likes.splice(post.likes.indexOf(user._id), 1);
       await Post.updateOne({ _id: id }, { likes: post.likes });
-      state = false;
+      like_state = false;
     }
-    return res.status(200).json({ length: post.likes.length, state: state });
+    return res
+      .status(200)
+      .json({ length: post.likes.length, like_state: like_state });
   } else if (type === "disliked") {
     if (!post.dislikes.includes(user._id)) {
       post.dislikes.push(user._id);
       await Post.updateOne({ _id: id }, { dislikes: post.dislikes });
-      state = true;
+      dislike_state = true;
     } else {
       post.dislikes.splice(post.dislikes.indexOf(user._id), 1);
       await Post.updateOne({ _id: id }, { dislikes: post.dislikes });
-      state = false;
+      dislike_state = false;
     }
     console.log(post);
-    return res.status(200).json({ length: post.dislikes.length, state: state });
+    return res
+      .status(200)
+      .json({ length: post.dislikes.length, dislike_state: dislike_state });
   }
 });
 

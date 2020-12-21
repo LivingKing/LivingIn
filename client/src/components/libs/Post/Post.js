@@ -93,8 +93,8 @@ const Post = (props) => {
       <Link
         style={{
           position: "absolute",
-          width: "610px",
-          height: "400px",
+          width: "320px",
+          height: "440px",
           zIndex: "201",
         }}
         to={{

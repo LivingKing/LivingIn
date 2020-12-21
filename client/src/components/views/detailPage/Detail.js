@@ -79,7 +79,7 @@ const Detail = (props) => {
   const [isCommentLoading, setIsCommentLoading] = useState(true); // 댓글 로딩 전인지
   const [islike, setIsLike] = useState(false); // 좋아요 눌렀는지
   const [likes, setLikes] = useState(0); // 좋아요 수
-  const [isdislike, setIsdislike] = useState(false); // 싫어요 눌렀는지
+  const [isdislike, setIsDisLike] = useState(false); // 싫어요 눌렀는지
   const [dislikes, setDisLikes] = useState(0); // 싫어요 수
   const [value, setValue] = useState(""); // 댓글 입력 메시지
 
@@ -170,6 +170,7 @@ const Detail = (props) => {
     if (isLoading) {
       const fetchPost = async () => {
         const res = await getPost();
+        console.log(res);
         const post = res.post;
         await post.hash_Tags.map((value) => hashTags.push(value));
         setTitle(post.title);
@@ -177,7 +178,9 @@ const Detail = (props) => {
         setWriter(post.writer);
         setCategory(post.category);
         setCreated_At(getFormatDate(post.created_At));
-        setIsLike(res.state);
+        setIsLike(res.like_state);
+        setIsDisLike(res.dislike_state);
+        setDisLikes(post.dislikes.length);
         setLikes(post.likes.length);
         setHits(post.hits);
         let result = {
@@ -261,7 +264,7 @@ const Detail = (props) => {
     });
     if (res.status === 200) {
       setLikes(res.data.length);
-      setIsLike(res.data.state);
+      setIsLike(res.data.like_state);
     }
   };
   const updateDisLike = async () => {
@@ -276,7 +279,7 @@ const Detail = (props) => {
     });
     if (res.status === 200) {
       setDisLikes(res.data.length);
-      setIsdislike(res.data.state);
+      setIsDisLike(res.data.dislike_state);
     }
   };
   const handleLike = async () => {

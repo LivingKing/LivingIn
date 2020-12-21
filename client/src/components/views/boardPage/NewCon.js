@@ -1,12 +1,11 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { message, Spin, Typography } from "antd";
+import { message, Spin } from "antd";
 import Post from "../../libs/Post/Post";
 import axios from "axios";
 import check from "./check.png";
 import { LoadingOutlined } from "@ant-design/icons";
 import qs from "querystring";
 import "./NewCon.css";
-const { Title } = Typography;
 
 function NewPost() {
   const [isLoading, setIsLoading] = useState(true);
@@ -29,19 +28,10 @@ function NewPost() {
   };
   // 스크롤 이벤트 핸들러
   const handleScroll = useCallback(() => {
-    // if (items.length === props.board.length - 1) {
-    //   if (!isLoadAll) {
-    //     setIsLoadAll(true);
-    //   }
-    // }
     const scrollHeight = document.documentElement.scrollHeight;
     const scrollTop = document.documentElement.scrollTop;
     const clientHeight = document.documentElement.clientHeight;
-    if (
-      scrollTop + clientHeight === scrollHeight &&
-      fetching === false
-      // &&!isLoadAll
-    ) {
+    if (scrollTop + clientHeight === scrollHeight && fetching === false) {
       // 페이지 끝에 도달하면 추가 데이터를 받아온다
       if (!fetching) fetchMoreInstaFeeds();
     }
@@ -95,10 +85,8 @@ function NewPost() {
             qs.parse(window.location.search).length !== 0 &&
             favorite_category
           ) {
-            console.log("123213");
             setFavItems(items);
           } else {
-            console.log("4545");
             setItems(items);
           }
         }
@@ -281,7 +269,7 @@ function NewPost() {
         <>
           <div>
             <br></br>
-            <Title level={3}>선호 카테고리 기반 추천 게시물</Title>
+            <h1 className="abcabc">👍 선호 카테고리 기반 추천 게시물</h1>
           </div>
           <div className="Scrollbar">
             {favItems.map((i, index) => (
@@ -304,12 +292,20 @@ function NewPost() {
           </div>
         </>
       ) : (
-        <></>
+        <article>
+          <h1 className="abcabc">
+            {sort_type === "created_At"
+              ? "😁 최신순"
+              : sort_type === "hits"
+              ? "😃 조회수순"
+              : "😄 좋아요순"}
+          </h1>
+        </article>
       )}
       {Object.keys(qs.parse(window.location.search)).length !== 0 ? (
         <div>
           <br></br>
-          <Title level={3}>검색 결과</Title>
+          <h1 className="abcabc">🧐 검색 결과</h1>
         </div>
       ) : (
         <></>

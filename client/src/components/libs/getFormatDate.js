@@ -1,6 +1,8 @@
+import { state } from "../../../package.json";
 const getFormatdate = (date) => {
   let date2 = new Date(date);
-  date2.setMilliseconds(date2.getMilliseconds() - 9 * 60 * 60 * 1000);
+  if (state === "DEV")
+    date2.setMilliseconds(date2.getMilliseconds() - 9 * 60 * 60 * 1000);
   const year = date2.getFullYear();
   const month = date2.getMonth() + 1;
   const day = date2.getDate();

@@ -51,7 +51,6 @@ router.put("/", async (req, res) => {
       else if (category === "생활") index = 2;
       else if (category === "욕실") index = 3;
 
-      console.log(active);
       if (active === "favorite_search") {
         user.favorite_score[index] += 24;
       } else if (active === "normal_search") {

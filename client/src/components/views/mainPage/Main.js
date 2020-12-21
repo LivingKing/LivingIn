@@ -245,32 +245,8 @@ function MainPage(props) {
           </div>
         </article>
 
-        <div className="box2"></div>
-        {/* <div className="box2"></div> */}
-
-        {/* <article>
-          <h2 className="blind">최신 팁</h2>
-          <div className="tip">
-            <header className="underline">
-              <h3 className="art_title">
-                <a href="/">HOT TIP</a>
-              </h3>
-              <ModalButton />
-            </header>
-          </div>
-        </article> */}
-
-        <div className="box2"></div>
+        <div className="box4"></div>
       </section>
-
-      <div className="box2"></div>
-      <div className="box2"></div>
-      <div className="box2"></div>
-      <div className="box2"></div>
-      <div className="box2"></div>
-      <div className="box2"></div>
-
-      {/* footer */}
       <Footer />
     </div>
   );
