@@ -7,9 +7,7 @@ router.get("/posts", async (req, res) => {
     console.log(req.query);
     let length = Number(req.query.length);
     let sort_type = req.query.sort_type;
-    if (!length) {
-      length = 0;
-    }
+    if (!length) length = 0;
     if (!sort_type) {
       sort_type = "created_At";
     }
