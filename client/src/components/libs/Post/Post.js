@@ -88,8 +88,16 @@ const Post = (props) => {
 
   const arr1 = v01.split(" ");
   const arr2 = v02.split(" ");
+  let t1=props.title;
+
+  if(props.title.length>18){
+     let t2 = props.title.substr(0,18);
+     t1 = t2+" ...";
+  }
   return (
+    
     <div className="posts__post">
+    
       <Link
         style={{
           position: "absolute",
@@ -122,7 +130,7 @@ const Post = (props) => {
       </div>
       <div className="post__info">
         <div className="info__detail1">
-          <p className="post__title">{props.title}</p>
+          <p className="post__title">{t1}</p>
           <p className="post__writer">{props.writer}</p>
           <p className="post__created_At">{getFormatDate(props.created_At)}</p>
         </div>

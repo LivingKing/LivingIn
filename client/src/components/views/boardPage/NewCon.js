@@ -216,7 +216,7 @@ function NewPost() {
               ) : (
                 <></>
               )}
-
+              
               <span>
                 <b>최신 순</b>
               </span>
@@ -276,12 +276,13 @@ function NewPost() {
           </div>
         </div>
       </div>
+      
       {Object.keys(qs.parse(window.location.search)).length !== 0 &&
       favCategory ? (
         <>
           <div>
             <br></br>
-            <Title level={3}>선호 카테고리 기반 추천 게시물</Title>
+            <h1 className="abcabc">👍 선호 카테고리 기반 추천 게시물</h1>
           </div>
           <div className="Scrollbar">
             {favItems.map((i, index) => (
@@ -304,12 +305,16 @@ function NewPost() {
           </div>
         </>
       ) : (
-        <></>
+        <article>
+
+                  <h1 className="abcabc">{sort_type=="created_At"?"😁 최신순":sort_type=="hits"?"😃 조회수순":"😄 좋아요순"}</h1>
+
+      </article>
       )}
       {Object.keys(qs.parse(window.location.search)).length !== 0 ? (
         <div>
           <br></br>
-          <Title level={3}>검색 결과</Title>
+          <h1 className="abcabc">🧐 검색 결과</h1>
         </div>
       ) : (
         <></>

@@ -51,6 +51,7 @@ const BoardPage = (props) => {
 
       <div className="content22">
         <BackTop style={{ zIndex: "999" }} />
+        
         <NewCon />
       </div>
     </div>

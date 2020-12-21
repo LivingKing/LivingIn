@@ -245,7 +245,7 @@ function MainPage(props) {
           </div>
         </article>
 
-        <div className="box2"></div>
+        <div className="box4"></div>
         {/* <div className="box2"></div> */}
 
         {/* <article>
@@ -260,15 +260,10 @@ function MainPage(props) {
           </div>
         </article> */}
 
-        <div className="box2"></div>
+        
       </section>
 
-      <div className="box2"></div>
-      <div className="box2"></div>
-      <div className="box2"></div>
-      <div className="box2"></div>
-      <div className="box2"></div>
-      <div className="box2"></div>
+      
 
       {/* footer */}
       <Footer />

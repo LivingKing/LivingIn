@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
-  "state":"DEV",
+  "state": "DEV",
   "directories": {
     "lib": "lib"
   },
@@ -14,7 +14,7 @@
   },
   "engines": {
     "node": "v12.18.2",
-    "npm" : "6.14.5"
+    "npm": "6.14.5"
   },
   "author": "",
   "license": "ISC",
@@ -35,7 +35,7 @@
     "nodemailer": "^6.4.11",
     "passport": "^0.4.1",
     "passport-google-oauth": "^2.0.0",
-    "pm2": "^4.4.1",
+    "pm2": "^4.5.1",
     "sanitize-html": "^1.27.4",
     "upgrade": "^1.1.0"
   }

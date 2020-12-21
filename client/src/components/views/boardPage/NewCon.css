@@ -1,3 +1,8 @@
+@font-face {
+  font-family: "jalnanOTF";
+  src: url("../mainPage/Font/JalnanOTF.otf");
+}
+
 .list_wrap {
   float: left;
   width: 635px;
@@ -115,4 +120,13 @@
 .top_sort .check_image {
   display: inline-block;
   margin-bottom: 6px;
+}
+
+.abcabc {
+  margin-bottom: 12px;
+  margin-top: 30px;
+  margin-right: 350px;
+  font-size: 30px;
+  color: #5c6bc0;
+  font-family: "jalnanOTF";
 }
