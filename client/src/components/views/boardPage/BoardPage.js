@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { BackTop, message, Typography } from "antd";
 import Header from "../../libs/Header/Header";
-import "./boardPage.css";
+import "./BoardPage.css";
 import NewCon from "./NewCon.js";
 import Verify from "../../libs/Verify";
 

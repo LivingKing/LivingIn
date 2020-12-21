@@ -11,7 +11,7 @@ import ModifyPage from "./views/FindPage/ModifyPage";
 import CallbackPage from "./views/loginPage/Login_Callback";
 import DetailPage from "./views/detailPage/Detail";
 import CreatePage from "./views/createPage/createPage";
-import BoardPage from "./views/boardPage/boardPage";
+import BoardPage from "./views/boardPage/BoardPage";
 import SettingsPage from "./views/settingPage/Settings";
 import { Switch, BrowserRouter } from "react-router-dom";
 
