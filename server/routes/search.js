@@ -4,7 +4,6 @@ const Post = require("../models/Post");
 
 router.get("/posts", async (req, res) => {
   try {
-    console.log(req.query);
     let length = Number(req.query.length);
     let sort_type = req.query.sort_type;
     if (!length) length = 0;
@@ -38,7 +37,7 @@ router.get("/posts", async (req, res) => {
       }
       if (tag) {
         post = await Post.find({
-          $and: [{ tag: { $regex: tag } }, { category: fav }],
+          $and: [{ hash_Tags: { $regex: tag } }, { category: fav }],
         })
           .sort(obj)
           .skip(length)
@@ -75,7 +74,7 @@ router.get("/posts", async (req, res) => {
           .limit(6);
       }
       if (tag) {
-        post = await Post.find({ tag: { $regex: tag } })
+        post = await Post.find({ hash_Tags: { $regex: tag } })
           .sort(obj)
           .skip(length)
           .limit(6);

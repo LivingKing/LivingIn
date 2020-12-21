@@ -1,6 +1,4 @@
-const package = require("../package.json");
-
-const state = package.state;
+const { state } = require("../package.json");
 
 exports.serverHost = () => {
   if (state === "PUB") return "https://livingin.herokuapp.com";

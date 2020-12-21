@@ -20,25 +20,33 @@ router.post("/", async (req, res) => {
     thumbnail,
   } = req.body;
   const user = await verifyUser(token_type, access_token);
-  Post.create(title, content, user.nickname, tags, category, thumbnail).then(
-    async () => {
-      let result = {
-        type: "score",
-        active: "create",
-        category: category,
-        access_token: access_token,
-        token_type: token_type,
-      };
-      const update = await Axios.put(host.serverHost() + `/users`, {
-        data: JSON.stringify(result),
+  let views = [];
+  views.push(user._id);
+  Post.create(
+    title,
+    content,
+    user.nickname,
+    tags,
+    category,
+    thumbnail,
+    views
+  ).then(async () => {
+    let result = {
+      type: "score",
+      active: "create",
+      category: category,
+      access_token: access_token,
+      token_type: token_type,
+    };
+    const update = await Axios.put(host.serverHost() + `/users`, {
+      data: JSON.stringify(result),
+    });
+    if (update.status === 200) {
+      res.status(200).json({
+        message: "post successfully",
       });
-      if (update.status === 200) {
-        res.status(200).json({
-          message: "post successfully",
-        });
-      }
     }
-  );
+  });
 });
 
 // 글 조회 api
@@ -57,17 +65,14 @@ router.get("/", async (req, res) => {
           post.hits = post.hits + 1;
           let like_state = false;
           let dislike_state = false;
-          console.log(post);
           post.save();
           if (post.likes.includes(user._id)) like_state = true;
           if (post.dislikes.includes(user._id)) dislike_state = true;
-          return res
-            .status(200)
-            .json({
-              post: post,
-              like_state: like_state,
-              dislike_state: dislike_state,
-            });
+          return res.status(200).json({
+            post: post,
+            like_state: like_state,
+            dislike_state: dislike_state,
+          });
         }
       }
       const { category } = req.query;
@@ -164,7 +169,6 @@ router.put("/", async (req, res) => {
       await Post.updateOne({ _id: id }, { dislikes: post.dislikes });
       dislike_state = false;
     }
-    console.log(post);
     return res
       .status(200)
       .json({ length: post.dislikes.length, dislike_state: dislike_state });

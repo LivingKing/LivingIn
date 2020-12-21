@@ -26,7 +26,8 @@ postSchema.statics.create = function (
   writer,
   hash_Tags,
   category,
-  thumbnail
+  thumbnail,
+  views
 ) {
   const post = new this({
     title,
@@ -35,6 +36,7 @@ postSchema.statics.create = function (
     hash_Tags,
     category,
     thumbnail,
+    views,
   });
   const date = getCurrentDate();
   post.created_At = date;

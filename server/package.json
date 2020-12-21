@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "main.js",
-  "state":"DEV",
+  "state": "PUB",
   "directories": {
     "lib": "lib"
   },
@@ -14,7 +14,7 @@
   },
   "engines": {
     "node": "v12.18.2",
-    "npm" : "6.14.5"
+    "npm": "6.14.5"
   },
   "author": "",
   "license": "ISC",
@@ -28,6 +28,7 @@
     "google-auth-library": "^6.0.6",
     "helmet": "^3.23.3",
     "jsonwebtoken": "^8.5.1",
+    "moment": "^2.29.1",
     "moment-timezone": "^0.5.31",
     "mongoose": "^5.10.1",
     "mongoose-auto-increment": "^5.0.1",

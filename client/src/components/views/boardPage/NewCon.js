@@ -51,7 +51,9 @@ function NewPost() {
             `/search/posts${search_type}=${search_word}&&fav=${favorite_category}&&sort_type=${sort_type}`
           );
         } else
-          res = await axios.get(`/search/posts${search_type}=${search_word}`);
+          res = await axios.get(
+            `/search/posts${search_type}=${search_word}&&sort_type=${sort_type}`
+          );
       } else {
         res = await axios.get(`/posts`, {
           params: {
