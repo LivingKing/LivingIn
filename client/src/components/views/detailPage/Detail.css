@@ -20,6 +20,9 @@
   background-color: white;
 }
 
+content #rectangle {
+  margin-bottom: calc(3%);
+}
 .view__container .backimg {
   background-image: url(https://cdn.pixabay.com/photo/2017/08/07/13/18/people-2603773_960_720.jpg);
   height: 450px;
